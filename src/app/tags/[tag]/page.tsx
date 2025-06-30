@@ -9,6 +9,7 @@ interface TagPageProps {
   };
 }
 
+// Function to generate metadata dynamically based on the tag
 export async function generateMetadata({ params }: TagPageProps): Promise<Metadata> {
   const tagName = decodeURIComponent(params.tag);
   return {
@@ -17,6 +18,7 @@ export async function generateMetadata({ params }: TagPageProps): Promise<Metada
   };
 }
 
+// Function to generate static paths for all tags (optional, for SSG)
 export async function generateStaticParams() {
   const posts = getSortedPostsData();
   const tags = new Set<string>();

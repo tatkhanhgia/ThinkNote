@@ -1,12 +1,12 @@
 import React from 'react';
-import Link from 'next/link'; // Import Link
-import CustomButton from './CustomButton';
+import Link from 'next/link';
+// Bỏ import CustomButton nếu bạn chọn phương án này và nó không dùng ở đâu khác
 
 interface KnowledgeCardProps {
   title: string;
   description: string;
   tags?: string[];
-  href: string; // href giờ là bắt buộc và dùng cho Link
+  href: string;
   gradientFrom?: string;
   gradientTo?: string;
 }
@@ -15,7 +15,7 @@ const KnowledgeCard: React.FC<KnowledgeCardProps> = ({
   title, 
   description, 
   tags, 
-  href, // Không còn giá trị mặc định, sẽ được truyền từ page
+  href, 
   gradientFrom = 'from-gray-700', 
   gradientTo = 'to-gray-800'
 }) => {
@@ -51,15 +51,13 @@ const KnowledgeCard: React.FC<KnowledgeCardProps> = ({
           </div>
         )}
       </div>
+      {/* PHẦN ĐÃ THAY ĐỔI CHO NÚT READ MORE */}
       <div className="mt-auto">
-        <Link href={href} passHref legacyBehavior>
-          <CustomButton 
-            as="a" // Render CustomButton như một thẻ <a>
-            variant="outline"
-            className="border-white text-white hover:bg-white hover:text-gray-800 w-full sm:w-auto"
-          >
-            Read more
-          </CustomButton>
+        <Link 
+          href={href} 
+          className="inline-block text-center w-full sm:w-auto font-semibold py-2 px-6 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-opacity-75 transition duration-300 ease-in-out border border-white text-white hover:bg-white hover:text-gray-800 focus:ring-purple-300"
+        >
+          Read more
         </Link>
       </div>
     </div>

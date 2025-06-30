@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Link from "next/link"; // Import Link
-import "@/styles/globals.css"; // Đảm bảo import globals.css ở đây
+import "../styles/globals.css"; // Đảm bảo import globals.css ở đây
 
 const inter = Inter({ subsets: ["latin"] });
 

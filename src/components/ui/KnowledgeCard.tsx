@@ -26,15 +26,14 @@ const KnowledgeCard: React.FC<KnowledgeCardProps> = ({
       className={`
         ${gradientStyle} 
         p-6 rounded-xl shadow-2xl 
-        text-white 
         flex flex-col justify-between 
         h-full 
         hover:shadow-purple-400/30 transition-shadow duration-300
       `}
     >
       <div>
-        <h3 className="text-2xl font-bold mb-3">{title}</h3>
-        <p className="text-gray-300 mb-4 text-sm leading-relaxed">
+        <h3 className="text-2xl font-bold mb-3 text-slate-800">{title}</h3>
+        <p className="text-slate-600 mb-4 text-sm leading-relaxed">
           {description}
         </p>
         {tags && tags.length > 0 && (
@@ -55,7 +54,7 @@ const KnowledgeCard: React.FC<KnowledgeCardProps> = ({
       <div className="mt-auto">
         <Link 
           href={href} 
-          className="inline-block text-center w-full sm:w-auto font-semibold py-2 px-6 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-opacity-75 transition duration-300 ease-in-out border border-white text-white hover:bg-white hover:text-gray-800 focus:ring-purple-300"
+          className="inline-block text-center w-full sm:w-auto font-semibold py-2 px-6 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-opacity-75 transition duration-300 ease-in-out border border-slate-800 text-slate-800 hover:bg-slate-800 hover:text-white focus:ring-purple-300"
         >
           Read more
         </Link>

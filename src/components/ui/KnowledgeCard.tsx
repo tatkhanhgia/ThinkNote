@@ -5,6 +5,7 @@ interface KnowledgeCardProps {
   title: string;
   description: string;
   tags?: string[];
+  categories?: string[];
   href: string;
   gradientFrom?: string;
   gradientTo?: string;

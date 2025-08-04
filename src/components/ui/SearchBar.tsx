@@ -2,7 +2,18 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { getSortedPostsData, PostData } from '@/lib/posts';
+
+interface PostData {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  tags: string[];
+  gradientFrom?: string;
+  gradientTo?: string;
+  contentHtml?: string;
+  [key: string]: any;
+}
 
 interface SearchBarProps {
   className?: string;
@@ -16,9 +27,11 @@ const SearchBar: React.FC<SearchBarProps> = ({ className = '' }) => {
   const searchRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Load all posts on component mount
-    const posts = getSortedPostsData();
-    setAllPosts(posts);
+    // Load all posts on component mount via API
+    fetch('/api/posts')
+      .then(res => res.json())
+      .then(posts => setAllPosts(posts))
+      .catch(err => console.error('Error loading posts:', err));
   }, []);
 
   useEffect(() => {

@@ -9,6 +9,7 @@ interface PostData {
   description: string;
   date: string;
   tags: string[];
+  categories: string[];
   gradientFrom?: string;
   gradientTo?: string;
   contentHtml?: string;

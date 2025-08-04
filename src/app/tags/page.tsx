@@ -2,9 +2,61 @@ import Link from 'next/link';
 import { getSortedPostsData } from '@/lib/posts';
 
 export const metadata = {
-  title: 'Browse Tags - ThinkNote',
+  title: 'All Tags - ThinkNote',
   description: 'Explore articles by topic tags. Find programming tutorials organized by technology and concept.',
 };
+
+// Define category mappings for better organization
+const CATEGORY_MAPPINGS = {
+  'Programming Languages': {
+    keywords: ['java', 'javascript', 'typescript', 'python', 'react', 'c++', 'c#', 'php', 'ruby', 'go', 'rust'],
+    color: 'bg-blue-100 text-blue-800 border-blue-200',
+    icon: '💻'
+  },
+  'Development Core': {
+    keywords: ['devcore', 'architecture', 'design', 'patterns', 'best', 'practices', 'solid', 'clean'],
+    color: 'bg-purple-100 text-purple-800 border-purple-200',
+    icon: '⚡'
+  },
+  'Tools & IDE': {
+    keywords: ['tool', 'ide', 'editor', 'vscode', 'intellij', 'eclipse', 'setup', 'configuration'],
+    color: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+    icon: '🛠️'
+  },
+  'AI & Machine Learning': {
+    keywords: ['ai', 'artificial', 'intelligence', 'machine', 'learning', 'ml', 'deep', 'neural', 'tensorflow', 'pytorch'],
+    color: 'bg-rose-100 text-rose-800 border-rose-200',
+    icon: '🤖'
+  },
+  'Frontend Development': {
+    keywords: ['frontend', 'css', 'tailwindcss', 'ui', 'ux', 'responsive', 'html', 'sass', 'bootstrap'],
+    color: 'bg-amber-100 text-amber-800 border-amber-200',
+    icon: '🎨'
+  },
+  'Backend Development': {
+    keywords: ['backend', 'api', 'database', 'server', 'microservices', 'nodejs', 'express', 'spring', 'django'],
+    color: 'bg-indigo-100 text-indigo-800 border-indigo-200',
+    icon: '🔧'
+  }
+};
+
+function getCategoryForTag(tag: string): { category: string; color: string; icon: string } | null {
+  const tagLower = tag.toLowerCase();
+  
+  for (const [categoryName, config] of Object.entries(CATEGORY_MAPPINGS)) {
+    if (config.keywords.some(keyword => 
+      tagLower.includes(keyword) || keyword.includes(tagLower)
+    )) {
+      return {
+        category: categoryName,
+        color: config.color,
+        icon: config.icon
+      };
+    }
+  }
+  
+  return null;
+}
 
 export default function TagsPage() {
   const allPosts = getSortedPostsData();
@@ -22,20 +74,21 @@ export default function TagsPage() {
     .sort(([, a], [, b]) => b - a)
     .map(([tag, count]) => ({ tag, count }));
 
-  const tagColors = [
-    'bg-blue-100 text-blue-800 border-blue-200',
-    'bg-purple-100 text-purple-800 border-purple-200',
-    'bg-emerald-100 text-emerald-800 border-emerald-200',
-    'bg-rose-100 text-rose-800 border-rose-200',
-    'bg-amber-100 text-amber-800 border-amber-200',
-    'bg-indigo-100 text-indigo-800 border-indigo-200',
-    'bg-cyan-100 text-cyan-800 border-cyan-200',
-    'bg-pink-100 text-pink-800 border-pink-200',
-  ];
+  // Group tags by category
+  const tagsByCategory: { [key: string]: typeof sortedTags } = {};
+  const uncategorizedTags: typeof sortedTags = [];
 
-  const getTagColor = (index: number) => {
-    return tagColors[index % tagColors.length];
-  };
+  sortedTags.forEach(tagData => {
+    const categoryInfo = getCategoryForTag(tagData.tag);
+    if (categoryInfo) {
+      if (!tagsByCategory[categoryInfo.category]) {
+        tagsByCategory[categoryInfo.category] = [];
+      }
+      tagsByCategory[categoryInfo.category].push(tagData);
+    } else {
+      uncategorizedTags.push(tagData);
+    }
+  });
 
   if (sortedTags.length === 0) {
     return (
@@ -70,7 +123,7 @@ export default function TagsPage() {
       <section className="bg-gradient-to-r from-purple-50 to-blue-50 py-16 sm:py-20">
         <div className="container mx-auto px-6 text-center">
           <h1 className="heading-xl text-gray-800 mb-6">
-            Browse by Tags
+            All Tags
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             Discover content organized by topics and technologies. Each tag represents 
@@ -90,87 +143,128 @@ export default function TagsPage() {
                   <div className="text-2xl font-bold text-blue-600">{allPosts.length}</div>
                   <div className="text-sm text-gray-600">Articles</div>
                 </div>
+                <div className="w-px h-8 bg-gray-300"></div>
+                <div>
+                  <div className="text-2xl font-bold text-emerald-600">{Object.keys(tagsByCategory).length}</div>
+                  <div className="text-sm text-gray-600">Categories</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Tags Cloud */}
+      {/* Quick Actions */}
+      <section className="py-8 bg-white/50">
+        <div className="container mx-auto px-6">
+          <div className="flex flex-wrap justify-center gap-4">
+            <Link
+              href="/categories"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 transition-colors text-sm font-medium"
+            >
+              <span>📋</span>
+              Browse by Categories
+            </Link>
+            <Link
+              href="/search"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium"
+            >
+              <span>🔍</span>
+              Search Articles
+            </Link>
+            <Link
+              href="/topics"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors text-sm font-medium"
+            >
+              <span>📚</span>
+              All Topics
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Tags by Category */}
       <section className="content-section">
         <div className="container mx-auto px-6">
-          <div className="mb-12 text-center">
-            <h2 className="heading-md text-gray-800 mb-4">
-              Explore Topics
-            </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Click on any tag to see all related articles. The size indicates how many articles are available for each topic.
-            </p>
-          </div>
+          {Object.entries(tagsByCategory).map(([categoryName, categoryTags]) => {
+            const categoryConfig = CATEGORY_MAPPINGS[categoryName as keyof typeof CATEGORY_MAPPINGS];
+            return (
+              <div key={categoryName} className="mb-16">
+                <div className="flex items-center gap-3 mb-8">
+                  <span className="text-2xl">{categoryConfig.icon}</span>
+                  <h2 className="heading-md text-gray-800">{categoryName}</h2>
+                  <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                    {categoryTags.length} tags
+                  </span>
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {categoryTags.map(({ tag, count }, index) => (
+                    <Link
+                      key={tag}
+                      href={`/tags/${encodeURIComponent(tag.toLowerCase())}`}
+                      className={`modern-card group p-4 hover:scale-105 ${categoryConfig.color} border`}
+                      style={{
+                        animationDelay: `${index * 50}ms`,
+                        animationFillMode: 'both'
+                      }}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                          </svg>
+                          <span className="font-medium">{tag}</span>
+                        </div>
+                        <span className="bg-white/50 text-xs px-2 py-1 rounded-full font-medium">
+                          {count}
+                        </span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
 
-          {/* Popular Tags */}
-          <div className="mb-16">
-            <h3 className="text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2">
-              <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-              </svg>
-              Most Popular Tags
-            </h3>
-            <div className="flex flex-wrap gap-4">
-              {sortedTags.slice(0, 5).map(({ tag, count }, index) => (
-                <Link
-                  key={tag}
-                  href={`/tags/${encodeURIComponent(tag.toLowerCase())}`}
-                  className={`modern-card group px-6 py-4 hover:scale-105 ${getTagColor(index)} border`}
-                >
-                  <div className="flex items-center gap-3">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                    </svg>
-                    <span className="font-semibold text-lg">{tag}</span>
-                    <span className="bg-white/50 text-xs px-2 py-1 rounded-full font-medium">
-                      {count}
-                    </span>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          {/* All Tags Grid */}
-          <div className="mb-16">
-            <h3 className="text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2">
-              <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-              </svg>
-              All Tags
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {sortedTags.map(({ tag, count }, index) => (
-                <Link
-                  key={tag}
-                  href={`/tags/${encodeURIComponent(tag.toLowerCase())}`}
-                  className={`modern-card group p-4 hover:scale-105 ${getTagColor(index)} border`}
-                  style={{
-                    animationDelay: `${index * 50}ms`,
-                    animationFillMode: 'both'
-                  }}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                      </svg>
-                      <span className="font-medium">{tag}</span>
+          {/* Uncategorized Tags */}
+          {uncategorizedTags.length > 0 && (
+            <div className="mb-16">
+              <div className="flex items-center gap-3 mb-8">
+                <span className="text-2xl">🏷️</span>
+                <h2 className="heading-md text-gray-800">Other Tags</h2>
+                <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                  {uncategorizedTags.length} tags
+                </span>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {uncategorizedTags.map(({ tag, count }, index) => (
+                  <Link
+                    key={tag}
+                    href={`/tags/${encodeURIComponent(tag.toLowerCase())}`}
+                    className="modern-card group p-4 hover:scale-105 bg-gray-100 text-gray-800 border-gray-200 border"
+                    style={{
+                      animationDelay: `${index * 50}ms`,
+                      animationFillMode: 'both'
+                    }}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                        </svg>
+                        <span className="font-medium">{tag}</span>
+                      </div>
+                      <span className="bg-white/50 text-xs px-2 py-1 rounded-full font-medium">
+                        {count}
+                      </span>
                     </div>
-                    <span className="bg-white/50 text-xs px-2 py-1 rounded-full font-medium">
-                      {count}
-                    </span>
-                  </div>
-                </Link>
-              ))}
+                  </Link>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </section>
 
@@ -181,21 +275,21 @@ export default function TagsPage() {
             Ready to dive into the topics?
           </h2>
           <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
-            Start exploring articles by clicking on any tag above, or browse all topics 
+            Start exploring articles by clicking on any tag above, or browse organized categories 
             to discover comprehensive programming insights and tutorials.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href="/topics"
+              href="/categories"
               className="btn-primary"
             >
-              View All Topics
+              Browse Categories
             </Link>
             <Link
-              href="/"
+              href="/topics"
               className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
             >
-              Back to Home
+              View All Topics
             </Link>
           </div>
         </div>

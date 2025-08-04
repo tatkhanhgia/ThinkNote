@@ -2,6 +2,7 @@
 title: "Introduction to Tailwind CSS"
 description: "Learn how Tailwind CSS, a utility-first CSS framework, can help you build custom designs rapidly."
 tags: ["TailwindCSS", "CSS", "Frontend", "Utility-First"]
+categories: ["Frontend", "Tool", "Frameworks"]
 date: "2023-09-15"
 gradientFrom: "from-teal-400"
 gradientTo: "to-emerald-500"

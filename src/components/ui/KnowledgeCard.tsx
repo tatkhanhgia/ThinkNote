@@ -15,6 +15,7 @@ const KnowledgeCard: React.FC<KnowledgeCardProps> = ({
   title, 
   description, 
   tags, 
+  categories,
   href, 
   gradientFrom = 'from-blue-500', 
   gradientTo = 'to-purple-600'

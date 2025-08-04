@@ -89,6 +89,7 @@ export async function getPostData(id: string): Promise<PostData> {
       description: string; 
       date: string; 
       tags: string[],
+      categories: string[],
       gradientFrom?: string;
       gradientTo?: string;
     }),

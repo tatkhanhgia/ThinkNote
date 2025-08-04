@@ -63,9 +63,16 @@ export default function TopicsPage() {
                 <div className="w-px h-8 bg-gray-300"></div>
                 <div>
                   <div className="text-2xl font-bold text-purple-600">
+                    {Array.from(new Set(allPosts.flatMap(post => post.categories || []))).length}
+                  </div>
+                  <div className="text-sm text-gray-600">Categories</div>
+                </div>
+                <div className="w-px h-8 bg-gray-300"></div>
+                <div>
+                  <div className="text-2xl font-bold text-emerald-600">
                     {Array.from(new Set(allPosts.flatMap(post => post.tags || []))).length}
                   </div>
-                  <div className="text-sm text-gray-600">Topics</div>
+                  <div className="text-sm text-gray-600">Tags</div>
                 </div>
               </div>
             </div>

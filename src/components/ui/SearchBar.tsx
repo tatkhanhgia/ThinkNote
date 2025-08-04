@@ -56,11 +56,12 @@ const SearchBar: React.FC<SearchBarProps> = ({ className = '' }) => {
       return;
     }
 
-    // Search in title, description, and tags
+    // Search in title, description, tags, and categories
     const filteredResults = allPosts.filter(post => 
       post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       post.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      post.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+      post.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      post.categories?.some(category => category.toLowerCase().includes(searchQuery.toLowerCase()))
     );
 
     setResults(filteredResults.slice(0, 6)); // Limit to 6 results

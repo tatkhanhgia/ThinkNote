@@ -176,21 +176,61 @@ yarn lint     # ESLint checking
 ## 🎯 Yêu Cầu Cần Implement
 
 ### 1. ✅ Search Functionality 
-- **Status**: ĐÃ CÓ SẴN
+- **Status**: ĐÃ CÓ SẴN & ĐƯỢC MỞ RỘNG
 - Real-time search trong SearchBar component
 - API endpoint `/api/posts` đã hoạt động  
-- Search theo title, description, tags
+- Search theo title, description, tags, và **categories**
 
-### 2. ❌ Enhanced Categories System
-- **Status**: CẦN IMPLEMENT
-- Hiện tại chỉ có tags đơn giản
-- Cần thêm categories như Java, DevCore, AI, Tool, IDE
-- Mỗi topic có thể thuộc nhiều categories
+### 2. ✅ Enhanced Categories System
+- **Status**: ĐÃ IMPLEMENT THÀNH CÔNG
+- Categories system song song với tags
+- Các categories hiện có: Java, DevCore, AI, Tool, IDE, Frontend, Backend, Database, Frameworks, Programming Languages
+- Categories được hiển thị dưới dạng purple chips, riêng biệt với tags (blue chips)
+- Category pages với routing `/categories/[category]`
+- Categories main page `/categories` với overview của tất cả categories
 
-### 3. ❌ Project Documentation  
-- **Status**: ĐANG TẠO
-- File này chính là documentation về project
+### 3. ✅ Project Documentation  
+- **Status**: HOÀN THÀNH
+- File `PROJECT_DOCUMENTATION.md` chứa tổng hợp hiểu biết về project
 - Sẽ giúp maintain consistency khi làm việc tiếp
+
+---
+
+## 🚀 Categories System Implementation Details
+
+### Categories Structure
+- **Categories field**: Array `categories: string[]` trong PostData interface
+- **Dual system**: Categories và tags hoạt động song song, không thay thế nhau
+- **Visual distinction**: Categories = purple chips, Tags = blue chips
+- **Routing**: `/categories/[category]` với slug format (lowercase, spaces → hyphens)
+
+### Available Categories
+1. **Java** ☕ - Java programming specifics
+2. **DevCore** ⚡ - Core development principles  
+3. **AI** 🤖 - Artificial Intelligence and ML
+4. **Tool** 🛠️ - Development tools
+5. **IDE** 🖥️ - Integrated Development Environments
+6. **Frontend** 🎨 - Frontend development
+7. **Backend** ⚙️ - Backend development
+8. **Database** 💾 - Database design and management
+9. **Frameworks** 🏗️ - Frameworks and libraries
+10. **Programming Languages** 💻 - Language-specific content
+
+### Categories vs Tags
+- **Categories**: Broad domain classification (Java, AI, DevCore, etc.)
+- **Tags**: Specific technologies/concepts (React, OOP, Collections, etc.)
+- **Usage**: Articles can have multiple categories AND multiple tags
+- **Search**: Both categories and tags are searchable
+- **UI**: Categories displayed first (purple), then tags (blue)
+
+### Updated Sample Content
+- **Java Fundamentals**: Categories: ["Java", "Programming Languages", "DevCore"]
+- **AI Introduction**: Categories: ["AI", "DevCore", "Programming Languages"]  
+- **VS Code Tips**: Categories: ["IDE", "Tool", "DevCore"]
+- **TypeScript Setup**: Categories: ["Programming Languages", "DevCore", "Frameworks"]
+- **React Basics**: Categories: ["Programming Languages", "Frontend", "Frameworks"]
+- **Database Design**: Categories: ["Database", "DevCore", "Backend"]
+- **Tailwind CSS**: Categories: ["Frontend", "Tool", "Frameworks"]
 
 ---
 

@@ -6,92 +6,68 @@ export const metadata = {
   description: 'Explore programming articles organized by categories and technologies.',
 };
 
-// Define main categories with their subcategories and colors
-const CATEGORY_CONFIG = {
-  'Programming Languages': {
-    color: 'bg-blue-100 text-blue-800 border-blue-200',
-    icon: '💻',
-    subcategories: ['Java', 'JavaScript', 'TypeScript', 'Python', 'React']
-  },
-  'Development Core': {
-    color: 'bg-purple-100 text-purple-800 border-purple-200', 
-    icon: '⚡',
-    subcategories: ['DevCore', 'Architecture', 'Design Patterns', 'Best Practices']
-  },
-  'Tools & IDE': {
-    color: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-    icon: '🛠️',
-    subcategories: ['Tool', 'IDE', 'Extensions', 'Productivity']
-  },
-  'AI & Machine Learning': {
-    color: 'bg-rose-100 text-rose-800 border-rose-200',
-    icon: '🤖',
-    subcategories: ['AI', 'Machine Learning', 'Deep Learning', 'Neural Networks']
-  },
-  'Frontend Development': {
-    color: 'bg-amber-100 text-amber-800 border-amber-200',
-    icon: '🎨',
-    subcategories: ['Frontend', 'CSS', 'TailwindCSS', 'UI/UX', 'Responsive Design']
-  },
-  'Backend Development': {
-    color: 'bg-indigo-100 text-indigo-800 border-indigo-200',
-    icon: '🔧',
-    subcategories: ['Backend', 'API', 'Database', 'Server', 'Microservices']
-  }
-};
-
 export default function CategoriesPage() {
   const allPosts = getSortedPostsData();
   
-  // Get all tags from posts
-  const allTags = Array.from(new Set(allPosts.flatMap(post => post.tags || [])));
-  
-  // Group tags by categories
-  const categorizedTags: { [key: string]: { tags: string[], count: number } } = {};
-  
-  Object.entries(CATEGORY_CONFIG).forEach(([categoryName, config]) => {
-    const categoryTags = allTags.filter(tag => 
-      config.subcategories.some(sub => 
-        tag.toLowerCase().includes(sub.toLowerCase()) || 
-        sub.toLowerCase().includes(tag.toLowerCase())
-      )
-    );
-    
-    const tagCounts = categoryTags.reduce((acc: { [key: string]: number }, tag) => {
-      acc[tag] = allPosts.filter(post => post.tags?.includes(tag)).length;
-      return acc;
-    }, {});
-    
-    const totalCount = Object.values(tagCounts).reduce((sum, count) => sum + count, 0);
-    
-    if (categoryTags.length > 0) {
-      categorizedTags[categoryName] = {
-        tags: categoryTags.sort((a, b) => (tagCounts[b] || 0) - (tagCounts[a] || 0)),
-        count: totalCount
-      };
+  // Get all unique categories with their counts
+  const categoryStats = allPosts.reduce((acc, post) => {
+    if (post.categories) {
+      post.categories.forEach(category => {
+        if (!acc[category]) {
+          acc[category] = { count: 0, posts: [] };
+        }
+        acc[category].count++;
+        acc[category].posts.push(post);
+      });
     }
-  });
-
-  // Uncategorized tags
-  const categorizedTagsList = Object.values(categorizedTags).flatMap(cat => cat.tags);
-  const uncategorizedTags = allTags.filter(tag => !categorizedTagsList.includes(tag));
-  
-  const uncategorizedCounts = uncategorizedTags.reduce((acc: { [key: string]: number }, tag) => {
-    acc[tag] = allPosts.filter(post => post.tags?.includes(tag)).length;
     return acc;
-  }, {});
+  }, {} as Record<string, { count: number; posts: any[] }>);
+
+  const categories = Object.entries(categoryStats).sort(([,a], [,b]) => b.count - a.count);
+
+  // Category icons mapping
+  const categoryIcons: Record<string, string> = {
+    'Programming Languages': '💻',
+    'DevCore': '⚡',
+    'AI': '🤖',
+    'Tool': '🛠️',
+    'IDE': '🖥️',
+    'Frontend': '🎨',
+    'Backend': '⚙️',
+    'Database': '💾',
+    'Frameworks': '🏗️',
+    'Java': '☕',
+    'Libraries': '📚',
+    'Development Core': '⚡',
+  };
+
+  // Category colors mapping
+  const categoryColors: Record<string, string> = {
+    'Programming Languages': 'bg-blue-100 text-blue-800 border-blue-200',
+    'DevCore': 'bg-purple-100 text-purple-800 border-purple-200',
+    'AI': 'bg-pink-100 text-pink-800 border-pink-200',
+    'Tool': 'bg-emerald-100 text-emerald-800 border-emerald-200',
+    'IDE': 'bg-indigo-100 text-indigo-800 border-indigo-200',
+    'Frontend': 'bg-cyan-100 text-cyan-800 border-cyan-200',
+    'Backend': 'bg-gray-100 text-gray-800 border-gray-200',
+    'Database': 'bg-green-100 text-green-800 border-green-200',
+    'Frameworks': 'bg-orange-100 text-orange-800 border-orange-200',
+    'Java': 'bg-amber-100 text-amber-800 border-amber-200',
+    'Libraries': 'bg-teal-100 text-teal-800 border-teal-200',
+    'Development Core': 'bg-purple-100 text-purple-800 border-purple-200',
+  };
 
   return (
     <div className="min-h-screen">
       {/* Header Section */}
-      <section className="bg-gradient-to-r from-indigo-50 to-purple-50 py-16 sm:py-20">
+      <section className="bg-gradient-to-r from-blue-50 to-purple-50 py-16 sm:py-20">
         <div className="container mx-auto px-6 text-center">
           <h1 className="heading-xl text-gray-800 mb-6">
-            Knowledge Categories
+            Browse by Categories
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Explore programming knowledge organized by categories. From languages and frameworks 
-            to tools and best practices - find exactly what you're looking for.
+            Explore articles organized by specific domains and technologies. 
+            Each category contains curated content to help you master different aspects of development.
           </p>
           
           {/* Stats */}
@@ -99,18 +75,13 @@ export default function CategoriesPage() {
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg">
               <div className="flex items-center gap-6 text-center">
                 <div>
-                  <div className="text-2xl font-bold text-indigo-600">{Object.keys(categorizedTags).length}</div>
+                  <div className="text-2xl font-bold text-blue-600">{categories.length}</div>
                   <div className="text-sm text-gray-600">Categories</div>
                 </div>
                 <div className="w-px h-8 bg-gray-300"></div>
                 <div>
-                  <div className="text-2xl font-bold text-purple-600">{allTags.length}</div>
-                  <div className="text-sm text-gray-600">Total Tags</div>
-                </div>
-                <div className="w-px h-8 bg-gray-300"></div>
-                <div>
-                  <div className="text-2xl font-bold text-blue-600">{allPosts.length}</div>
-                  <div className="text-sm text-gray-600">Articles</div>
+                  <div className="text-2xl font-bold text-purple-600">{allPosts.length}</div>
+                  <div className="text-sm text-gray-600">Total Articles</div>
                 </div>
               </div>
             </div>
@@ -121,89 +92,85 @@ export default function CategoriesPage() {
       {/* Categories Grid */}
       <section className="content-section">
         <div className="container mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-            {Object.entries(categorizedTags).map(([categoryName, data], index) => {
-              const config = CATEGORY_CONFIG[categoryName as keyof typeof CATEGORY_CONFIG];
-              return (
-                <div
-                  key={categoryName}
-                  className={`modern-card p-8 hover:scale-105 ${config.color} border`}
-                  style={{
-                    animationDelay: `${index * 100}ms`,
-                    animationFillMode: 'both'
-                  }}
-                >
-                  <div className="flex items-start gap-4 mb-6">
-                    <div className="text-3xl">{config.icon}</div>
-                    <div className="flex-1">
-                      <h3 className="text-xl font-bold mb-2">{categoryName}</h3>
-                      <p className="text-sm opacity-80">
-                        {data.count} article{data.count !== 1 ? 's' : ''} across {data.tags.length} topic{data.tags.length !== 1 ? 's' : ''}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-wrap gap-2 mb-6">
-                    {data.tags.slice(0, 6).map((tag) => {
-                      const count = allPosts.filter(post => post.tags?.includes(tag)).length;
-                      return (
-                        <Link
-                          key={tag}
-                          href={`/tags/${encodeURIComponent(tag.toLowerCase())}`}
-                          className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-white/50 hover:bg-white/80 transition-colors"
-                        >
-                          <span>{tag}</span>
-                          <span className="text-xs opacity-60">({count})</span>
-                        </Link>
-                      );
-                    })}
-                    {data.tags.length > 6 && (
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-white/30">
-                        +{data.tags.length - 6} more
-                      </span>
-                    )}
-                  </div>
-
-                  <Link
-                    href={`/tags`}
-                    className="inline-flex items-center gap-2 text-sm font-medium hover:underline"
-                  >
-                    Explore Category
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </Link>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Uncategorized Tags */}
-          {uncategorizedTags.length > 0 && (
-            <div className="mb-16">
-              <h2 className="heading-md text-gray-800 mb-8 text-center">
-                Other Topics
-              </h2>
-              <div className="flex flex-wrap justify-center gap-3">
-                {uncategorizedTags.map((tag) => {
-                  const count = uncategorizedCounts[tag] || 0;
-                  return (
-                    <Link
-                      key={tag}
-                      href={`/tags/${encodeURIComponent(tag.toLowerCase())}`}
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border bg-white hover:bg-gray-50 transition-colors"
-                    >
-                      <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                      </svg>
-                      <span className="font-medium text-gray-700">{tag}</span>
-                      <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
-                        {count}
-                      </span>
-                    </Link>
-                  );
-                })}
+          {categories.length === 0 ? (
+            <div className="text-center py-16">
+              <div className="w-24 h-24 mx-auto mb-8 bg-gray-100 rounded-full flex items-center justify-center">
+                <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
               </div>
+              <h2 className="heading-lg text-gray-800 mb-4">No Categories Found</h2>
+              <p className="text-lg text-gray-600 mb-8 max-w-md mx-auto">
+                No categories are available yet. Articles need to have categories defined.
+              </p>
+              <Link 
+                href="/topics" 
+                className="btn-primary inline-flex items-center gap-2"
+              >
+                Browse All Topics
+              </Link>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {categories.map(([category, stats], index) => {
+                const categorySlug = category.toLowerCase().replace(/\s+/g, '-');
+                const icon = categoryIcons[category] || '📁';
+                const colorClass = categoryColors[category] || 'bg-gray-100 text-gray-800 border-gray-200';
+                
+                return (
+                  <div
+                    key={category}
+                    className="animate-in"
+                    style={{
+                      animationDelay: `${index * 100}ms`,
+                      animationFillMode: 'both'
+                    }}
+                  >
+                    <Link
+                      href={`/categories/${categorySlug}`}
+                      className={`modern-card p-6 group hover:scale-105 transition-all duration-300 block h-full border ${colorClass}`}
+                    >
+                      {/* Icon and Title */}
+                      <div className="flex items-start gap-4 mb-6">
+                        <div className="text-3xl">{icon}</div>
+                        <div className="flex-1">
+                          <h3 className="text-xl font-bold mb-2">{category}</h3>
+                          <p className="text-sm opacity-80">
+                            {stats.count} article{stats.count !== 1 ? 's' : ''} available
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Sample Articles */}
+                      <div className="space-y-2 mb-6">
+                        {stats.posts.slice(0, 2).map((post) => (
+                          <div key={post.id} className="text-xs bg-white/50 rounded-lg p-2">
+                            <div className="font-medium line-clamp-1">{post.title}</div>
+                          </div>
+                        ))}
+                        {stats.count > 2 && (
+                          <div className="text-xs opacity-60 text-center">
+                            +{stats.count - 2} more article{stats.count - 2 !== 1 ? 's' : ''}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Arrow */}
+                      <div className="flex items-center justify-between">
+                        <div className="text-2xl font-bold">
+                          {stats.count}
+                        </div>
+                        <div className="flex items-center text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                          <span className="mr-2">Explore</span>
+                          <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </div>
+                      </div>
+                    </Link>
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
@@ -213,10 +180,10 @@ export default function CategoriesPage() {
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-6 text-center">
           <h2 className="heading-md text-gray-800 mb-4">
-            Ready to dive deep into learning?
+            Want to explore more?
           </h2>
           <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
-            Start exploring articles in your area of interest, or discover something completely new.
+            Browse all articles or search for specific topics that interest you most.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
@@ -229,7 +196,10 @@ export default function CategoriesPage() {
               href="/tags"
               className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
             >
-              View All Tags
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+              </svg>
+              Browse by Tags
             </Link>
           </div>
         </div>

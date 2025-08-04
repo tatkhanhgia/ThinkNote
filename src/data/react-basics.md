@@ -2,6 +2,7 @@
 title: "React Basics for Beginners"
 description: "An introduction to the fundamental concepts of React, including components, props, and state."
 tags: ["React", "JavaScript", "Frontend"]
+categories: ["Programming Languages", "Frontend", "Frameworks"]
 date: "2023-10-26"
 gradientFrom: "from-sky-400"
 gradientTo: "to-cyan-300"

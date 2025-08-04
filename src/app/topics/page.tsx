@@ -90,6 +90,7 @@ export default function TopicsPage() {
                   title={post.title}
                   description={post.description}
                   tags={post.tags}
+                  categories={post.categories}
                   href={`/topics/${post.id}`}
                   gradientFrom={post.gradientFrom || 'from-blue-500'}
                   gradientTo={post.gradientTo || 'to-purple-600'}

@@ -67,20 +67,38 @@ export default async function TopicDetailPage({ params }: { params: { topic: str
               </div>
             </div>
 
-            {/* Tags */}
-            {postData.tags && postData.tags.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {postData.tags.map((tag, index) => (
-                  <Link 
-                    href={`/tags/${encodeURIComponent(tag.toLowerCase())}`} 
-                    key={index} 
-                    className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-white/10 text-white hover:bg-white/20 transition-colors"
-                  >
-                    {tag}
-                  </Link>
-                ))}
-              </div>
-            )}
+            {/* Categories and Tags */}
+            <div className="space-y-3">
+              {postData.categories && postData.categories.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  <span className="text-gray-300 text-sm font-medium">Categories:</span>
+                  {postData.categories.map((category, index) => (
+                    <Link 
+                      href={`/categories/${encodeURIComponent(category.toLowerCase().replace(/\s+/g, '-'))}`} 
+                      key={index} 
+                      className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-600/20 text-purple-200 hover:bg-purple-600/30 transition-colors"
+                    >
+                      {category}
+                    </Link>
+                  ))}
+                </div>
+              )}
+              
+              {postData.tags && postData.tags.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  <span className="text-gray-300 text-sm font-medium">Tags:</span>
+                  {postData.tags.map((tag, index) => (
+                    <Link 
+                      href={`/tags/${encodeURIComponent(tag.toLowerCase())}`} 
+                      key={index} 
+                      className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-white/10 text-white hover:bg-white/20 transition-colors"
+                    >
+                      {tag}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </section>

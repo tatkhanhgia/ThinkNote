@@ -12,6 +12,7 @@ export interface PostData {
   description: string;
   date: string;
   tags: string[];
+  categories: string[];
   gradientFrom?: string;
   gradientTo?: string;
   contentHtml?: string; // Sẽ dùng cho trang chi tiết

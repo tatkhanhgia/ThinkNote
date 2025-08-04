@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import SearchBar from "@/components/ui/SearchBar";
 import "../styles/globals.css";
 
 export const metadata: Metadata = {
@@ -49,8 +50,13 @@ export default function RootLayout({
               </span>
             </Link>
 
+            {/* Search Bar - Hidden on mobile, shown on tablet+ */}
+            <div className="hidden md:flex flex-1 max-w-md mx-8">
+              <SearchBar className="w-full" />
+            </div>
+
             {/* Navigation */}
-            <nav className="hidden md:flex items-center gap-8">
+            <nav className="hidden lg:flex items-center gap-8">
               <Link href="/" className="nav-link">
                 Home
               </Link>
@@ -58,16 +64,21 @@ export default function RootLayout({
                 Topics
               </Link>
               <Link href="/tags" className="nav-link">
-                Tags
+                Categories
               </Link>
             </nav>
 
             {/* Mobile Menu Button */}
-            <button className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors">
+            <button className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
+          </div>
+
+          {/* Mobile Search Bar */}
+          <div className="md:hidden border-t border-white/20 p-4">
+            <SearchBar className="w-full" />
           </div>
         </header>
 

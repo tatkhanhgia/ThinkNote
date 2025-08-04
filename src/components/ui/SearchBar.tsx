@@ -125,23 +125,44 @@ const SearchBar: React.FC<SearchBarProps> = ({ className = '' }) => {
                   <p className="text-xs text-gray-500 line-clamp-2 mt-1">
                     {post.description}
                   </p>
-                  {post.tags && post.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mt-2">
-                      {post.tags.slice(0, 3).map((tag, index) => (
-                        <span
-                          key={index}
-                          className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                      {post.tags.length > 3 && (
-                        <span className="text-xs text-gray-400">
-                          +{post.tags.length - 3} more
-                        </span>
-                      )}
-                    </div>
-                  )}
+                  <div className="flex flex-col gap-2 mt-2">
+                    {post.categories && post.categories.length > 0 && (
+                      <div className="flex flex-wrap gap-1">
+                        <span className="text-xs text-gray-400">Categories:</span>
+                        {post.categories.slice(0, 2).map((category, index) => (
+                          <span
+                            key={index}
+                            className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800"
+                          >
+                            {category}
+                          </span>
+                        ))}
+                        {post.categories.length > 2 && (
+                          <span className="text-xs text-gray-400">
+                            +{post.categories.length - 2} more
+                          </span>
+                        )}
+                      </div>
+                    )}
+                    {post.tags && post.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1">
+                        <span className="text-xs text-gray-400">Tags:</span>
+                        {post.tags.slice(0, 2).map((tag, index) => (
+                          <span
+                            key={index}
+                            className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                        {post.tags.length > 2 && (
+                          <span className="text-xs text-gray-400">
+                            +{post.tags.length - 2} more
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </Link>
             ))}

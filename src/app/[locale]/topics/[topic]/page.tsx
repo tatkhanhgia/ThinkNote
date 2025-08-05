@@ -23,7 +23,7 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props) {
-  const postData = await getPostData(params.topic);
+  const postData = await getPostData(params.topic, params.locale);
   return {
     title: `${postData.title} - ThinkNote`,
     description: postData.description,

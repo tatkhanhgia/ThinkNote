@@ -68,8 +68,9 @@ export function getSortedPostsData(locale: string = 'en'): PostData[] {
   });
 }
 
-export async function getPostData(id: string): Promise<PostData> {
-  const fullPath = path.join(postsDirectory, `${id}.md`);
+export async function getPostData(id: string, locale: string = 'en'): Promise<PostData> {
+  const localePostsDirectory = path.join(postsDirectory, locale);
+  const fullPath = path.join(localePostsDirectory, `${id}.md`);
   const fileContents = fs.readFileSync(fullPath, 'utf8');
 
   // Use gray-matter to parse the post metadata section

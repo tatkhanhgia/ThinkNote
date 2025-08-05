@@ -1,14 +1,29 @@
 import { getPostData, getSortedPostsData } from '@/lib/posts';
 import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
+
+type Props = {
+  params: { locale: string; topic: string };
+};
 
 export async function generateStaticParams() {
   const allPosts = getSortedPostsData();
-  return allPosts.map((post) => ({
-    topic: post.id,
-  }));
+  const locales = ['en', 'vi'];
+  
+  // Generate params for all locale/topic combinations
+  const params = [];
+  for (const locale of locales) {
+    for (const post of allPosts) {
+      params.push({
+        locale,
+        topic: post.id,
+      });
+    }
+  }
+  return params;
 }
 
-export async function generateMetadata({ params }: { params: { topic: string } }) {
+export async function generateMetadata({ params }: Props) {
   const postData = await getPostData(params.topic);
   return {
     title: `${postData.title} - ThinkNote`,
@@ -16,7 +31,7 @@ export async function generateMetadata({ params }: { params: { topic: string } }
   };
 }
 
-export default async function TopicDetailPage({ params }: { params: { topic: string } }) {
+export default async function TopicDetailPage({ params }: Props) {
   const postData = await getPostData(params.topic);
 
   return (

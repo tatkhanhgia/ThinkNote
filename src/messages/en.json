@@ -64,6 +64,40 @@
       "startExploring": "Start Exploring"
     }
   },
+  "TopicsPage": {
+    "title": "Explore All Topics",
+    "description": "Dive deep into programming concepts, best practices, and the latest insights from my continuous learning journey. Each article is crafted to provide practical value and actionable knowledge.",
+    "stats": {
+      "articles": "Articles",
+      "categories": "Categories", 
+      "tags": "Tags"
+    },
+    "noTopics": {
+      "title": "No Topics Found",
+      "description": "It seems there are no knowledge articles available at the moment. Check back soon for new content!",
+      "backToHome": "Back to Home"
+    },
+    "cta": {
+      "title": "Can't find what you're looking for?",
+      "description": "This knowledge base is constantly growing. If you have suggestions for topics you'd like to see covered, feel free to reach out!",
+      "browseTags": "Browse by Tags",
+      "backToHome": "Back to Home"
+    }
+  },
+  "TopicDetail": {
+    "breadcrumb": {
+      "home": "Home",
+      "topics": "Topics"
+    },
+    "meta": {
+      "readTime": "{minutes} min read",
+      "categories": "Categories",
+      "tags": "Tags"
+    },
+    "navigation": {
+      "backToTopics": "Back to Topics"
+    }
+  },
   "Common": {
     "categories": "Categories",
     "tags": "Tags",

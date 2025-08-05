@@ -558,4 +558,4 @@ yarn lint     # ESLint checking
 
 ---
 
-*Document này đã được update với complete i18n implementation details. ThinkNote hiện support đầy đủ tiếng Anh và tiếng Việt với professional-grade internationalization system.*
+*Document này đã được update với complete i18n implementation details và Content Translation System. ThinkNote hiện support đầy đủ tiếng Anh và tiếng Việt với professional-grade internationalization system, bao gồm cả UI translation và full content translation cho topics.*

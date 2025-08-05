@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { useLocale, useTranslations } from 'next-intl';
 
 interface PostData {
   id: string;
@@ -26,14 +27,18 @@ const SearchBar: React.FC<SearchBarProps> = ({ className = '' }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [allPosts, setAllPosts] = useState<PostData[]>([]);
   const searchRef = useRef<HTMLDivElement>(null);
+  
+  const locale = useLocale();
+  const t = useTranslations('Layout.search');
+  const tCommon = useTranslations('Common');
 
   useEffect(() => {
     // Load all posts on component mount via API
-    fetch('/api/posts')
+    fetch(`/${locale}/api/posts`)
       .then(res => res.json())
       .then(posts => setAllPosts(posts))
       .catch(err => console.error('Error loading posts:', err));
-  }, []);
+  }, [locale]);
 
   useEffect(() => {
     // Close dropdown when clicking outside
@@ -74,6 +79,11 @@ const SearchBar: React.FC<SearchBarProps> = ({ className = '' }) => {
     setIsOpen(false);
   };
 
+  const getResultsCount = (count: number) => {
+    const plural = count > 1 ? 's' : '';
+    return t('resultsFound', { count, plural });
+  };
+
   return (
     <div className={`relative ${className}`} ref={searchRef}>
       {/* Search Input */}
@@ -98,7 +108,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ className = '' }) => {
           value={query}
           onChange={(e) => handleSearch(e.target.value)}
           onFocus={() => query && setIsOpen(true)}
-          placeholder="Search articles..."
+          placeholder={t('placeholder')}
           className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white/90 backdrop-blur-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
         />
       </div>
@@ -108,12 +118,12 @@ const SearchBar: React.FC<SearchBarProps> = ({ className = '' }) => {
         <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-xl border border-gray-200 z-50 max-h-96 overflow-y-auto">
           <div className="p-2">
             <div className="text-xs text-gray-500 px-3 py-2 border-b border-gray-100">
-              Found {results.length} result{results.length !== 1 ? 's' : ''}
+              {getResultsCount(results.length)}
             </div>
             {results.map((post) => (
               <Link
                 key={post.id}
-                href={`/topics/${post.id}`}
+                href={`/${locale}/topics/${post.id}`}
                 onClick={handleResultClick}
                 className="flex items-start gap-3 px-3 py-3 hover:bg-gray-50 rounded-lg transition-colors"
               >
@@ -128,7 +138,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ className = '' }) => {
                   <div className="flex flex-col gap-2 mt-2">
                     {post.categories && post.categories.length > 0 && (
                       <div className="flex flex-wrap gap-1">
-                        <span className="text-xs text-gray-400">Categories:</span>
+                        <span className="text-xs text-gray-400">{tCommon('categories')}:</span>
                         {post.categories.slice(0, 2).map((category, index) => (
                           <span
                             key={index}
@@ -139,14 +149,14 @@ const SearchBar: React.FC<SearchBarProps> = ({ className = '' }) => {
                         ))}
                         {post.categories.length > 2 && (
                           <span className="text-xs text-gray-400">
-                            +{post.categories.length - 2} more
+                            {tCommon('more', { count: post.categories.length - 2 })}
                           </span>
                         )}
                       </div>
                     )}
                     {post.tags && post.tags.length > 0 && (
                       <div className="flex flex-wrap gap-1">
-                        <span className="text-xs text-gray-400">Tags:</span>
+                        <span className="text-xs text-gray-400">{tCommon('tags')}:</span>
                         {post.tags.slice(0, 2).map((tag, index) => (
                           <span
                             key={index}
@@ -157,7 +167,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ className = '' }) => {
                         ))}
                         {post.tags.length > 2 && (
                           <span className="text-xs text-gray-400">
-                            +{post.tags.length - 2} more
+                            {tCommon('more', { count: post.tags.length - 2 })}
                           </span>
                         )}
                       </div>
@@ -171,14 +181,14 @@ const SearchBar: React.FC<SearchBarProps> = ({ className = '' }) => {
           {query && (
             <div className="border-t border-gray-100 p-3">
               <Link
-                href={`/search?q=${encodeURIComponent(query)}`}
+                href={`/${locale}/search?q=${encodeURIComponent(query)}`}
                 onClick={handleResultClick}
                 className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-2"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
-                See all results for "{query}"
+                {t('seeAllResults', { query })}
               </Link>
             </div>
           )}
@@ -194,8 +204,8 @@ const SearchBar: React.FC<SearchBarProps> = ({ className = '' }) => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
-            <p className="text-sm text-gray-500">No articles found for "{query}"</p>
-            <p className="text-xs text-gray-400 mt-1">Try searching with different keywords</p>
+            <p className="text-sm text-gray-500">{t('noResults', { query })}</p>
+            <p className="text-xs text-gray-400 mt-1">{t('tryDifferent')}</p>
           </div>
         </div>
       )}

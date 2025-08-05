@@ -32,7 +32,10 @@ export async function generateMetadata({ params }: Props) {
 }
 
 export default async function TopicDetailPage({ params }: Props) {
+export default async function TopicDetailPage({ params }: Props) {
   const postData = await getPostData(params.topic);
+  const t = await getTranslations('TopicDetail');
+  const { locale } = params;
 
   return (
     <div className="min-h-screen">
@@ -42,14 +45,14 @@ export default async function TopicDetailPage({ params }: Props) {
           <div className="max-w-4xl mx-auto">
             {/* Breadcrumb */}
             <nav className="mb-8 flex items-center gap-2 text-sm text-gray-300">
-              <Link href="/" className="hover:text-white transition-colors">
-                Home
+              <Link href={`/${locale}`} className="hover:text-white transition-colors">
+                {t('breadcrumb.home')}
               </Link>
               <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
-              <Link href="/topics" className="hover:text-white transition-colors">
-                Topics
+              <Link href={`/${locale}/topics`} className="hover:text-white transition-colors">
+                {t('breadcrumb.topics')}
               </Link>
               <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -67,7 +70,7 @@ export default async function TopicDetailPage({ params }: Props) {
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                <span>{new Date(postData.date).toLocaleDateString('en-US', {
+                <span>{new Date(postData.date).toLocaleDateString(locale === 'vi' ? 'vi-VN' : 'en-US', {
                   year: 'numeric',
                   month: 'long',
                   day: 'numeric'
@@ -78,7 +81,7 @@ export default async function TopicDetailPage({ params }: Props) {
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
-                <span>5 min read</span>
+                <span>{t('meta.readTime', { minutes: 5 })}</span>
               </div>
             </div>
 
@@ -86,10 +89,10 @@ export default async function TopicDetailPage({ params }: Props) {
             <div className="space-y-3">
               {postData.categories && postData.categories.length > 0 && (
                 <div className="flex flex-wrap gap-2">
-                  <span className="text-gray-300 text-sm font-medium">Categories:</span>
+                  <span className="text-gray-300 text-sm font-medium">{t('meta.categories')}:</span>
                   {postData.categories.map((category, index) => (
                     <Link 
-                      href={`/categories/${encodeURIComponent(category.toLowerCase().replace(/\s+/g, '-'))}`} 
+                      href={`/${locale}/categories/${encodeURIComponent(category.toLowerCase().replace(/\s+/g, '-'))}`} 
                       key={index} 
                       className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-600/20 text-purple-200 hover:bg-purple-600/30 transition-colors"
                     >
@@ -101,10 +104,10 @@ export default async function TopicDetailPage({ params }: Props) {
               
               {postData.tags && postData.tags.length > 0 && (
                 <div className="flex flex-wrap gap-2">
-                  <span className="text-gray-300 text-sm font-medium">Tags:</span>
+                  <span className="text-gray-300 text-sm font-medium">{t('meta.tags')}:</span>
                   {postData.tags.map((tag, index) => (
                     <Link 
-                      href={`/tags/${encodeURIComponent(tag.toLowerCase())}`} 
+                      href={`/${locale}/tags/${encodeURIComponent(tag.toLowerCase())}`} 
                       key={index} 
                       className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-white/10 text-white hover:bg-white/20 transition-colors"
                     >
@@ -152,13 +155,13 @@ export default async function TopicDetailPage({ params }: Props) {
           <div className="max-w-4xl mx-auto">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <Link 
-                href="/topics" 
+                href={`/${locale}/topics`}
                 className="inline-flex items-center gap-2 px-6 py-3 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
-                Back to Topics
+                {t('navigation.backToTopics')}
               </Link>
 
               <div className="flex items-center gap-4">

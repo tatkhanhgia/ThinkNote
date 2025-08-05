@@ -1,24 +1,71 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { getSortedPostsData } from '@/lib/posts';
+import { useState, useEffect } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
 import KnowledgeCard from '@/components/ui/KnowledgeCard';
 import Link from 'next/link';
+
+interface PostData {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  tags: string[];
+  categories: string[];
+  gradientFrom?: string;
+  gradientTo?: string;
+}
 
 export default function SearchResults() {
   const searchParams = useSearchParams();
   const query = searchParams.get('q') || '';
+  const [allPosts, setAllPosts] = useState<PostData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   
-  const allPosts = getSortedPostsData();
+  const locale = useLocale();
+  const t = useTranslations('Common');
+
+  useEffect(() => {
+    // Load all posts via API
+    fetch(`/${locale}/api/posts`)
+      .then(res => res.json())
+      .then(posts => {
+        setAllPosts(posts);
+        setIsLoading(false);
+      })
+      .catch(err => {
+        console.error('Error loading posts:', err);
+        setIsLoading(false);
+      });
+  }, [locale]);
   
   // Filter posts based on search query
-  const filteredPosts = query 
+  const filteredPosts = query && allPosts.length > 0
     ? allPosts.filter(post => 
         post.title.toLowerCase().includes(query.toLowerCase()) ||
         post.description.toLowerCase().includes(query.toLowerCase()) ||
-        post.tags?.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
+        post.tags?.some(tag => tag.toLowerCase().includes(query.toLowerCase())) ||
+        post.categories?.some(category => category.toLowerCase().includes(query.toLowerCase()))
       )
     : [];
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen">
+        <section className="bg-gradient-to-r from-blue-50 to-purple-50 py-16 sm:py-20">
+          <div className="container mx-auto px-6">
+            <div className="max-w-4xl mx-auto text-center">
+              <div className="animate-pulse">
+                <div className="h-8 bg-gray-300 rounded mb-4"></div>
+                <div className="h-4 bg-gray-200 rounded w-3/4 mx-auto"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">
@@ -68,7 +115,8 @@ export default function SearchResults() {
                     title={post.title}
                     description={post.description}
                     tags={post.tags}
-                    href={`/topics/${post.id}`}
+                    categories={post.categories}
+                    href={`/${locale}/topics/${post.id}`}
                     gradientFrom={post.gradientFrom || 'from-blue-500'}
                     gradientTo={post.gradientTo || 'to-purple-600'}
                   />
@@ -91,13 +139,13 @@ export default function SearchResults() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
-                  href="/topics"
+                  href={`/${locale}/topics`}
                   className="btn-primary"
                 >
                   Browse All Topics
                 </Link>
                 <Link
-                  href="/tags"
+                  href={`/${locale}/categories`}
                   className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   Explore Categories
@@ -120,13 +168,13 @@ export default function SearchResults() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
-                  href="/topics"
+                  href={`/${locale}/topics`}
                   className="btn-primary"
                 >
                   Browse All Topics
                 </Link>
                 <Link
-                  href="/tags"
+                  href={`/${locale}/categories`}
                   className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   Explore Categories

@@ -1,13 +1,26 @@
 import Link from 'next/link';
 import { getSortedPostsData } from '@/lib/posts';
 import KnowledgeCard from '@/components/ui/KnowledgeCard';
+import { getTranslations } from 'next-intl/server';
 
-export const metadata = {
-  title: 'All Topics - ThinkNote',
-  description: 'Explore all programming topics, tutorials, and technical insights in one place.',
+type Props = {
+  params: { locale: string };
 };
 
-export default function TopicsPage() {
+export async function generateMetadata({
+  params: { locale }
+}: {
+  params: { locale: string };
+}) {
+  const t = await getTranslations({ locale, namespace: 'TopicsPage' });
+
+  return {
+    title: `${t('title')} - ThinkNote`,
+    description: t('description'),
+  };
+}
+
+export default async function TopicsPage({ params: { locale } }: Props) {
   const allPosts = getSortedPostsData();
 
   if (!allPosts || allPosts.length === 0) {

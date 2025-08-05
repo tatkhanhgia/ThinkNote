@@ -32,7 +32,6 @@ export async function generateMetadata({ params }: Props) {
 }
 
 export default async function TopicDetailPage({ params }: Props) {
-export default async function TopicDetailPage({ params }: Props) {
   const postData = await getPostData(params.topic);
   const t = await getTranslations('TopicDetail');
   const { locale } = params;

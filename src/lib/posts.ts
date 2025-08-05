@@ -19,12 +19,13 @@ export interface PostData {
   [key: string]: any;
 }
 
-export function getSortedPostsData(): PostData[] {
+export function getSortedPostsData(locale: string = 'en'): PostData[] {
+  const localePostsDirectory = path.join(postsDirectory, locale);
   let fileNames: string[] = [];
   try {
-    fileNames = fs.readdirSync(postsDirectory);
+    fileNames = fs.readdirSync(localePostsDirectory);
   } catch (err) {
-    console.error("Error reading posts directory:", postsDirectory, err);
+    console.error("Error reading posts directory:", localePostsDirectory, err);
     return []; 
   }
 
@@ -32,7 +33,7 @@ export function getSortedPostsData(): PostData[] {
     .filter(fileName => fileName.endsWith('.md'))
     .map(fileName => {
       const id = fileName.replace(/\.md$/, '');
-      const fullPath = path.join(postsDirectory, fileName);
+      const fullPath = path.join(localePostsDirectory, fileName);
       let fileContents = '';
       try {
         fileContents = fs.readFileSync(fullPath, 'utf8');

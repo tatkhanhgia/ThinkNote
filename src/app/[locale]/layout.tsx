@@ -5,7 +5,7 @@ import { getMessages, getTranslations } from 'next-intl/server';
 import { Inter } from 'next/font/google';
 import SearchBar from "@/components/ui/SearchBar";
 import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
-import "../styles/globals.css";
+import "../../styles/globals.css";
 
 const inter = Inter({ subsets: ['latin'] });
 

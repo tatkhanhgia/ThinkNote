@@ -21,7 +21,6 @@ export async function generateMetadata({
 }
 
 export default async function TopicsPage({ params: { locale } }: Props) {
-export default async function TopicsPage({ params: { locale } }: Props) {
   const allPosts = getSortedPostsData();
   const t = await getTranslations('TopicsPage');
   const tCommon = await getTranslations('Common');

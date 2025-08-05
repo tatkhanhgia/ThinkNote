@@ -7,12 +7,11 @@ type Props = {
 };
 
 export async function generateStaticParams() {
-  const allPosts = getSortedPostsData();
   const locales = ['en', 'vi'];
-  
-  // Generate params for all locale/topic combinations
   const params = [];
+  
   for (const locale of locales) {
+    const allPosts = getSortedPostsData(locale);
     for (const post of allPosts) {
       params.push({
         locale,

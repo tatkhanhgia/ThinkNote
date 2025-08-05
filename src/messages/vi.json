@@ -64,6 +64,40 @@
       "startExploring": "Bắt Đầu Khám Phá"
     }
   },
+  "TopicsPage": {
+    "title": "Khám Phá Tất Cả Chủ Đề",
+    "description": "Đi sâu vào các khái niệm lập trình, best practices và những insights mới nhất từ hành trình học tập liên tục của tôi. Mỗi bài viết đều được tạo ra để mang lại giá trị thực tế và kiến thức có thể áp dụng được.",
+    "stats": {
+      "articles": "Bài Viết",
+      "categories": "Danh Mục",
+      "tags": "Thẻ"
+    },
+    "noTopics": {
+      "title": "Không Tìm Thấy Chủ Đề",
+      "description": "Có vẻ như hiện tại chưa có bài viết tri thức nào. Hãy quay lại sau để xem nội dung mới!",
+      "backToHome": "Về Trang Chủ"
+    },
+    "cta": {
+      "title": "Không tìm thấy thứ bạn đang tìm kiếm?",
+      "description": "Kho tri thức này luôn phát triển. Nếu bạn có gợi ý về các chủ đề muốn được đề cập, hãy liên hệ với tôi!",
+      "browseTags": "Duyệt Theo Thẻ",
+      "backToHome": "Về Trang Chủ"
+    }
+  },
+  "TopicDetail": {
+    "breadcrumb": {
+      "home": "Trang Chủ",
+      "topics": "Chủ Đề"
+    },
+    "meta": {
+      "readTime": "{minutes} phút đọc",
+      "categories": "Danh mục",
+      "tags": "Thẻ"
+    },
+    "navigation": {
+      "backToTopics": "Quay Lại Chủ Đề"
+    }
+  },
   "Common": {
     "categories": "Danh mục",
     "tags": "Thẻ",

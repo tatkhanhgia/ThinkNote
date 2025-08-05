@@ -1,0 +1,74 @@
+{
+  "Layout": {
+    "title": "ThinkNote - Personal Knowledge Base",
+    "description": "A modern, beautiful hub for your programming knowledge, notes, and insights.",
+    "navigation": {
+      "home": "Home",
+      "topics": "Topics", 
+      "categories": "Categories"
+    },
+    "search": {
+      "placeholder": "Search articles...",
+      "resultsFound": "Found {count} result{plural}",
+      "noResults": "No articles found for \"{query}\"",
+      "tryDifferent": "Try searching with different keywords",
+      "seeAllResults": "See all results for \"{query}\""
+    },
+    "footer": {
+      "copyright": "© {year} ThinkNote. Built with ❤️ for knowledge sharing.",
+      "builtWith": "Built with Next.js & TailwindCSS"
+    }
+  },
+  "HomePage": {
+    "hero": {
+      "title": "Welcome to Your",
+      "subtitle": "Knowledge Universe",
+      "description": "A beautifully crafted space where your programming insights, code snippets, and technical wisdom come to life.",
+      "exploreTopics": "Explore Topics",
+      "browseCategories": "Browse Categories"
+    },
+    "stats": {
+      "articles": "Knowledge Articles",
+      "categories": "Categories", 
+      "technologies": "Technologies",
+      "alwaysLearning": "Always Learning"
+    },
+    "featuredCategories": {
+      "title": "Popular Categories",
+      "description": "Explore the most valuable programming concepts, best practices, and technical deep-dives organized by category.",
+      "programmingLanguages": {
+        "title": "Programming Languages",
+        "description": "Master Java, JavaScript, TypeScript, Python and more with comprehensive tutorials and best practices.",
+        "action": "Explore Languages"
+      },
+      "developmentCore": {
+        "title": "Development Core", 
+        "description": "Learn software architecture, design patterns, and core development principles that every developer should know.",
+        "action": "Learn Core Concepts"
+      },
+      "toolsAI": {
+        "title": "Tools & AI",
+        "description": "Discover productivity tools, IDEs, AI technologies, and automation that enhance your development workflow.", 
+        "action": "Discover Tools"
+      }
+    },
+    "quickAccess": {
+      "title": "Quick Access",
+      "searchArticles": "Search Articles",
+      "browseAllTags": "Browse All Tags", 
+      "allArticles": "All Articles"
+    },
+    "cta": {
+      "title": "Ready to explore the knowledge?",
+      "description": "Join me on this continuous learning journey. Every article is crafted with care to help you grow as a developer.",
+      "startExploring": "Start Exploring"
+    }
+  },
+  "Common": {
+    "categories": "Categories",
+    "tags": "Tags",
+    "more": "+{count} more",
+    "readMore": "Read More",
+    "backToHome": "Back to Home"
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "Layout": {
+    "title": "ThinkNote - Kho Tri Thức Cá Nhân",
+    "description": "Một không gian hiện đại và đẹp mắt cho kiến thức lập trình, ghi chú và insights của bạn.",
+    "navigation": {
+      "home": "Trang Chủ",
+      "topics": "Chủ Đề",
+      "categories": "Danh Mục"
+    },
+    "search": {
+      "placeholder": "Tìm kiếm bài viết...",
+      "resultsFound": "Tìm thấy {count} kết quả{plural}",
+      "noResults": "Không tìm thấy bài viết nào cho \"{query}\"", 
+      "tryDifferent": "Thử tìm kiếm với từ khóa khác",
+      "seeAllResults": "Xem tất cả kết quả cho \"{query}\""
+    },
+    "footer": {
+      "copyright": "© {year} ThinkNote. Được xây dựng với ❤️ để chia sẻ tri thức.",
+      "builtWith": "Được xây dựng với Next.js & TailwindCSS"
+    }
+  },
+  "HomePage": {
+    "hero": {
+      "title": "Chào Mừng Đến Với",
+      "subtitle": "Vũ Trụ Tri Thức",
+      "description": "Một không gian được tạo ra một cách tinh tế, nơi những insight lập trình, đoạn code và trí tuệ kỹ thuật của bạn được thể hiện sống động.",
+      "exploreTopics": "Khám Phá Chủ Đề",
+      "browseCategories": "Duyệt Danh Mục"
+    },
+    "stats": {
+      "articles": "Bài Viết Tri Thức",
+      "categories": "Danh Mục",
+      "technologies": "Công Nghệ", 
+      "alwaysLearning": "Luôn Học Tập"
+    },
+    "featuredCategories": {
+      "title": "Danh Mục Phổ Biến",
+      "description": "Khám phá những khái niệm lập trình có giá trị nhất, best practices và các phân tích kỹ thuật sâu được tổ chức theo danh mục.",
+      "programmingLanguages": {
+        "title": "Ngôn Ngữ Lập Trình",
+        "description": "Thành thạo Java, JavaScript, TypeScript, Python và nhiều hơn nữa với những hướng dẫn toàn diện và best practices.",
+        "action": "Khám Phá Ngôn Ngữ"
+      },
+      "developmentCore": {
+        "title": "Cốt Lõi Phát Triển",
+        "description": "Học kiến trúc phần mềm, design patterns và các nguyên tắc phát triển cốt lõi mà mọi developer nên biết.",
+        "action": "Học Khái Niệm Cốt Lõi"
+      },
+      "toolsAI": {
+        "title": "Công Cụ & AI",
+        "description": "Khám phá các công cụ năng suất, IDEs, công nghệ AI và tự động hóa để nâng cao quy trình phát triển của bạn.",
+        "action": "Khám Phá Công Cụ"
+      }
+    },
+    "quickAccess": {
+      "title": "Truy Cập Nhanh", 
+      "searchArticles": "Tìm Kiếm Bài Viết",
+      "browseAllTags": "Duyệt Tất Cả Thẻ",
+      "allArticles": "Tất Cả Bài Viết"
+    },
+    "cta": {
+      "title": "Sẵn sàng khám phá tri thức?",
+      "description": "Cùng tôi trên hành trình học tập liên tục này. Mỗi bài viết đều được tạo ra một cách cẩn thận để giúp bạn phát triển như một developer.",
+      "startExploring": "Bắt Đầu Khám Phá"
+    }
+  },
+  "Common": {
+    "categories": "Danh mục",
+    "tags": "Thẻ",
+    "more": "+{count} thêm",
+    "readMore": "Đọc Thêm",
+    "backToHome": "Về Trang Chủ"
+  }
+}

@@ -149,6 +149,9 @@ export default async function LocaleLayout({
                   <span>{t('footer.builtWith')}</span>
                 </div>
               </div>
+              <div className="mt-8 pt-8 border-t border-gray-200 text-center text-sm text-gray-400">
+                <p>&copy; 2025 GiaTK. All rights reserved.</p>
+              </div>
             </div>
           </footer>
         </NextIntlClientProvider>

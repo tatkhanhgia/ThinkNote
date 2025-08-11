@@ -1,6 +1,7 @@
 import { getPostData, getSortedPostsData } from '@/lib/posts';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
+import PostContent from '@/components/ui/PostContent'; // Import the new component
 
 type Props = {
   params: { locale: string; topic: string };
@@ -124,24 +125,7 @@ export default async function TopicDetailPage({ params }: Props) {
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto">
             <div className="modern-card p-8 lg:p-12">
-              <div 
-                className="prose prose-lg prose-gray max-w-none
-                  prose-headings:text-gray-800 
-                  prose-headings:font-bold
-                  prose-h1:text-3xl prose-h1:mb-6
-                  prose-h2:text-2xl prose-h2:mb-4 prose-h2:mt-8
-                  prose-h3:text-xl prose-h3:mb-3 prose-h3:mt-6
-                  prose-p:text-gray-600 prose-p:leading-relaxed prose-p:mb-4
-                  prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline
-                  prose-strong:text-gray-800 prose-strong:font-semibold
-                  prose-code:text-purple-600 prose-code:bg-purple-50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-sm
-                  prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-pre:p-4 prose-pre:rounded-lg prose-pre:overflow-x-auto
-                  prose-blockquote:border-l-4 prose-blockquote:border-blue-500 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-gray-600
-                  prose-ul:text-gray-600 prose-ol:text-gray-600
-                  prose-li:mb-1
-                "
-                dangerouslySetInnerHTML={{ __html: postData.contentHtml || '' }} 
-              />
+              <PostContent contentHtml={postData.contentHtml || ''} />
             </div>
           </div>
         </div>

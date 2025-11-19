@@ -2,7 +2,7 @@
 title: "Kiến Thức Cơ Bản Java và Các Thực Hành Tốt Nhất"
 description: "Các khái niệm Java thiết yếu mà mọi lập trình viên nên nắm vững, bao gồm nguyên lý OOP, collections và quản lý bộ nhớ."
 tags: ["Java", "OOP", "Collections", "Quản Lý Bộ Nhớ"]
-categories: ["Java", "Ngôn Ngữ Lập Trình", "DevCore"]
+categories: ["Java", "Ngôn ngữ lập trình", "Lõi phát triển"]
 date: "2023-12-01"
 gradientFrom: "from-orange-400"
 gradientTo: "to-red-500"

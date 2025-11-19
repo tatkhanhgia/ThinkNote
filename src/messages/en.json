@@ -5,7 +5,8 @@
     "navigation": {
       "home": "Home",
       "topics": "Topics", 
-      "categories": "Categories"
+      "categories": "Categories",
+      "importMarkdown": "Import Markdown"
     },
     "search": {
       "placeholder": "Search articles...",
@@ -25,7 +26,8 @@
       "subtitle": "Knowledge Universe",
       "description": "A beautifully crafted space where your programming insights, code snippets, and technical wisdom come to life.",
       "exploreTopics": "Explore Topics",
-      "browseCategories": "Browse Categories"
+      "browseCategories": "Browse Categories",
+      "importMarkdown": "Import Markdown"
     },
     "stats": {
       "articles": "Knowledge Articles",
@@ -104,5 +106,218 @@
     "more": "+{count} more",
     "readMore": "Read More",
     "backToHome": "Back to Home"
+  },
+  "CategoriesPage": {
+    "title": "Browse by Categories",
+    "description": "Explore articles organized by specific domains and technologies. Each category contains curated content to help you master different aspects of development.",
+    "stats": {
+      "categories": "Categories",
+      "totalArticles": "Total Articles"
+    },
+    "noCategories": {
+      "title": "No Categories Found",
+      "description": "No categories are available yet. Articles need to have categories defined.",
+      "browseAllTopics": "Browse All Topics"
+    },
+    "card": {
+      "articlesAvailable": "{count, plural, one {# article} other {# articles}} available",
+      "moreArticles": "+{count} more {count, plural, one {article} other {articles}}",
+      "explore": "Explore"
+    },
+    "cta": {
+      "title": "Want to explore more?",
+      "description": "Browse all articles or search for specific topics that interest you most.",
+      "browseAllArticles": "Browse All Articles",
+      "browseByTags": "Browse by Tags"
+    }
+  },
+  "CategoryPage": {
+    "title": "Articles in Category:"
+  },
+  "TagsPage": {
+    "title": "All Tags",
+    "description": "Discover content organized by topics and technologies. Each tag represents a collection of carefully curated articles and insights.",
+    "stats": {
+      "tags": "Tags",
+      "articles": "Articles",
+      "categories": "Categories"
+    },
+    "noTags": {
+      "title": "No Tags Found",
+      "description": "There are no tags available at the moment. Check back when articles are added!",
+      "backToHome": "Back to Home"
+    },
+    "quickActions": {
+      "browseByCategories": "Browse by Categories",
+      "searchArticles": "Search Articles",
+      "allTopics": "All Topics"
+    },
+    "tagsCount": "tags",
+    "uncategorized": "Other Tags",
+    "cta": {
+      "title": "Ready to dive into the topics?",
+      "description": "Start exploring articles by clicking on any tag above, or browse organized categories to discover comprehensive programming insights and tutorials.",
+      "browseCategories": "Browse Categories",
+      "viewAllTopics": "View All Topics"
+    }
+  },
+  "TagPage": {
+    "title": "{tag} Articles - ThinkNote",
+    "description": "Explore all articles tagged with {tag}. Programming tutorials, insights, and best practices.",
+    "noArticles": {
+      "title": "No Articles Found",
+      "description": "There are no articles tagged with \"{tag}\" at the moment.",
+      "browseAllTags": "Browse All Tags",
+      "viewAllTopics": "View All Topics"
+    },
+    "breadcrumb": {
+      "home": "Home",
+      "tags": "Tags"
+    },
+    "header": {
+      "title": "{tag} Articles",
+      "description": "Explore {count} carefully curated article{count, plural, one {} other {s}} focused on {tag}. Each piece is designed to provide practical insights and actionable knowledge."
+    },
+    "stats": {
+      "articles": "Articles",
+      "relatedTags": "Related Tags"
+    },
+    "relatedTags": {
+      "title": "Related Tags",
+      "description": "Discover more content by exploring related topics"
+    },
+    "navigation": {
+      "backToTags": "Back to Tags",
+      "viewAllTopics": "View All Topics"
+    }
+  },
+  "markdown-import": {
+    "uploadZone": {
+      "ariaLabel": "File upload zone for Markdown files",
+      "dragAndDrop": "Drag and drop your Markdown file here",
+      "dropHere": "Drop your file here",
+      "orClickToSelect": "or click to select a file",
+      "supportedFormats": "Supported formats: {formats} (max {maxSize}MB)",
+      "releaseToUpload": "Release to upload file"
+    },
+    "errors": {
+      "invalidFileType": "Invalid file type. Please select a Markdown file ({allowed})",
+      "fileTooLarge": "File is too large. Maximum size is {maxSize}MB",
+      "emptyFile": "File is empty. Please select a valid Markdown file",
+      "multipleFiles": "Please select only one file at a time",
+      "title": "Error"
+    },
+    "modal": {
+      "title": "Import Markdown File",
+      "description": "Upload and convert your Markdown files to match the project's styling",
+      "close": "Close modal",
+      "cancel": "Cancel",
+      "back": "Back",
+      "import": "Import File",
+      "importing": "Importing..."
+    },
+    "steps": {
+      "upload": {
+        "title": "Step 1: Upload your Markdown file"
+      },
+      "preview": {
+        "title": "Step 2: Preview and configure"
+      },
+      "processing": {
+        "title": "Step 3: Processing file"
+      },
+      "complete": {
+        "title": "Step 4: Import complete"
+      }
+    },
+    "preview": {
+      "title": "Preview",
+      "fileName": "File Name",
+      "fileNamePlaceholder": "Enter file name (without extension)",
+      "metadata": "File Metadata"
+    },
+    "processing": {
+      "title": "Processing Your File",
+      "description": "Converting Markdown and applying project styling...",
+      "analyzing": "Analyzing file content..."
+    },
+    "complete": {
+      "title": "Import Successful!",
+      "description": "Your Markdown file has been successfully imported and converted."
+    },
+    "notifications": {
+      "success": {
+        "title": "Import Successful",
+        "message": "File '{fileName}' has been imported to {filePath}",
+        "undoLabel": "Undo"
+      },
+      "error": {
+        "title": "Import Failed",
+        "retryLabel": "Retry",
+        "detailsLabel": "Show Details"
+      },
+      "undo": {
+        "success": "Import has been undone successfully",
+        "failed": "Failed to undo import"
+      }
+    },
+    "errorDetails": {
+      "networkError": {
+        "title": "Connection Problem",
+        "message": "Unable to connect to the server",
+        "suggestions": [
+          "Check your internet connection",
+          "Try again in a few moments",
+          "Contact support if the problem persists"
+        ]
+      },
+      "validationError": {
+        "title": "Invalid File",
+        "message": "The selected file is not valid",
+        "suggestions": [
+          "Ensure your file is a valid Markdown file (.md or .markdown)",
+          "Check that the file is not corrupted",
+          "Try with a different file"
+        ]
+      },
+      "processingError": {
+        "title": "Processing Failed",
+        "message": "Failed to process the Markdown content",
+        "suggestions": [
+          "Check your Markdown syntax",
+          "Remove any unsupported elements",
+          "Try simplifying the content"
+        ]
+      },
+      "serverError": {
+        "title": "Server Error",
+        "message": "The server encountered an error",
+        "suggestions": [
+          "Try again in a few moments",
+          "Contact support if the problem persists"
+        ]
+      },
+      "fileSystemError": {
+        "title": "File System Error",
+        "message": "Unable to save the file",
+        "suggestions": [
+          "Check file permissions",
+          "Ensure sufficient disk space",
+          "Contact administrator"
+        ]
+      },
+      "unknownError": {
+        "title": "Unexpected Error",
+        "message": "An unexpected error occurred",
+        "suggestions": [
+          "Try again",
+          "Refresh the page",
+          "Contact support if the problem persists"
+        ]
+      }
+    }
+  },
+  "notifications": {
+    "dismiss": "Dismiss notification"
   }
 }

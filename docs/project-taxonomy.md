@@ -10,11 +10,13 @@
 - Backend
 - Công Cụ
 - Database
+- Design Patterns
 - DevCore
 - Frameworks
 - Frontend
 - IDE
 - Java
+- Mẫu Thiết Kế
 - Ngôn Ngữ Lập Trình
 - Security
 - Tool
@@ -27,6 +29,7 @@
 - Algorithms
 - Authentication
 - Authorization
+- Behavioral Patterns
 - Caching
 - Cài Đặt
 - Collections
@@ -36,6 +39,7 @@
 - CSS
 - Cấu trúc
 - Design
+- Design Patterns
 - Extensions
 - Frontend
 - HTTP
@@ -49,6 +53,8 @@
 - Logging
 - Machine Learning
 - Markdown
+- Mẫu Hành Vi
+- Mẫu Thiết Kế
 - Memory Management
 - Monitoring
 - Năng Suất

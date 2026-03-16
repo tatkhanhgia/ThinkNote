@@ -13,20 +13,20 @@ gradientTo: "to-orange-500"
 
 ## 📋 Table of Contents
 
-1. [What is CORS?](https://www.google.com/search?q=%23_what-is-cors)
-2. [The Same-Origin Policy (SOP) Mechanism](https://www.google.com/search?q=%23_the-same-origin-policy-sop-mechanism)
-3. [When Does CORS Occur?](https://www.google.com/search?q=%23_when-does-cors-occur)
-4. CORS Flow of Operation
-    4.1 Simple Request
-    4.2 Preflight Request
-5. [Important HTTP Headers in CORS](https://www.google.com/search?q=%23_important-http-headers-in-cors)
-6. Backend Handling (Java Servlet Example)
-    6.1 Creating a CorsFilter
-    6.2 Note on Access-Control-Allow-Credentials
-7. [Note on Proxies/Load Balancers (HAProxy)](https://www.google.com/search?q=%23_note-on-proxiesload-balancers-haproxy)
-8. [Some Quick Questions about CORS](https://www.google.com/search?q=%23_some-quick-questions-about-cors)
-9. [Summary](https://www.google.com/search?q=%23_summary)
-10. [Detailed CORS Flow Diagram](https://www.google.com/search?q=%23_detailed-cors-flow-diagram)
+- **1.** [What is CORS?](#1-what-is-cors)
+- **2.** [The Same-Origin Policy (SOP) Mechanism](#2-the-same-origin-policy-sop-mechanism)
+- **3.** [When Does CORS Occur?](#3-when-does-cors-occur)
+- **4.** [CORS Flow of Operation](#4-cors-flow-of-operation)
+    - **4.1** [Simple Request](#41-simple-request)
+    - **4.2** [Preflight Request](#42-preflight-request)
+- **5.** [Important HTTP Headers in CORS](#5-important-http-headers-in-cors)
+- **6.** [Backend Handling (Java Servlet Example)](#6-backend-handling-java-servlet-example)
+    - **6.1** [Creating a CorsFilter](#61-creating-a-corsfilter)
+    - **6.2** [Note on Access-Control-Allow-Credentials](#62-note-on-access-control-allow-credentials)
+- **7.** [Note on Proxies/Load Balancers (HAProxy)](#7-note-on-proxiesload-balancers-haproxy)
+- **8.** [Some Quick Questions about CORS](#8-some-quick-questions-about-cors)
+- **9.** [Summary](#9-summary)
+- **10.** [Detailed CORS Flow Diagram](#10-detailed-cors-flow-diagram)
 
 ---
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import mermaid from 'mermaid';
 
 type PostContentProps = {
@@ -8,38 +8,41 @@ type PostContentProps = {
 };
 
 export default function PostContent({ contentHtml }: PostContentProps) {
+  const contentRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    // This tells Mermaid it will be initialized manually
+    // Check for dark mode preference
+    const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
     mermaid.initialize({
       startOnLoad: false,
-      // You can customize the theme to match your website
-      theme: 'neutral', 
+      // Use 'dark' theme if in dark mode, otherwise 'neutral'
+      theme: isDarkMode ? 'dark' : 'neutral',
     });
 
-    // After the component mounts, find all <code> elements with class 'language-mermaid' 
-    // (which is what remark-html generates) and render them.
     async function renderMermaid() {
-      try {
-        await mermaid.run({
-          nodes: document.querySelectorAll('code.language-mermaid'),
-        });
-      } catch (e) {
-        console.error("Error rendering mermaid diagrams:", e);
+      if (contentRef.current) {
+        try {
+          const nodes = contentRef.current.querySelectorAll('code.language-mermaid');
+          if (nodes.length > 0) {
+            await mermaid.run({ nodes });
+          }
+        } catch (e) {
+          console.error("Error rendering mermaid diagrams:", e);
+        }
       }
     }
 
-    // Delay rendering slightly to ensure the DOM is fully ready
-    const timer = setTimeout(() => {
-        renderMermaid();
-    }, 100);
-
-    return () => clearTimeout(timer);
+    renderMermaid();
     
-  // The empty dependency array ensures this effect runs only once
-  // after the component initially mounts.
+  // Rerun this effect whenever the content changes
   }, [contentHtml]);
 
   return (
-    <div className="prose dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: contentHtml }} />
+    <div 
+      ref={contentRef}
+      className="prose dark:prose-invert max-w-none" 
+      dangerouslySetInnerHTML={{ __html: contentHtml }} 
+    />
   );
 }

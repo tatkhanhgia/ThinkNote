@@ -10,7 +10,7 @@
     "search": {
       "placeholder": "Tìm kiếm bài viết...",
       "resultsFound": "Tìm thấy {count} kết quả{plural}",
-      "noResults": "Không tìm thấy bài viết nào cho \"{query}\"", 
+      "noResults": "Không tìm thấy bài viết nào cho \"{query}\"",
       "tryDifferent": "Thử tìm kiếm với từ khóa khác",
       "seeAllResults": "Xem tất cả kết quả cho \"{query}\""
     },
@@ -104,5 +104,89 @@
     "more": "+{count} thêm",
     "readMore": "Đọc Thêm",
     "backToHome": "Về Trang Chủ"
+  },
+  "CategoriesPage": {
+    "title": "Duyệt theo Danh mục",
+    "description": "Khám phá các bài viết được sắp xếp theo các lĩnh vực và công nghệ cụ thể. Mỗi danh mục chứa nội dung được tuyển chọn để giúp bạn nắm vững các khía cạnh khác nhau của phát triển.",
+    "stats": {
+      "categories": "Danh mục",
+      "totalArticles": "Tổng số bài viết"
+    },
+    "noCategories": {
+      "title": "Không tìm thấy Danh mục",
+      "description": "Chưa có danh mục nào. Các bài viết cần phải được xác định danh mục.",
+      "browseAllTopics": "Duyệt tất cả chủ đề"
+    },
+    "card": {
+      "articlesAvailable": "{count} bài viết có sẵn",
+      "moreArticles": "+{count} bài viết khác",
+      "explore": "Khám phá"
+    },
+    "cta": {
+      "title": "Bạn muốn khám phá thêm?",
+      "description": "Duyệt tất cả các bài viết hoặc tìm kiếm các chủ đề cụ thể mà bạn quan tâm nhất.",
+      "browseAllArticles": "Duyệt tất cả bài viết",
+      "browseByTags": "Duyệt theo Thẻ"
+    }
+  },
+  "CategoryPage": {
+    "title": "Bài viết trong danh mục:"
+  },
+  "TagsPage": {
+    "title": "Tất cả các Thẻ",
+    "description": "Khám phá nội dung được sắp xếp theo chủ đề và công nghệ. Mỗi thẻ đại diện cho một bộ sưu tập các bài viết và thông tin chi tiết được tuyển chọn cẩn thận.",
+    "stats": {
+      "tags": "Thẻ",
+      "articles": "Bài viết",
+      "categories": "Danh mục"
+    },
+    "noTags": {
+      "title": "Không tìm thấy Thẻ",
+      "description": "Hiện tại không có thẻ nào. Hãy quay lại sau khi các bài viết được thêm vào!",
+      "backToHome": "Về Trang chủ"
+    },
+    "quickActions": {
+      "browseByCategories": "Duyệt theo Danh mục",
+      "searchArticles": "Tìm kiếm Bài viết",
+      "allTopics": "Tất cả Chủ đề"
+    },
+    "tagsCount": "thẻ",
+    "uncategorized": "Thẻ khác",
+    "cta": {
+      "title": "Sẵn sàng đi sâu vào các chủ đề?",
+      "description": "Bắt đầu khám phá các bài viết bằng cách nhấp vào bất kỳ thẻ nào ở trên hoặc duyệt các danh mục được sắp xếp để khám phá những hiểu biết và hướng dẫn lập trình toàn diện.",
+      "browseCategories": "Duyệt Danh mục",
+      "viewAllTopics": "Xem tất cả Chủ đề"
+    }
+  },
+  "TagPage": {
+    "title": "Bài viết về {tag} - ThinkNote",
+    "description": "Khám phá tất cả bài viết được gắn thẻ {tag}. Hướng dẫn lập trình, thông tin chi tiết và các phương pháp hay nhất.",
+    "noArticles": {
+      "title": "Không tìm thấy bài viết",
+      "description": "Hiện tại không có bài viết nào được gắn thẻ \"{tag}\".",
+      "browseAllTags": "Duyệt tất cả các thẻ",
+      "viewAllTopics": "Xem tất cả chủ đề"
+    },
+    "breadcrumb": {
+      "home": "Trang chủ",
+      "tags": "Thẻ"
+    },
+    "header": {
+      "title": "Bài viết về {tag}",
+      "description": "Khám phá {count} bài viết được tuyển chọn cẩn thận tập trung vào {tag}. Mỗi bài viết được thiết kế để cung cấp thông tin chi tiết thực tế và kiến thức có thể hành động."
+    },
+    "stats": {
+      "articles": "Bài viết",
+      "relatedTags": "Thẻ liên quan"
+    },
+    "relatedTags": {
+      "title": "Thẻ liên quan",
+      "description": "Khám phá thêm nội dung bằng cách khám phá các chủ đề liên quan"
+    },
+    "navigation": {
+      "backToTags": "Quay lại trang Thẻ",
+      "viewAllTopics": "Xem tất cả chủ đề"
+    }
   }
 }

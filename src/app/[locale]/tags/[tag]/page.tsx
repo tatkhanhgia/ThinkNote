@@ -1,44 +1,52 @@
 import Link from 'next/link';
-import { getSortedPostsData } from '@/lib/posts';
+import { getSortedPostsData, getAllPostIds } from '@/lib/posts';
 import KnowledgeCard from '@/components/ui/KnowledgeCard';
+import { useTranslations, useLocale } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
+import { locales } from '@/i18n';
 
 export async function generateStaticParams() {
-  const allPosts = getSortedPostsData();
+  const allPosts = getAllPostIds(locales);
   const allTags = new Set<string>();
   
-  allPosts.forEach(post => {
-    post.tags?.forEach(tag => {
-      allTags.add(tag.toLowerCase());
+  allPosts.forEach(({ params }) => {
+    const posts = getSortedPostsData(params.locale);
+    posts.forEach(post => {
+        post.tags?.forEach(tag => {
+            allTags.add(tag.toLowerCase());
+        });
     });
   });
 
-  return Array.from(allTags).map((tag) => ({
-    tag: tag,
-  }));
+  const params = Array.from(allTags).flatMap((tag) =>
+    locales.map((locale) => ({ tag, locale }))
+  );
+
+  return params;
 }
 
-export async function generateMetadata({ params }: { params: { tag: string } }) {
+export async function generateMetadata({ params }: { params: { tag: string, locale: string } }) {
+  const t = await getTranslations({ locale: params.locale, namespace: 'TagPage' });
   const tagName = decodeURIComponent(params.tag);
   const formattedTag = tagName.charAt(0).toUpperCase() + tagName.slice(1);
   
   return {
-    title: `${formattedTag} Articles - ThinkNote`,
-    description: `Explore all articles tagged with ${formattedTag}. Programming tutorials, insights, and best practices.`,
+    title: t('title', { tag: formattedTag }),
+    description: t('description', { tag: formattedTag }),
   };
 }
 
-export default function TagPage({ params }: { params: { tag: string } }) {
-  const allPosts = getSortedPostsData();
+export default function TagPage({ params }: { params: { tag: string, locale: string } }) {
+  const t = useTranslations('TagPage');
+  const allPosts = getSortedPostsData(params.locale);
   const tagName = decodeURIComponent(params.tag).toLowerCase();
   
-  // Filter posts by tag (case-insensitive)
   const filteredPosts = allPosts.filter(post => 
     post.tags?.some(tag => tag.toLowerCase() === tagName)
   );
 
   const formattedTag = tagName.charAt(0).toUpperCase() + tagName.slice(1);
 
-  // Get related tags
   const relatedTags = new Set<string>();
   filteredPosts.forEach(post => {
     post.tags?.forEach(tag => {
@@ -65,25 +73,25 @@ export default function TagPage({ params }: { params: { tag: string } }) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
             </svg>
           </div>
-          <h1 className="heading-lg text-gray-800 mb-4">No Articles Found</h1>
+          <h1 className="heading-lg text-gray-800 mb-4">{t('noArticles.title')}</h1>
           <p className="text-lg text-gray-600 mb-8 max-w-md mx-auto">
-            There are no articles tagged with <span className="font-semibold">"{formattedTag}"</span> at the moment.
+            {t('noArticles.description', { tag: formattedTag })}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link 
-              href="/tags" 
+              href={`/${params.locale}/tags`} 
               className="btn-primary inline-flex items-center gap-2"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
               </svg>
-              Browse All Tags
+              {t('noArticles.browseAllTags')}
             </Link>
             <Link 
-              href="/topics" 
+              href={`/${params.locale}/topics`} 
               className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
             >
-              View All Topics
+              {t('noArticles.viewAllTopics')}
             </Link>
           </div>
         </div>
@@ -99,14 +107,14 @@ export default function TagPage({ params }: { params: { tag: string } }) {
           <div className="max-w-4xl mx-auto">
             {/* Breadcrumb */}
             <nav className="mb-8 flex items-center gap-2 text-sm text-gray-600">
-              <Link href="/" className="hover:text-gray-800 transition-colors">
-                Home
+              <Link href={`/${params.locale}`} className="hover:text-gray-800 transition-colors">
+                {t('breadcrumb.home')}
               </Link>
               <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
-              <Link href="/tags" className="hover:text-gray-800 transition-colors">
-                Tags
+              <Link href={`/${params.locale}/tags`} className="hover:text-gray-800 transition-colors">
+                {t('breadcrumb.tags')}
               </Link>
               <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -115,7 +123,6 @@ export default function TagPage({ params }: { params: { tag: string } }) {
             </nav>
 
             <div className="text-center">
-              {/* Tag Icon */}
               <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 text-blue-600 rounded-2xl mb-6">
                 <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
@@ -123,13 +130,11 @@ export default function TagPage({ params }: { params: { tag: string } }) {
               </div>
 
               <h1 className="heading-xl text-gray-800 mb-6">
-                {formattedTag} Articles
+                {t('header.title', { tag: formattedTag })}
               </h1>
               
               <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed mb-8">
-                Explore {filteredPosts.length} carefully curated article{filteredPosts.length !== 1 ? 's' : ''} 
-                focused on <span className="font-semibold text-blue-600">{formattedTag}</span>. 
-                Each piece is designed to provide practical insights and actionable knowledge.
+                {t('header.description', { count: filteredPosts.length, tag: formattedTag })}
               </p>
 
               {/* Stats */}
@@ -137,14 +142,14 @@ export default function TagPage({ params }: { params: { tag: string } }) {
                 <div className="flex items-center gap-4 text-center">
                   <div>
                     <div className="text-2xl font-bold text-blue-600">{filteredPosts.length}</div>
-                    <div className="text-sm text-gray-600">Articles</div>
+                    <div className="text-sm text-gray-600">{t('stats.articles')}</div>
                   </div>
                   {relatedTags.size > 0 && (
                     <>
                       <div className="w-px h-8 bg-gray-300"></div>
                       <div>
                         <div className="text-2xl font-bold text-emerald-600">{relatedTags.size}</div>
-                        <div className="text-sm text-gray-600">Related Tags</div>
+                        <div className="text-sm text-gray-600">{t('stats.relatedTags')}</div>
                       </div>
                     </>
                   )}
@@ -172,7 +177,7 @@ export default function TagPage({ params }: { params: { tag: string } }) {
                   title={post.title}
                   description={post.description}
                   tags={post.tags}
-                  href={`/topics/${post.id}`}
+                  href={`/${params.locale}/topics/${post.id}`}
                   gradientFrom={post.gradientFrom || 'from-blue-500'}
                   gradientTo={post.gradientTo || 'to-purple-600'}
                 />
@@ -188,16 +193,16 @@ export default function TagPage({ params }: { params: { tag: string } }) {
           <div className="container mx-auto px-6">
             <div className="max-w-4xl mx-auto text-center">
               <h2 className="heading-md text-gray-800 mb-6">
-                Related Tags
+                {t('relatedTags.title')}
               </h2>
               <p className="text-gray-600 mb-8">
-                Discover more content by exploring related topics
+                {t('relatedTags.description')}
               </p>
               <div className="flex flex-wrap justify-center gap-3">
                 {Array.from(relatedTags).slice(0, 10).map((tag, index) => (
                   <Link
                     key={tag}
-                    href={`/tags/${encodeURIComponent(tag.toLowerCase())}`}
+                    href={`/${params.locale}/tags/${encodeURIComponent(tag.toLowerCase())}`}
                     className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors hover:scale-105 ${
                       tagColors[index % tagColors.length]
                     }`}
@@ -220,20 +225,20 @@ export default function TagPage({ params }: { params: { tag: string } }) {
           <div className="max-w-4xl mx-auto">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <Link 
-                href="/tags" 
+                href={`/${params.locale}/tags`} 
                 className="inline-flex items-center gap-2 px-6 py-3 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
-                Back to Tags
+                {t('navigation.backToTags')}
               </Link>
 
               <Link
-                href="/topics"
+                href={`/${params.locale}/topics`}
                 className="btn-primary"
               >
-                View All Topics
+                {t('navigation.viewAllTopics')}
               </Link>
             </div>
           </div>

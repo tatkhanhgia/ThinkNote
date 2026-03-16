@@ -2,7 +2,7 @@
 title: "Visual Studio Code: Mẹo Năng Suất và Tiện Ích Mở Rộng Cần Thiết"
 description: "Tối đa hóa hiệu quả lập trình của bạn với các mẹo, phím tắt và tiện ích mở rộng không thể thiếu cho VS Code trong phát triển hiện đại."
 tags: ["VS Code", "Năng Suất", "Tiện Ích", "Phím Tắt"]
-categories: ["IDE", "Công Cụ", "DevCore"]
+categories: ["IDE", "Công cụ", "Lõi phát triển"]
 date: "2023-11-10"
 gradientFrom: "from-blue-600"
 gradientTo: "to-purple-600"

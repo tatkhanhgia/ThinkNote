@@ -89,7 +89,7 @@ export default function SearchResults() {
                   <svg className="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
-                  <span className="font-semibold text-gray-800">"{query}"</span>
+                  <span className="font-semibold text-gray-800">&quot;{query}&quot;</span>
                 </div>
               </div>
             )}
@@ -135,7 +135,7 @@ export default function SearchResults() {
                 No articles found
               </h2>
               <p className="text-lg text-gray-600 mb-8 max-w-md mx-auto">
-                We couldn't find any articles matching your search. Try using different keywords or browse by categories.
+                We couldn&apos;t find any articles matching your search. Try using different keywords or browse by categories.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link

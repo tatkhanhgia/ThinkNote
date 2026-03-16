@@ -2,7 +2,7 @@
 title: "Cross-Origin Resource Sharing (CORS) - A Deep Dive"
 description: "A detailed explanation of Cross-Origin Resource Sharing (CORS), including the Same-Origin Policy, preflight requests, and how to handle CORS headers on the backend."
 tags: ["CORS", "Security", "Web", "HTTP", "Frontend", "Backend", "Hướng dẫn"]
-categories: ["Security", "Backend", "Frontend", "DevCore"]
+categories: ["Bảo mật", "Backend", "Frontend", "Lõi phát triển"]
 date: "2025-08-08"
 gradientFrom: "from-yellow-500"
 gradientTo: "to-orange-500"
@@ -13,33 +13,20 @@ gradientTo: "to-orange-500"
 
 ## 📋 Table of Contents
 
-1. [CORS là gì?](https://www.google.com/search?q=%23_cors-la-gi)
-    
-2. [Cơ chế Same-Origin Policy (SOP)](https://www.google.com/search?q=%23_co-che-same-origin-policy-sop)
-    
-3. [Khi nào CORS xảy ra?](https://www.google.com/search?q=%23_khi-nao-cors-xay-ra)
-    
-4. Luồng hoạt động CORS
-    
-    4.1 Request Đơn giản (Simple Request)
-    
-    4.2 Request Preflight (Preflight Request)
-    
-5. [Các HTTP Headers quan trọng trong CORS](https://www.google.com/search?q=%23_cac-http-headers-quan-trong-trong-cors)
-    
-6. Xử lý phía Backend (Java Servlet Example)
-    
-    6.1 Tạo CorsFilter
-    
-    6.2 Lưu ý về Access-Control-Allow-Credentials
-    
-7. [Lưu ý khi có Proxy/Load Balancer (HAProxy)](https://www.google.com/search?q=%23_luu-y-khi-co-proxyload-balancer-haproxy)
-    
-8. [Một số câu hỏi nhanh về CORS](https://www.google.com/search?q=%23_mot-so-cau-hoi-nhanh-ve-cors)
-    
-9. [Tổng kết](https://www.google.com/search?q=%23_tong-ket)
-    
-10. [Sơ đồ luồng CORS chi tiết](https://www.google.com/search?q=%23_so-do-luong-cors-chi-tiet)
+- **1.** [CORS là gì?](#1-cors-la-gi)
+- **2.** [Cơ chế Same-Origin Policy (SOP)](#2-co-che-same-origin-policy-sop)
+- **3.** [Khi nào CORS xảy ra?](#3-khi-nao-cors-xay-ra)
+- **4.** [Luồng hoạt động CORS](#4-luong-hoat-dong-cors)
+    - **4.1** [Request Đơn giản (Simple Request)](#41-request-don-gian-simple-request)
+    - **4.2** [Request Preflight (Preflight Request)](#42-request-preflight-preflight-request)
+- **5.** [Các HTTP Headers quan trọng trong CORS](#5-cac-http-headers-quan-trong-trong-cors)
+- **6.** [Xử lý phía Backend (Java Servlet Example)](#6-xu-ly-phia-backend-java-servlet-example)
+    - **6.1** [Tạo CorsFilter](#61-tao-corsfilter)
+    - **6.2** [Lưu ý về Access-Control-Allow-Credentials](#62-luu-y-ve-access-control-allow-credentials)
+- **7.** [Lưu ý khi có Proxy/Load Balancer (HAProxy)](#7-luu-y-khi-co-proxyload-balancer-haproxy)
+- **8.** [Một số câu hỏi nhanh về CORS](#8-mot-so-cau-hoi-nhanh-ve-cors)
+- **9.** [Tổng kết](#9-tong-ket)
+- **10.** [Sơ đồ luồng CORS chi tiết](#10-so-do-luong-cors-chi-tiet)
     
 
 ---
@@ -361,7 +348,7 @@ Khi bạn có một Reverse Proxy hoặc Load Balancer (như HAProxy, Nginx, API
 
 Đoạn mã
 
-```
+```mermaid
 sequenceDiagram
     participant Browser as Browser (FE)
     participant Server as Backend Server

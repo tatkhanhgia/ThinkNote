@@ -2,7 +2,7 @@
 title: "Cài Đặt TypeScript với Next.js"
 description: "Hướng dẫn từng bước để tích hợp TypeScript vào dự án Next.js của bạn để đảm bảo an toàn kiểu dữ liệu tốt hơn."
 tags: ["TypeScript", "Next.js", "Cài Đặt"]
-categories: ["Ngôn Ngữ Lập Trình", "DevCore", "Frameworks"]
+categories: ["Ngôn ngữ lập trình", "Lõi phát triển", "Framework"]
 date: "2023-11-05"
 gradientFrom: "from-blue-500"
 gradientTo: "to-indigo-500"

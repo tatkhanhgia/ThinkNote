@@ -104,5 +104,89 @@
     "more": "+{count} more",
     "readMore": "Read More",
     "backToHome": "Back to Home"
+  },
+  "CategoriesPage": {
+    "title": "Browse by Categories",
+    "description": "Explore articles organized by specific domains and technologies. Each category contains curated content to help you master different aspects of development.",
+    "stats": {
+      "categories": "Categories",
+      "totalArticles": "Total Articles"
+    },
+    "noCategories": {
+      "title": "No Categories Found",
+      "description": "No categories are available yet. Articles need to have categories defined.",
+      "browseAllTopics": "Browse All Topics"
+    },
+    "card": {
+      "articlesAvailable": "{count, plural, one {# article} other {# articles}} available",
+      "moreArticles": "+{count} more {count, plural, one {article} other {articles}}",
+      "explore": "Explore"
+    },
+    "cta": {
+      "title": "Want to explore more?",
+      "description": "Browse all articles or search for specific topics that interest you most.",
+      "browseAllArticles": "Browse All Articles",
+      "browseByTags": "Browse by Tags"
+    }
+  },
+  "CategoryPage": {
+    "title": "Articles in Category:"
+  },
+  "TagsPage": {
+    "title": "All Tags",
+    "description": "Discover content organized by topics and technologies. Each tag represents a collection of carefully curated articles and insights.",
+    "stats": {
+      "tags": "Tags",
+      "articles": "Articles",
+      "categories": "Categories"
+    },
+    "noTags": {
+      "title": "No Tags Found",
+      "description": "There are no tags available at the moment. Check back when articles are added!",
+      "backToHome": "Back to Home"
+    },
+    "quickActions": {
+      "browseByCategories": "Browse by Categories",
+      "searchArticles": "Search Articles",
+      "allTopics": "All Topics"
+    },
+    "tagsCount": "tags",
+    "uncategorized": "Other Tags",
+    "cta": {
+      "title": "Ready to dive into the topics?",
+      "description": "Start exploring articles by clicking on any tag above, or browse organized categories to discover comprehensive programming insights and tutorials.",
+      "browseCategories": "Browse Categories",
+      "viewAllTopics": "View All Topics"
+    }
+  },
+  "TagPage": {
+    "title": "{tag} Articles - ThinkNote",
+    "description": "Explore all articles tagged with {tag}. Programming tutorials, insights, and best practices.",
+    "noArticles": {
+      "title": "No Articles Found",
+      "description": "There are no articles tagged with \"{tag}\" at the moment.",
+      "browseAllTags": "Browse All Tags",
+      "viewAllTopics": "View All Topics"
+    },
+    "breadcrumb": {
+      "home": "Home",
+      "tags": "Tags"
+    },
+    "header": {
+      "title": "{tag} Articles",
+      "description": "Explore {count} carefully curated article{count, plural, one {} other {s}} focused on {tag}. Each piece is designed to provide practical insights and actionable knowledge."
+    },
+    "stats": {
+      "articles": "Articles",
+      "relatedTags": "Related Tags"
+    },
+    "relatedTags": {
+      "title": "Related Tags",
+      "description": "Discover more content by exploring related topics"
+    },
+    "navigation": {
+      "backToTags": "Back to Tags",
+      "viewAllTopics": "View All Topics"
+    }
   }
 }

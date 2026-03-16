@@ -2,7 +2,7 @@
 title: "Nguyên Tắc Thiết Kế Cơ Sở Dữ Liệu và Các Thực Hành Tốt Nhất"
 description: "Tìm hiểu các khái niệm cơ bản về thiết kế cơ sở dữ liệu, chuẩn hóa, lập chỉ mục và các kỹ thuật tối ưu hóa để có hiệu suất tốt hơn."
 tags: ["Cơ Sở Dữ Liệu", "SQL", "Thiết Kế", "Tối Ưu Hóa"]
-categories: ["Database", "DevCore", "Backend"]
+categories: ["Cơ sở dữ liệu", "Lõi phát triển", "Backend"]
 date: "2023-10-15"
 gradientFrom: "from-green-400"
 gradientTo: "to-blue-500"

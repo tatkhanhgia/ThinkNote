@@ -2,7 +2,7 @@
 title: "Giới Thiệu về AI và Học Máy"
 description: "Hướng dẫn cho người mới bắt đầu về các khái niệm, thuật toán và ứng dụng thực tế của trí tuệ nhân tạo và học máy."
 tags: ["Học Máy", "AI", "Python", "Thuật Toán"]
-categories: ["AI", "DevCore", "Ngôn Ngữ Lập Trình"]
+categories: ["Trí tuệ nhân tạo", "Lõi phát triển", "Ngôn ngữ lập trình"]
 date: "2023-11-20"
 gradientFrom: "from-purple-500"
 gradientTo: "to-pink-500"

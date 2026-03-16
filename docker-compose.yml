@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  # 1. Dịch vụ Frontend (Node.js)
+  frontend:
+    # Đường dẫn đến image trên kho chứa GHCR
+    image: ghcr.io/your_github_username/your_repo_name/frontend:latest
+    container_name: my-frontend
+    restart: always
+    ports:
+      - "3000:3000" # Mở cổng 3000 để Tailscale Funnel trỏ vào
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - backend # Chờ backend chạy xong mới chạy frontend
+
+  # 2. Dịch vụ Backend (Python API)
+  backend:
+    image: ghcr.io/your_github_username/your_repo_name/backend:latest
+    container_name: my-backend
+    restart: always
+    ports:
+      - "8000:8000" # Mở cổng 8000 (nếu cần gọi API trực tiếp)
+    environment:
+      # Frontend sẽ gọi backend qua tên service này (http://backend:8000)
+      - DB_HOST=db 
+      - DB_USER=postgres
+      - DB_PASSWORD=secretpassword # (Nên dùng GitHub Secrets, xem lưu ý dưới)
+      - DB_NAME=myproject
+    depends_on:
+      - db
+
+  # 3. Database (PostgreSQL)
+  db:
+    image: postgres:15-alpine
+    container_name: my-db
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=secretpassword
+      - POSTGRES_DB=myproject
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Lưu dữ liệu bền vững
+
+# Định nghĩa nơi lưu trữ data DB
+volumes:
+  postgres_data:

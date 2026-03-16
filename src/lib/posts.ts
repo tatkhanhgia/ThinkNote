@@ -3,6 +3,7 @@ import path from 'path';
 import matter from 'gray-matter'; 
 import { remark } from 'remark';
 import html from 'remark-html'; 
+import remarkGfm from 'remark-gfm'; 
 
 const postsDirectory = path.join(process.cwd(), 'src/data');
 
@@ -78,7 +79,8 @@ export async function getPostData(id: string, locale: string = 'en'): Promise<Po
 
   // Use remark to convert markdown into HTML string
   const processedContent = await remark()
-    .use(html)
+    .use(html, { sanitize: false })
+    .use(remarkGfm)
     .process(matterResult.content);
   const contentHtml = processedContent.toString();
 
@@ -96,4 +98,194 @@ export async function getPostData(id: string, locale: string = 'en'): Promise<Po
       gradientTo?: string;
     }),
   };
+}
+
+export function getAllPostIds(locales: string[]) {
+  let paths: { params: { topic: string, locale: string } }[] = [];
+
+  locales.forEach(locale => {
+    const localePostsDirectory = path.join(postsDirectory, locale);
+    if (fs.existsSync(localePostsDirectory)) {
+      const fileNames = fs.readdirSync(localePostsDirectory);
+      const localePaths = fileNames
+        .filter(fileName => fileName.endsWith('.md'))
+        .map(fileName => {
+          return {
+            params: {
+              topic: fileName.replace(/\.md$/, ''),
+              locale: locale,
+            },
+          };
+        });
+      paths = paths.concat(localePaths);
+    }
+  });
+
+  return paths;
+}
+
+export function getAllTags(locale: string = 'en'): { [key: string]: number } {
+  const allPosts = getSortedPostsData(locale);
+  const tags: { [key: string]: number } = {};
+  allPosts.forEach(post => {
+    if (post.tags) {
+      post.tags.forEach(tag => {
+        if (tags[tag]) {
+          tags[tag]++;
+        } else {
+          tags[tag] = 1;
+        }
+      });
+    }
+  });
+  return tags;
+}
+
+export function getPostsByTag(tag: string, locale: string = 'en'): PostData[] {
+  const allPosts = getSortedPostsData(locale);
+  return allPosts.filter(post => post.tags && post.tags.includes(tag));
+}
+
+export function getAllCategories(locale: string = 'en'): { [key: string]: number } {
+  const allPosts = getSortedPostsData(locale);
+  const categories: { [key: string]: number } = {};
+  allPosts.forEach(post => {
+    if (post.categories) {
+      post.categories.forEach(category => {
+        if (categories[category]) {
+          categories[category]++;
+        } else {
+          categories[category] = 1;
+        }
+      });
+    }
+  });
+  return categories;
+}
+
+export function getPostsByCategory(category: string, locale: string = 'en'): PostData[] {
+  const allPosts = getSortedPostsData(locale);
+  return allPosts.filter(post => post.categories && post.categories.includes(category));
+}
+
+export const slugify = (text: string) =>
+  text
+    .toString()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-]/g, '')
+    .replace(/-+/g, '-');
+
+const categoryTranslationMap: { [key: string]: { [key: string]: string } } = {
+  // English to Vietnamese
+  "Programming Languages": { "vi": "Ngôn ngữ lập trình" },
+  "Development Core": { "vi": "Lõi phát triển" },
+  "AI": { "vi": "Trí tuệ nhân tạo" },
+  "Tool": { "vi": "Công cụ" },
+  "Database": { "vi": "Cơ sở dữ liệu" },
+  "Security": { "vi": "Bảo mật" },
+  "Design Patterns": { "vi": "Mẫu thiết kế" },
+  "Framework": { "vi": "Framework" },
+  "Java": { "vi": "Java" },
+  "Frontend": { "vi": "Frontend" },
+  "Backend": { "vi": "Backend" },
+  "IDE": { "vi": "IDE" },
+  // Add other categories as needed
+};
+
+// Function to get the translated category name
+function getTranslatedCategory(englishCategory: string, locale: string): string {
+  if (locale === 'en' || !categoryTranslationMap[englishCategory]) {
+    return englishCategory;
+  }
+  return categoryTranslationMap[englishCategory][locale] || englishCategory;
+}
+
+export function getAllCategoriesWithSlug(locale: string = 'en') {
+  const allEnPosts = getSortedPostsData('en');
+  const allLocalePosts = getSortedPostsData(locale);
+  const categories: { [key: string]: { name: string; count: number } } = {};
+
+  // Use English posts to define the slugs
+  allEnPosts.forEach(post => {
+    post.categories?.forEach(category => {
+      const slug = slugify(category);
+      if (!categories[slug]) {
+        categories[slug] = { name: getTranslatedCategory(category, locale), count: 0 };
+      }
+    });
+  });
+
+  // Count posts in the current locale
+  allLocalePosts.forEach(post => {
+    post.categories?.forEach(categoryNameInLocale => {
+      // Find the corresponding English category to get the correct slug
+      const englishCategory = Object.keys(categoryTranslationMap).find(key => 
+        getTranslatedCategory(key, locale) === categoryNameInLocale
+      ) || categoryNameInLocale;
+
+      const slug = slugify(englishCategory);
+      if (categories[slug]) {
+        categories[slug].count++;
+      }
+    });
+  });
+  
+  // Filter out categories with 0 posts in the current locale
+  const filteredCategories = Object.entries(categories)
+    .filter(([, data]) => data.count > 0)
+    .map(([slug, data]) => ({
+      slug,
+      ...data,
+    }));
+
+  return filteredCategories;
+}
+
+export function getPostsByCategorySlug(slug: string, locale: string = 'en') {
+  const allPosts = getSortedPostsData(locale);
+  
+  // Find the English category name from the slug
+  const allEnPosts = getSortedPostsData('en');
+  let englishCategory: string | null = null;
+  for (const post of allEnPosts) {
+    const foundCategory = post.categories?.find(cat => slugify(cat) === slug);
+    if (foundCategory) {
+      englishCategory = foundCategory;
+      break;
+    }
+  }
+
+  if (!englishCategory) {
+    return [];
+  }
+
+  const translatedCategory = getTranslatedCategory(englishCategory, locale);
+
+  return allPosts.filter(post =>
+    post.categories?.includes(translatedCategory)
+  );
+}
+
+export function getCategoryNameBySlug(slug: string, locale: string = 'en') {
+  // Find the English category name from the slug by iterating through the canonical English categories
+  const allEnPosts = getSortedPostsData('en');
+  let englishCategory: string | null = null;
+
+  for (const post of allEnPosts) {
+    const foundCategory = post.categories?.find(cat => slugify(cat) === slug);
+    if (foundCategory) {
+      englishCategory = foundCategory;
+      break;
+    }
+  }
+
+  if (englishCategory) {
+    return getTranslatedCategory(englishCategory, locale);
+  }
+
+  return null;
 }

@@ -2,7 +2,7 @@
 title: "Kiến Thức React Cơ Bản cho Người Mới Bắt Đầu"
 description: "Giới thiệu về các khái niệm cơ bản của React, bao gồm components, props và state."
 tags: ["React", "JavaScript", "Frontend"]
-categories: ["Ngôn Ngữ Lập Trình", "Frontend", "Frameworks"]
+categories: ["Ngôn ngữ lập trình", "Frontend", "Framework"]
 date: "2023-10-26"
 gradientFrom: "from-sky-400"
 gradientTo: "to-cyan-300"

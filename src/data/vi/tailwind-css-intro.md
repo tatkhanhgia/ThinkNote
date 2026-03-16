@@ -2,7 +2,7 @@
 title: "Giới Thiệu về Tailwind CSS"
 description: "Tìm hiểu cách Tailwind CSS, một framework CSS ưu tiên tiện ích, có thể giúp bạn xây dựng các thiết kế tùy chỉnh một cách nhanh chóng."
 tags: ["TailwindCSS", "CSS", "Frontend", "Utility-First"]
-categories: ["Frontend", "Công Cụ", "Frameworks"]
+categories: ["Frontend", "Công cụ", "Framework"]
 date: "2023-09-15"
 gradientFrom: "from-teal-400"
 gradientTo: "to-emerald-500"

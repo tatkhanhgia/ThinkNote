@@ -494,6 +494,93 @@ code, pre {
   background: white;
 }
 
+/* Mermaid Diagram Styling */
+.mermaid {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+  background: white !important;
+  padding: 1rem !important;
+  border: 2px solid #000000 !important;
+  border-radius: 8px !important;
+  margin: 1.5rem 0 !important;
+}
+
+.mermaid svg {
+  width: 100% !important;
+  height: auto !important;
+  max-width: 800px !important;
+  background: white !important;
+  display: block !important;
+  margin: 0 auto !important;
+}
+
+/* Force white background and black borders for all Mermaid elements */
+.mermaid .node rect,
+.mermaid .node circle,
+.mermaid .node ellipse,
+.mermaid .node polygon {
+  fill: white !important;
+  stroke: #000000 !important;
+  stroke-width: 2px !important;
+}
+
+.mermaid .edgePath path {
+  stroke: #000000 !important;
+  stroke-width: 2px !important;
+}
+
+.mermaid .arrowheadPath {
+  fill: #000000 !important;
+  stroke: #000000 !important;
+}
+
+.mermaid text {
+  fill: #000000 !important;
+  font-family: inherit !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+/* Ensure nodes have proper padding and sizing */
+.mermaid .node {
+  min-width: fit-content !important;
+}
+
+.mermaid .node rect {
+  rx: 8px !important;
+  ry: 8px !important;
+  min-width: 120px !important;
+  padding: 8px !important;
+}
+
+.mermaid .node text {
+  text-anchor: middle !important;
+  dominant-baseline: middle !important;
+  white-space: nowrap !important;
+}
+
+/* Dark mode Mermaid adjustments */
+@media (prefers-color-scheme: dark) {
+  .mermaid {
+    filter: brightness(1.1) contrast(1.05);
+  }
+}
+
+/* Responsive Mermaid diagrams */
+@media (max-width: 768px) {
+  .mermaid {
+    min-height: 250px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+  }
+  
+  .mermaid svg {
+    min-width: 600px !important;
+  }
+}
+
 /* Dark mode ready variables */
 @media (prefers-color-scheme: dark) {
   :root {

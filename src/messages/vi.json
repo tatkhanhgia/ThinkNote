@@ -5,7 +5,8 @@
     "navigation": {
       "home": "Trang Chủ",
       "topics": "Chủ Đề",
-      "categories": "Danh Mục"
+      "categories": "Danh Mục",
+      "importMarkdown": "Import Markdown"
     },
     "search": {
       "placeholder": "Tìm kiếm bài viết...",
@@ -25,7 +26,8 @@
       "subtitle": "Vũ Trụ Tri Thức",
       "description": "Một không gian được tạo ra một cách tinh tế, nơi những insight lập trình, đoạn code và trí tuệ kỹ thuật của bạn được thể hiện sống động.",
       "exploreTopics": "Khám Phá Chủ Đề",
-      "browseCategories": "Duyệt Danh Mục"
+      "browseCategories": "Duyệt Danh Mục",
+      "importMarkdown": "Import Markdown"
     },
     "stats": {
       "articles": "Bài Viết Tri Thức",
@@ -188,5 +190,144 @@
       "backToTags": "Quay lại trang Thẻ",
       "viewAllTopics": "Xem tất cả chủ đề"
     }
+  },
+  "markdown-import": {
+    "uploadZone": {
+      "ariaLabel": "Vùng tải lên file cho các file Markdown",
+      "dragAndDrop": "Kéo và thả file Markdown của bạn vào đây",
+      "dropHere": "Thả file của bạn vào đây",
+      "orClickToSelect": "hoặc nhấp để chọn file",
+      "supportedFormats": "Định dạng hỗ trợ: {formats} (tối đa {maxSize}MB)",
+      "releaseToUpload": "Thả để tải lên file"
+    },
+    "errors": {
+      "invalidFileType": "Loại file không hợp lệ. Vui lòng chọn file Markdown ({allowed})",
+      "fileTooLarge": "File quá lớn. Kích thước tối đa là {maxSize}MB",
+      "emptyFile": "File trống. Vui lòng chọn file Markdown hợp lệ",
+      "multipleFiles": "Vui lòng chỉ chọn một file tại một thời điểm",
+      "title": "Lỗi"
+    },
+    "modal": {
+      "title": "Import File Markdown",
+      "description": "Tải lên và chuyển đổi file Markdown để phù hợp với styling của dự án",
+      "close": "Đóng modal",
+      "cancel": "Hủy bỏ",
+      "back": "Quay lại",
+      "import": "Import File",
+      "importing": "Đang import...",
+      "opened": "Hộp thoại import Markdown đã mở"
+    },
+    "steps": {
+      "upload": {
+        "title": "Bước 1: Tải lên file Markdown của bạn",
+        "announcement": "Đang ở bước tải lên file"
+      },
+      "preview": {
+        "title": "Bước 2: Xem trước và cấu hình",
+        "announcement": "Đang ở bước xem trước file"
+      },
+      "processing": {
+        "title": "Bước 3: Đang xử lý file",
+        "announcement": "Đang xử lý file của bạn"
+      },
+      "complete": {
+        "title": "Bước 4: Import hoàn tất",
+        "announcement": "Import đã hoàn tất thành công"
+      }
+    },
+    "preview": {
+      "title": "Xem trước",
+      "fileName": "Tên File",
+      "fileNamePlaceholder": "Nhập tên file (không có phần mở rộng)",
+      "metadata": "Metadata của File"
+    },
+    "processing": {
+      "title": "Đang Xử Lý File Của Bạn",
+      "description": "Đang chuyển đổi Markdown và áp dụng styling của dự án...",
+      "analyzing": "Đang phân tích nội dung file..."
+    },
+    "complete": {
+      "title": "Import Thành Công!",
+      "description": "File Markdown của bạn đã được import và chuyển đổi thành công."
+    },
+    "notifications": {
+      "success": {
+        "title": "Import Thành Công",
+        "message": "File '{fileName}' đã được import vào {filePath} (Thời gian xử lý: {processingTime})",
+        "announced": "File {fileName} đã được import thành công",
+        "undoLabel": "Hoàn tác"
+      },
+      "error": {
+        "title": "Import Thất Bại",
+        "retryLabel": "Thử lại",
+        "detailsLabel": "Xem Chi tiết"
+      },
+      "undo": {
+        "success": "Đã hoàn tác import thành công",
+        "failed": "Không thể hoàn tác import"
+      },
+      "security": {
+        "title": "Cảnh Báo Bảo Mật",
+        "message": "Phát hiện nội dung có thể không an toàn: {warnings}"
+      }
+    },
+    "errorDetails": {
+      "networkError": {
+        "title": "Lỗi Kết Nối",
+        "message": "Không thể kết nối đến máy chủ",
+        "suggestions": [
+          "Kiểm tra kết nối internet của bạn",
+          "Thử lại sau vài phút",
+          "Liên hệ hỗ trợ nếu vấn đề vẫn tiếp tục"
+        ]
+      },
+      "validationError": {
+        "title": "File Không Hợp Lệ",
+        "message": "File được chọn không hợp lệ",
+        "suggestions": [
+          "Đảm bảo file của bạn là file Markdown hợp lệ (.md hoặc .markdown)",
+          "Kiểm tra file không bị hỏng",
+          "Thử với file khác"
+        ]
+      },
+      "processingError": {
+        "title": "Xử Lý Thất Bại",
+        "message": "Không thể xử lý nội dung Markdown",
+        "suggestions": [
+          "Kiểm tra cú pháp Markdown của bạn",
+          "Loại bỏ các phần tử không được hỗ trợ",
+          "Thử đơn giản hóa nội dung"
+        ]
+      },
+      "serverError": {
+        "title": "Lỗi Máy Chủ",
+        "message": "Máy chủ gặp lỗi",
+        "suggestions": [
+          "Thử lại sau vài phút",
+          "Liên hệ hỗ trợ nếu vấn đề vẫn tiếp tục"
+        ]
+      },
+      "fileSystemError": {
+        "title": "Lỗi Hệ Thống File",
+        "message": "Không thể lưu file",
+        "suggestions": [
+          "Kiểm tra quyền truy cập file",
+          "Đảm bảo có đủ dung lượng đĩa",
+          "Liên hệ quản trị viên"
+        ]
+      },
+      "unknownError": {
+        "title": "Lỗi Không Xác Định",
+        "message": "Đã xảy ra lỗi không mong muốn",
+        "suggestions": [
+          "Thử lại",
+          "Làm mới trang",
+          "Liên hệ hỗ trợ nếu vấn đề vẫn tiếp tục"
+        ]
+      }
+    }
+  },
+  "notifications": {
+    "dismiss": "Đóng thông báo"
   }
 }

@@ -109,7 +109,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ className = '' }) => {
           onChange={(e) => handleSearch(e.target.value)}
           onFocus={() => query && setIsOpen(true)}
           placeholder={t('placeholder')}
-          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white/90 backdrop-blur-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white/90 backdrop-blur-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm text-gray-800 placeholder-gray-500"
         />
       </div>
 

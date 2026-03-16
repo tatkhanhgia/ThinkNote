@@ -3,8 +3,19 @@ import { getSortedPostsData } from '@/lib/posts';
 import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 
+// Define category mapping type
+type CategoryMapping = {
+  keywords: string[];
+  color: string;
+  icon: string;
+};
+
+type CategoryMappings = {
+  [key: string]: CategoryMapping;
+};
+
 // Define category mappings for English
-const CATEGORY_MAPPINGS_EN = {
+const CATEGORY_MAPPINGS_EN: CategoryMappings = {
   'Programming Languages': {
     keywords: ['java', 'javascript', 'typescript', 'python', 'react', 'c++', 'c#', 'php', 'ruby', 'go', 'rust'],
     color: 'bg-blue-100 text-blue-800 border-blue-200',
@@ -38,7 +49,7 @@ const CATEGORY_MAPPINGS_EN = {
 };
 
 // Define category mappings for Vietnamese
-const CATEGORY_MAPPINGS_VI = {
+const CATEGORY_MAPPINGS_VI: CategoryMappings = {
   'Ngôn ngữ lập trình': {
     keywords: ['java', 'javascript', 'typescript', 'python', 'react', 'c++', 'c#', 'php', 'ruby', 'go', 'rust'],
     color: 'bg-blue-100 text-blue-800 border-blue-200',
@@ -227,7 +238,13 @@ export default function TagsPage({params: {locale}}: {params: {locale: string}})
       <section className="content-section">
         <div className="container mx-auto px-6">
           {Object.entries(tagsByCategory).map(([categoryName, categoryTags]) => {
-            const categoryConfig = MAPPINGS[categoryName as keyof typeof MAPPINGS];
+            const categoryConfig: CategoryMapping | undefined = MAPPINGS[categoryName];
+            
+            // Skip if category config is not found
+            if (!categoryConfig) {
+              return null;
+            }
+            
             return (
               <div key={categoryName} className="mb-16">
                 <div className="flex items-center gap-3 mb-8">

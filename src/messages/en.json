@@ -5,7 +5,8 @@
     "navigation": {
       "home": "Home",
       "topics": "Topics", 
-      "categories": "Categories"
+      "categories": "Categories",
+      "importMarkdown": "Import Markdown"
     },
     "search": {
       "placeholder": "Search articles...",
@@ -25,7 +26,8 @@
       "subtitle": "Knowledge Universe",
       "description": "A beautifully crafted space where your programming insights, code snippets, and technical wisdom come to life.",
       "exploreTopics": "Explore Topics",
-      "browseCategories": "Browse Categories"
+      "browseCategories": "Browse Categories",
+      "importMarkdown": "Import Markdown"
     },
     "stats": {
       "articles": "Knowledge Articles",
@@ -188,5 +190,134 @@
       "backToTags": "Back to Tags",
       "viewAllTopics": "View All Topics"
     }
+  },
+  "markdown-import": {
+    "uploadZone": {
+      "ariaLabel": "File upload zone for Markdown files",
+      "dragAndDrop": "Drag and drop your Markdown file here",
+      "dropHere": "Drop your file here",
+      "orClickToSelect": "or click to select a file",
+      "supportedFormats": "Supported formats: {formats} (max {maxSize}MB)",
+      "releaseToUpload": "Release to upload file"
+    },
+    "errors": {
+      "invalidFileType": "Invalid file type. Please select a Markdown file ({allowed})",
+      "fileTooLarge": "File is too large. Maximum size is {maxSize}MB",
+      "emptyFile": "File is empty. Please select a valid Markdown file",
+      "multipleFiles": "Please select only one file at a time",
+      "title": "Error"
+    },
+    "modal": {
+      "title": "Import Markdown File",
+      "description": "Upload and convert your Markdown files to match the project's styling",
+      "close": "Close modal",
+      "cancel": "Cancel",
+      "back": "Back",
+      "import": "Import File",
+      "importing": "Importing..."
+    },
+    "steps": {
+      "upload": {
+        "title": "Step 1: Upload your Markdown file"
+      },
+      "preview": {
+        "title": "Step 2: Preview and configure"
+      },
+      "processing": {
+        "title": "Step 3: Processing file"
+      },
+      "complete": {
+        "title": "Step 4: Import complete"
+      }
+    },
+    "preview": {
+      "title": "Preview",
+      "fileName": "File Name",
+      "fileNamePlaceholder": "Enter file name (without extension)",
+      "metadata": "File Metadata"
+    },
+    "processing": {
+      "title": "Processing Your File",
+      "description": "Converting Markdown and applying project styling...",
+      "analyzing": "Analyzing file content..."
+    },
+    "complete": {
+      "title": "Import Successful!",
+      "description": "Your Markdown file has been successfully imported and converted."
+    },
+    "notifications": {
+      "success": {
+        "title": "Import Successful",
+        "message": "File '{fileName}' has been imported to {filePath}",
+        "undoLabel": "Undo"
+      },
+      "error": {
+        "title": "Import Failed",
+        "retryLabel": "Retry",
+        "detailsLabel": "Show Details"
+      },
+      "undo": {
+        "success": "Import has been undone successfully",
+        "failed": "Failed to undo import"
+      }
+    },
+    "errorDetails": {
+      "networkError": {
+        "title": "Connection Problem",
+        "message": "Unable to connect to the server",
+        "suggestions": [
+          "Check your internet connection",
+          "Try again in a few moments",
+          "Contact support if the problem persists"
+        ]
+      },
+      "validationError": {
+        "title": "Invalid File",
+        "message": "The selected file is not valid",
+        "suggestions": [
+          "Ensure your file is a valid Markdown file (.md or .markdown)",
+          "Check that the file is not corrupted",
+          "Try with a different file"
+        ]
+      },
+      "processingError": {
+        "title": "Processing Failed",
+        "message": "Failed to process the Markdown content",
+        "suggestions": [
+          "Check your Markdown syntax",
+          "Remove any unsupported elements",
+          "Try simplifying the content"
+        ]
+      },
+      "serverError": {
+        "title": "Server Error",
+        "message": "The server encountered an error",
+        "suggestions": [
+          "Try again in a few moments",
+          "Contact support if the problem persists"
+        ]
+      },
+      "fileSystemError": {
+        "title": "File System Error",
+        "message": "Unable to save the file",
+        "suggestions": [
+          "Check file permissions",
+          "Ensure sufficient disk space",
+          "Contact administrator"
+        ]
+      },
+      "unknownError": {
+        "title": "Unexpected Error",
+        "message": "An unexpected error occurred",
+        "suggestions": [
+          "Try again",
+          "Refresh the page",
+          "Contact support if the problem persists"
+        ]
+      }
+    }
+  },
+  "notifications": {
+    "dismiss": "Dismiss notification"
   }
 }

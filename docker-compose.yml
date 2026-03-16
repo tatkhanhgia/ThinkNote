@@ -1,47 +1,36 @@
-version: '3.8'
+# --- GIAI ĐOẠN 1: BUILDER (Người thợ xây) ---
+FROM node:20-alpine AS builder
+WORKDIR /app
 
-services:
-  # 1. Dịch vụ Frontend (Node.js)
-  frontend:
-    # Đường dẫn đến image trên kho chứa GHCR
-    image: ghcr.io/your_github_username/your_repo_name/frontend:latest
-    container_name: my-frontend
-    restart: always
-    ports:
-      - "3000:3000" # Mở cổng 3000 để Tailscale Funnel trỏ vào
-    environment:
-      - NODE_ENV=production
-    depends_on:
-      - backend # Chờ backend chạy xong mới chạy frontend
+# 1. Cài đặt dependencies (Tận dụng cache lớp này nếu package.json không đổi)
+COPY package*.json ./
+# Dùng 'ci' để cài đúng version khóa trong lock file -> Ổn định
+RUN npm ci 
 
-  # 2. Dịch vụ Backend (Python API)
-  backend:
-    image: ghcr.io/your_github_username/your_repo_name/backend:latest
-    container_name: my-backend
-    restart: always
-    ports:
-      - "8000:8000" # Mở cổng 8000 (nếu cần gọi API trực tiếp)
-    environment:
-      # Frontend sẽ gọi backend qua tên service này (http://backend:8000)
-      - DB_HOST=db 
-      - DB_USER=postgres
-      - DB_PASSWORD=secretpassword # (Nên dùng GitHub Secrets, xem lưu ý dưới)
-      - DB_NAME=myproject
-    depends_on:
-      - db
+# 2. Copy toàn bộ code và Build
+COPY . .
+# Lệnh này sẽ tạo ra folder build (thường là .next hoặc dist hoặc build)
+RUN npm run build 
 
-  # 3. Database (PostgreSQL)
-  db:
-    image: postgres:15-alpine
-    container_name: my-db
-    restart: always
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=secretpassword
-      - POSTGRES_DB=myproject
-    volumes:
-      - postgres_data:/var/lib/postgresql/data # Lưu dữ liệu bền vững
 
-# Định nghĩa nơi lưu trữ data DB
-volumes:
-  postgres_data:
+# --- GIAI ĐOẠN 2: RUNNER (Người vận chuyển) ---
+FROM node:20-alpine AS runner
+WORKDIR /app
+
+# Thiết lập biến môi trường Production
+ENV NODE_ENV=production
+
+# 3. Chỉ lấy những thứ cần thiết từ giai đoạn Builder
+# Copy file quản lý gói
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/package-lock.json ./
+
+# Copy thư mục đã build (Tùy framework của bạn mà sửa tên folder này nhé)
+# Ví dụ Next.js là .next, React thường là build
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/node_modules ./node_modules
+
+# 4. Mở cổng và chạy
+EXPOSE 3000
+CMD ["npm", "start"]

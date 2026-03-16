@@ -5,6 +5,8 @@ import { getMessages, getTranslations } from 'next-intl/server';
 import { Inter } from 'next/font/google';
 import SearchBar from "@/components/ui/SearchBar";
 import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
+import ImportMarkdownButton from "@/components/ui/ImportMarkdownButton";
+import { NotificationProvider } from "@/contexts/NotificationContext";
 import "../../styles/globals.css";
 
 const inter = Inter({ subsets: ['latin'] });
@@ -40,8 +42,9 @@ export default async function LocaleLayout({
     <html lang={locale} className="scroll-smooth">
       <body className={`min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 text-gray-800 antialiased ${inter.className}`}>
         <NextIntlClientProvider messages={messages}>
-          {/* Modern Header */}
-          <header className="sticky top-0 z-50 w-full glass border-b border-white/20">
+          <NotificationProvider>
+            {/* Modern Header */}
+            <header className="sticky top-0 z-50 w-full glass border-b border-white/20">
             <div className="container mx-auto flex h-16 items-center justify-between px-6">
               {/* Logo Section */}
               <Link href={`/${locale}`} className="flex items-center gap-3 group">
@@ -93,6 +96,9 @@ export default async function LocaleLayout({
                     {t('navigation.categories')}
                   </Link>
                 </nav>
+
+                {/* Import Markdown Button */}
+                <ImportMarkdownButton />
 
                 {/* Language Switcher */}
                 <LanguageSwitcher />
@@ -154,6 +160,7 @@ export default async function LocaleLayout({
               </div>
             </div>
           </footer>
+          </NotificationProvider>
         </NextIntlClientProvider>
       </body>
     </html>

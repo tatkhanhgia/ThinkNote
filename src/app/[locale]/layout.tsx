@@ -6,7 +6,9 @@ import { Inter } from 'next/font/google';
 import SearchBar from "@/components/ui/SearchBar";
 import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
 import ImportMarkdownButton from "@/components/ui/ImportMarkdownButton";
-import { NotificationProvider } from "@/contexts/NotificationContext";
+import LogoIcon from "@/components/ui/LogoIcon";
+import HeaderNav from "@/components/ui/HeaderNav";
+import { Toaster } from 'sonner';
 import "../../styles/globals.css";
 
 const inter = Inter({ subsets: ['latin'] });
@@ -42,34 +44,14 @@ export default async function LocaleLayout({
     <html lang={locale} className="scroll-smooth">
       <body className={`min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 text-gray-800 antialiased ${inter.className}`}>
         <NextIntlClientProvider messages={messages}>
-          <NotificationProvider>
+          <Toaster richColors position="top-right" />
             {/* Modern Header */}
             <header className="sticky top-0 z-50 w-full glass border-b border-white/20">
             <div className="container mx-auto flex h-16 items-center justify-between px-6">
               {/* Logo Section */}
               <Link href={`/${locale}`} className="flex items-center gap-3 group">
                 <div className="relative">
-                  <svg 
-                    className="w-8 h-8 text-blue-600 group-hover:text-blue-700 transition-colors" 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path 
-                      d="M4 19.5C4 18.837 4.26339 18.2011 4.73223 17.7322C5.20107 17.2634 5.83696 17 6.5 17H20" 
-                      stroke="currentColor" 
-                      strokeWidth="2" 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round"
-                    />
-                    <path 
-                      d="M6.5 2H20V22H6.5C5.83696 22 5.20107 21.7366 4.73223 21.2678C4.26339 20.7989 4 20.163 4 19.5V4.5C4 3.83696 4.26339 3.20107 4.73223 2.73223C5.20107 2.26339 5.83696 2 6.5 2Z" 
-                      stroke="currentColor" 
-                      strokeWidth="2" 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+                  <LogoIcon className="w-8 h-8 text-blue-600 group-hover:text-blue-700 transition-colors" />
                   <div className="absolute -inset-1 bg-blue-600 rounded-full opacity-0 group-hover:opacity-20 transition-opacity blur-sm"></div>
                 </div>
                 <span className="text-xl font-bold text-gray-800 group-hover:text-blue-700 transition-colors">
@@ -82,33 +64,16 @@ export default async function LocaleLayout({
                 <SearchBar className="w-full" />
               </div>
 
-              {/* Navigation & Language Switcher */}
+              {/* Navigation, Actions & Language Switcher */}
               <div className="flex items-center gap-4">
-                {/* Navigation */}
-                <nav className="hidden lg:flex items-center gap-8">
-                  <Link href={`/${locale}`} className="nav-link">
-                    {t('navigation.home')}
-                  </Link>
-                  <Link href={`/${locale}/topics`} className="nav-link">
-                    {t('navigation.topics')}
-                  </Link>
-                  <Link href={`/${locale}/categories`} className="nav-link">
-                    {t('navigation.categories')}
-                  </Link>
-                </nav>
-
                 {/* Import Markdown Button */}
                 <ImportMarkdownButton />
 
                 {/* Language Switcher */}
                 <LanguageSwitcher />
 
-                {/* Mobile Menu Button */}
-                <button className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                  </svg>
-                </button>
+                {/* Desktop Nav + Mobile Menu (HeaderNav handles both) */}
+                <HeaderNav locale={locale} />
               </div>
             </div>
 
@@ -128,22 +93,7 @@ export default async function LocaleLayout({
             <div className="container mx-auto px-6 py-12">
               <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                 <div className="flex items-center gap-3">
-                  <svg className="w-6 h-6 text-blue-600" viewBox="0 0 24 24" fill="none">
-                    <path 
-                      d="M4 19.5C4 18.837 4.26339 18.2011 4.73223 17.7322C5.20107 17.2634 5.83696 17 6.5 17H20" 
-                      stroke="currentColor" 
-                      strokeWidth="2" 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round"
-                    />
-                    <path 
-                      d="M6.5 2H20V22H6.5C5.83696 22 5.20107 21.7366 4.73223 21.2678C4.26339 20.7989 4 20.163 4 19.5V4.5C4 3.83696 4.26339 3.20107 4.73223 2.73223C5.20107 2.26339 5.83696 2 6.5 2Z" 
-                      stroke="currentColor" 
-                      strokeWidth="2" 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+                  <LogoIcon className="w-6 h-6 text-blue-600" />
                   <span className="font-semibold text-gray-700">ThinkNote</span>
                 </div>
                 
@@ -160,7 +110,6 @@ export default async function LocaleLayout({
               </div>
             </div>
           </footer>
-          </NotificationProvider>
         </NextIntlClientProvider>
       </body>
     </html>

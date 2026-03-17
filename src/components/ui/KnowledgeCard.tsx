@@ -12,35 +12,68 @@ interface KnowledgeCardProps {
   gradientTo?: string;
 }
 
-const KnowledgeCard: React.FC<KnowledgeCardProps> = ({ 
-  title, 
-  description, 
-  tags, 
+// Map category names (EN + VI) to consistent gradient CSS classes
+const CATEGORY_GRADIENT_MAP: Record<string, string> = {
+  // Security
+  'Security': 'gradient-purple',
+  'Bảo mật': 'gradient-purple',
+  // AI
+  'AI': 'gradient-emerald',
+  'Trí tuệ nhân tạo': 'gradient-emerald',
+  // Database
+  'Database': 'gradient-amber',
+  'Cơ sở dữ liệu': 'gradient-amber',
+  // Design Patterns
+  'Design Patterns': 'gradient-rose',
+  'Mẫu thiết kế': 'gradient-rose',
+  // Java
+  'Java': 'gradient-amber',
+  // System Design / Web Performance
+  'System Design': 'gradient-emerald',
+  'Thiết kế hệ thống': 'gradient-emerald',
+  'Web Performance': 'gradient-emerald',
+  'Hiệu suất Web': 'gradient-emerald',
+  // Frontend / Framework / IDE / Tool
+  'Frontend': 'gradient-blue',
+  'Framework': 'gradient-blue',
+  'IDE': 'gradient-blue',
+  'Tool': 'gradient-blue',
+  'Công cụ': 'gradient-blue',
+  // Backend / Development Core / Programming Languages
+  'Backend': 'gradient-blue',
+  'Development Core': 'gradient-blue',
+  'Lõi phát triển': 'gradient-blue',
+  'Programming Languages': 'gradient-blue',
+  'Ngôn ngữ lập trình': 'gradient-blue',
+};
+
+/** Pick gradient based on first matching category; fallback to gradient-blue */
+function getCategoryGradient(categories?: string[]): string {
+  if (!categories?.length) return 'gradient-blue';
+  for (const cat of categories) {
+    if (CATEGORY_GRADIENT_MAP[cat]) return CATEGORY_GRADIENT_MAP[cat];
+  }
+  // Deterministic hash fallback for unknown categories
+  const gradients = ['gradient-blue', 'gradient-emerald', 'gradient-purple', 'gradient-rose', 'gradient-amber'];
+  const hash = (categories[0] || '').split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+  return gradients[hash % gradients.length];
+}
+
+const KnowledgeCard: React.FC<KnowledgeCardProps> = ({
+  title,
+  description,
+  tags,
   categories,
-  href, 
-  gradientFrom = 'from-blue-500', 
-  gradientTo = 'to-purple-600'
+  href,
 }) => {
   const locale = useLocale();
   const t = useTranslations('Common');
 
-  // Map gradient classes to modern color schemes
-  const getGradientClass = (from: string, to: string) => {
-    const gradientMap: { [key: string]: string } = {
-      'from-teal-400 to-emerald-500': 'gradient-emerald',
-      'from-blue-500 to-indigo-500': 'gradient-blue', 
-      'from-sky-400 to-cyan-300': 'gradient-blue',
-      'from-gray-700 to-gray-800': 'gradient-purple',
-    };
-    
-    const key = `${from} ${to}`;
-    return gradientMap[key] || 'gradient-blue';
-  };
+  const gradientClass = getCategoryGradient(categories);
 
-  const gradientClass = getGradientClass(gradientFrom, gradientTo);
-
+  // hover lift/shadow handled by .modern-card:hover in globals.css — no duplicate Tailwind class needed
   return (
-    <article className="modern-card group overflow-hidden h-full flex flex-col">
+    <article className="modern-card group overflow-hidden h-full flex flex-col cursor-pointer">
       {/* Gradient Header */}
       <div className={`${gradientClass} p-6 relative overflow-hidden`}>
         <div className="absolute inset-0 bg-black/10"></div>

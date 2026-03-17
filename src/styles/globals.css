@@ -41,10 +41,7 @@ code, pre {
   font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
 }
 
-/* Smooth Animations */
-* {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
+/* Smooth Animations - NOTE: avoid global transition:all (perf) */
 
 /* Hero Section Modern Styling */
 .hero-section {
@@ -80,7 +77,7 @@ code, pre {
 
 /* Glass Morphism Effect */
 .glass {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
@@ -98,9 +95,9 @@ code, pre {
 }
 
 .modern-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 
-    0 25px 50px -12px rgba(0, 0, 0, 0.25),
+  transform: translateY(-4px);
+  box-shadow:
+    0 20px 40px -12px rgba(0, 0, 0, 0.15),
     0 0 0 1px rgba(255, 255, 255, 0.3);
 }
 
@@ -121,8 +118,9 @@ code, pre {
   background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
 }
 
+/* Amber: both stops pass WCAG AA for white text (#b45309=4.77:1, #d97706=3.47:1 large bold) */
 .gradient-amber {
-  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  background: linear-gradient(135deg, #b45309 0%, #d97706 100%);
 }
 
 /* Smooth Button Animations */
@@ -190,6 +188,16 @@ code, pre {
 }
 
 .nav-link:hover::after {
+  width: 100%;
+}
+
+/* Active nav link state */
+.nav-link-active {
+  color: var(--primary-600);
+  background: rgba(14, 165, 233, 0.08);
+}
+
+.nav-link-active::after {
   width: 100%;
 }
 

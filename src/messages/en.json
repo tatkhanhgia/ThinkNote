@@ -4,9 +4,10 @@
     "description": "A modern, beautiful hub for your programming knowledge, notes, and insights.",
     "navigation": {
       "home": "Home",
-      "topics": "Topics", 
+      "topics": "Topics",
       "categories": "Categories",
-      "importMarkdown": "Import Markdown"
+      "importMarkdown": "Import Markdown",
+      "blog": "Blog"
     },
     "search": {
       "placeholder": "Search articles...",
@@ -245,6 +246,20 @@
       "title": "Import Successful!",
       "description": "Your Markdown file has been successfully imported and converted."
     },
+    "options": {
+      "title": "Import Options",
+      "autoFormat": "Auto-format markdown",
+      "autoTranslate": "Auto-translate to {locale}",
+      "formatDescription": "Fix frontmatter, headings, code blocks, and whitespace",
+      "translateDescription": "Create translated copy in {locale} folder"
+    },
+    "results": {
+      "savedTo": "Saved to {path}",
+      "translatedTo": "Translated copy saved to {path}",
+      "formatChanges": "Format changes applied",
+      "translationFailed": "Translation failed — original saved successfully",
+      "bothFilesSaved": "Both language versions saved"
+    },
     "notifications": {
       "success": {
         "title": "Import Successful",
@@ -315,6 +330,33 @@
           "Contact support if the problem persists"
         ]
       }
+    }
+  },
+  "BlogPage": {
+    "hero": {
+      "title": "My Blog",
+      "subtitle": "Personal thoughts, reflections, and life experiences"
+    },
+    "filter": {
+      "all": "All",
+      "mood": "Mood"
+    },
+    "noPosts": {
+      "title": "No Posts Yet",
+      "description": "Blog posts will appear here soon."
+    },
+    "readingTime": "{minutes} min read"
+  },
+  "BlogDetail": {
+    "breadcrumb": {
+      "home": "Home",
+      "blog": "Blog"
+    },
+    "meta": {
+      "readTime": "{minutes} min read"
+    },
+    "navigation": {
+      "backToBlog": "Back to Blog"
     }
   },
   "notifications": {

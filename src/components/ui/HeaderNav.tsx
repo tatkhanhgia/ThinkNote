@@ -19,6 +19,7 @@ const HeaderNav: React.FC<HeaderNavProps> = ({ locale }) => {
     { href: `/${locale}`, label: t('navigation.home') },
     { href: `/${locale}/topics`, label: t('navigation.topics') },
     { href: `/${locale}/categories`, label: t('navigation.categories') },
+    { href: `/${locale}/blog`, label: t('navigation.blog') },
   ];
 
   // Home only matches exact; others match prefix with trailing slash guard

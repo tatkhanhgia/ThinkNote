@@ -2,7 +2,7 @@
 
 ## Current Status: Active Development (Phase 1)
 
-**Overall Progress:** 70% - Core features implemented, content library growing, production-ready
+**Overall Progress:** 75% - Core features + blog feature fully implemented, content library growing, production-ready
 
 ## Phase 1: Foundation & Core Features (In Progress - ~70% Complete)
 
@@ -27,18 +27,38 @@
 - [x] Home page with hero section and stats
 - [x] Full-text search (client-side) with dropdown results
 - [x] Browse all articles page
-- [x] Individual article detail page with markdown rendering
+- [x] Individual article detail page with markdown rendering + Mermaid support
 - [x] Category browsing and filtering
 - [x] Tag browsing and filtering
 - [x] Language switcher (preserve current page)
-- [x] Responsive design (mobile-first)
+- [x] Responsive design (mobile-first with glass-morphism)
 - [x] Custom 404 page
+- [x] Markdown import via UI (drag-drop file upload)
+- [x] Multi-step import wizard (select → preview → confirm)
+- [x] Undo last import functionality
+- [x] Real-time notifications (success, error, warning, info)
+
+#### Blog Feature ✓ (NEW)
+- [x] Personal blog section separate from KB (warm, cozy styling)
+- [x] Blog post listing page with mood filtering
+- [x] Individual blog post detail page with reading time
+- [x] 8 mood tags (reflective, joyful, thoughtful, inspired, grateful, contemplative, energetic, peaceful)
+- [x] Reading time calculation and display
+- [x] Blog navigation in header
+- [x] Bilingual blog support (English & Vietnamese)
+- [x] Blog-specific CSS styling (warm palette, serif fonts, max-width prose)
+- [x] 31 new tests for blog functionality (13 lib + 18 components)
 
 #### Technical Infrastructure ✓
-- [x] next-intl for internationalization
-- [x] remark + remark-gfm for markdown processing
-- [x] Mermaid v11 for diagram support
-- [x] gray-matter for YAML parsing
+- [x] next-intl v4.3.4 for internationalization
+- [x] remark v15.0.1 + remark-gfm for markdown processing
+- [x] Mermaid v11.9.0 for diagram support
+- [x] gray-matter v4.0.3 for YAML parsing
+- [x] isomorphic-dompurify v2.32.0 for XSS prevention
+- [x] Markdown import API with file upload (10MB limit)
+- [x] Undo system for import rollback (10 actions, 5min expiry)
+- [x] Notification system (toast: success, error, warning, info)
+- [x] Content sanitization pipeline (validation → processing → sanitizing)
 - [x] ESLint configuration and linting
 - [x] Docker & Docker Compose setup
 - [x] Development guidelines and code standards
@@ -47,12 +67,12 @@
 
 #### Documentation ✓
 - [x] Comprehensive project overview & PDR
-- [x] Codebase summary and architecture
-- [x] Code standards and conventions
-- [x] System architecture documentation
-- [x] Project roadmap (this file)
-- [ ] Deployment guide
-- [ ] Design guidelines
+- [x] Codebase summary and architecture (includes 37 test files, new components, modules)
+- [x] Code standards and conventions (testing, security, frontmatter validation)
+- [x] System architecture documentation (new API endpoints, sanitization pipeline)
+- [x] Project roadmap (this file, updated Phase 1 progress)
+- [x] Deployment guide
+- [x] Design guidelines
 
 #### Content Expansion
 - [ ] Expand article library to 100+ articles
@@ -60,10 +80,16 @@
 - [ ] Create better cross-linking between related articles
 - [ ] Add SEO metadata and descriptions
 
-#### Testing Infrastructure
-- [ ] Unit tests for posts.ts utility functions
-- [ ] Integration tests for page routes
-- [ ] E2E tests for search functionality
+#### Testing Infrastructure ✓
+- [x] 50+ test files (vitest 4.0.8 + @testing-library/react 16)
+- [x] Unit tests for posts.ts, blog-posts.ts, and utility modules
+- [x] Integration tests for API routes and page rendering
+- [x] Security tests for ContentSanitizer and XSS prevention
+- [x] i18n tests for locale detection and bilingual content
+- [x] Error handling tests with bilingual error codes
+- [x] Blog component tests (BlogCard, MoodFilter, ReadingTime)
+- [x] Blog utility tests (blog-posts.ts, blog-moods.ts)
+- [ ] E2E tests for complete user workflows
 - [ ] Component snapshot tests
 
 ### Phase 1 Target: Q2 2026
@@ -270,29 +296,29 @@
 | **Client-Side Search** | Search works up to 1000 articles | Phase 2 |
 | **No User Accounts** | No personalization possible | Phase 2 |
 | **No Comments/Discussions** | Limited user interaction | Phase 2 |
-| **HTML Not Sanitized** | XSS risk if user-generated content added | Phase 2+ |
+| **HTML Sanitized** | All user-generated content sanitized (isomorphic-dompurify) | Phase 1 ✓ |
 | **No Analytics** | Can't track user behavior | Phase 3 |
 | **Manual Content Publishing** | No editorial workflow | Phase 2 |
 
 ### Technical Debt
 
-1. **Testing Coverage:** Currently ~20% (target: 95% in Phase 1)
-2. **Component Organization:** Some pages still have large components (need refactoring)
-3. **API Documentation:** Need OpenAPI/Swagger specification
-4. **Error Boundaries:** Need better error handling for edge cases
-5. **Accessibility:** Need full WCAG 2.1 AA compliance audit
-6. **Performance Monitoring:** Need production monitoring and alerting
-7. **Logging Strategy:** Need structured logging system
+1. **Test Coverage:** Currently ~60%+ with 37 test files (target: 95% by Phase 1 end)
+2. **API Documentation:** Need OpenAPI/Swagger specification
+3. **Error Boundaries:** React error boundaries for recovery
+4. **Accessibility:** Full WCAG 2.1 AA compliance audit
+5. **Performance Monitoring:** Production monitoring and alerting setup
+6. **Logging Strategy:** Structured logging for troubleshooting
+7. **E2E Tests:** Complete user workflow testing (Playwright/Cypress)
 
-### Recommended Priority Order for Fixes
+### Recommended Priority Order for Remaining Phase 1 Work
 
-1. **HIGH:** Increase test coverage (Phase 1)
-2. **HIGH:** Improve error handling (Phase 1)
-3. **HIGH:** Add deployment guide (Phase 1)
-4. **MEDIUM:** WCAG accessibility compliance (Phase 1)
-5. **MEDIUM:** Performance monitoring (Phase 2)
-6. **MEDIUM:** API documentation (Phase 2)
-7. **LOW:** Refactor large components (Phase 3)
+1. **HIGH:** E2E tests for complete workflows (Playwright)
+2. **HIGH:** WCAG 2.1 AA accessibility compliance audit
+3. **HIGH:** API documentation (OpenAPI/Swagger)
+4. **MEDIUM:** Production monitoring & alerting setup
+5. **MEDIUM:** React error boundaries implementation
+6. **MEDIUM:** Structured logging system
+7. **LOW:** Performance profiling and optimization
 
 ---
 

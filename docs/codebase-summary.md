@@ -42,7 +42,9 @@ src/
 │   │   ├── page.tsx               # Home page (shows hero, categories, stats)
 │   │   ├── layout.tsx             # Locale layout (header, footer, nav)
 │   │   ├── api/
-│   │   │   └── posts/route.ts     # GET /[locale]/api/posts - returns all posts JSON
+│   │   │   ├── posts/route.ts     # GET /[locale]/api/posts - returns sorted posts JSON
+│   │   │   ├── markdown/import/route.ts  # POST /api/markdown/import - file upload (10MB limit)
+│   │   │   └── markdown/undo/route.ts    # DELETE /api/markdown/undo - revert last import
 │   │   ├── topics/
 │   │   │   ├── page.tsx           # All articles page with pagination
 │   │   │   └── [topic]/
@@ -55,6 +57,10 @@ src/
 │   │   │   ├── page.tsx           # All tags listing with counts
 │   │   │   └── [tag]/
 │   │   │       └── page.tsx       # Tag detail - shows posts with tag
+│   │   ├── blog/
+│   │   │   ├── page.tsx           # Blog listing page with mood filtering
+│   │   │   └── [slug]/
+│   │   │       └── page.tsx       # Individual blog post detail page
 │   │   └── search/
 │   │       ├── page.tsx           # Search results page
 │   │       └── SearchResults.tsx  # Client component for search UI
@@ -63,7 +69,35 @@ src/
 │   └── not-found.tsx              # Custom 404 page
 │
 ├── lib/
-│   └── posts.ts                   # Core business logic (291 lines)
+│   ├── posts.ts                   # Core post CRUD & filtering (292 LOC)
+│   ├── blog-moods.ts              # NEW - Blog mood definitions & utilities
+│   ├── blog-posts.ts              # NEW - Blog post data loading & filtering
+│   ├── markdown/
+│   │   ├── MarkdownProcessor.ts   # Parse, validate, convert markdown
+│   │   └── MarkdownErrorHandler.ts # Bilingual error codes (EN/VI)
+│   ├── translation/               # NEW - Markdown translation module
+│   │   ├── TranslationService.ts  # Google Translate API wrapper with retry logic
+│   │   ├── MarkdownTranslator.ts  # Markdown-aware translation with placeholder system
+│   │   ├── __tests__/             # Unit tests for translation (8+ test suites)
+│   │   └── index.ts               # Barrel export
+│   ├── formatting/                # NEW - Markdown auto-formatting module
+│   │   ├── MarkdownFormatter.ts   # Heading/link/list/whitespace normalization
+│   │   ├── __tests__/             # Unit tests for formatting (12+ test suites)
+│   │   └── index.ts               # Barrel export
+│   ├── security/
+│   │   └── ContentSanitizer.ts    # XSS prevention, allowed elements/attributes
+│   ├── performance/
+│   │   ├── ChunkedProcessor.ts    # Non-blocking 10KB chunks for large files
+│   │   ├── LazyLoader.ts          # Lazy load components
+│   │   └── PerformanceMonitor.ts  # Track performance metrics
+│   ├── validation/
+│   │   └── FileValidator.ts       # Type, size (5MB), MIME, frontmatter validation
+│   ├── undo/
+│   │   └── UndoManager.ts         # 10 actions max, 5min expiry
+│   ├── error-handling/
+│   │   └── ErrorHandler.ts        # Categorize, backoff retry (exponential)
+│   └── accessibility/
+│       └── AccessibilityHelpers.ts # ARIA, focus, keyboard navigation
 │       ├── getSortedPostsData()   # Get all posts sorted by date (desc)
 │       ├── getPostData()          # Get single post with rendered HTML
 │       ├── getAllPostIds()        # For static generation
@@ -77,18 +111,26 @@ src/
 │       ├── slugify()              # Normalize to URL-safe slug
 │       └── categoryTranslationMap # Bilingual category translations
 │
-├── components/ui/                 # Reusable React components
-│   ├── SearchBar.tsx              # Client component - full-text search
-│   │   ├── Fetches /api/posts on mount
-│   │   ├── Real-time search filtering
-│   │   └── Dropdown results (6 max)
+├── components/ui/                 # Reusable React components (16 components)
+│   ├── SearchBar.tsx              # Client component - full-text search (216 LOC)
+│   ├── MarkdownImporter.tsx       # Multi-step markdown import wizard
+│   ├── MarkdownPreview.tsx        # Preview imported markdown
+│   ├── FileUploadZone.tsx         # Drag-drop file upload zone
+│   ├── NotificationSystem.tsx      # Toast notifications (success, error, warning, info)
+│   ├── ImportMarkdownButton.tsx    # Button to trigger import
+│   ├── ErrorDisplay.tsx           # Bilingual error message display
+│   ├── PostContent.tsx            # Client component - renders markdown HTML with Mermaid
 │   ├── LanguageSwitcher.tsx       # Client component - locale switcher
-│   ├── PostContent.tsx            # Client component - renders markdown HTML
-│   │   ├── Handles HTML injection (sanitize: false)
-│   │   └── Mermaid diagram support
 │   ├── KnowledgeCard.tsx          # Card component for article listing
 │   ├── CustomButton.tsx           # Reusable button component
-│   └── LogoIcon.tsx               # Logo SVG component
+│   ├── LogoIcon.tsx               # Logo SVG component
+│   ├── AccessibilityHelpers.tsx   # ARIA & keyboard navigation helpers
+│   ├── BlogCard.tsx               # Blog post card for listing (warm styling)
+│   ├── MoodFilter.tsx             # Mood tag filter chips for blog
+│   └── ReadingTime.tsx            # Reading time display for blog posts
+│
+├── components/markdown/
+│   └── StyleConverter.tsx         # HTML to Tailwind class mapping
 │
 ├── data/                          # Content files (Markdown + YAML)
 │   ├── en/                        # English articles (12+ files)
@@ -97,9 +139,16 @@ src/
 │   │   ├── java-fundamentals.md
 │   │   ├── database-design-principles.md
 │   │   └── ... (more articles)
-│   └── vi/                        # Vietnamese translations (12+ files)
-│       ├── react-basics.md
-│       └── ... (translated content)
+│   ├── vi/                        # Vietnamese translations (12+ files)
+│   │   ├── react-basics.md
+│   │   └── ... (translated content)
+│   └── blog/                      # Blog posts (personal content)
+│       ├── en/                    # English blog posts
+│       │   ├── welcome-to-my-blog.md
+│       │   └── ... (more blog posts)
+│       └── vi/                    # Vietnamese blog posts
+│           ├── welcome-to-my-blog.md
+│           └── ... (translated blog posts)
 │
 ├── messages/                      # i18n translation files
 │   ├── en.json                    # English UI strings
@@ -209,9 +258,17 @@ Browser Output (HTML + CSS + Tailwind styles)
 - `useTranslations()` hook in client components
 - Bilingual category mapping in posts.ts
 
+## Code Organization & Testing
+
+### Test Coverage
+- **37 test files** (vitest 4.0.8 + @testing-library/react 16)
+- **Categories:** Integration tests, security tests, validation tests, i18n tests, error-handling tests
+- **Framework:** vitest 4.0.8, @testing-library/react 16, @testing-library/jest-dom
+- **Coverage Target:** Phase 1 goal is 95%+
+
 ## Key Modules & Responsibilities
 
-### posts.ts (Core Business Logic - 291 LOC)
+### posts.ts (Core Business Logic - 292 LOC)
 
 | Function | Purpose |
 |----------|---------|
@@ -226,6 +283,63 @@ Browser Output (HTML + CSS + Tailwind styles)
 | `getPostsByCategorySlug(slug, locale)` | Filter posts by URL slug |
 | `getCategoryNameBySlug(slug, locale)` | Resolve slug to translated category name |
 | `slugify(text)` | Normalize text to URL-safe slug (removes diacritics) |
+
+### blog-moods.ts (Blog Mood Definitions - NEW)
+
+| Function | Purpose |
+|----------|---------|
+| `BLOG_MOODS` | Constant defining 8 mood types: reflective, joyful, thoughtful, inspired, grateful, contemplative, energetic, peaceful |
+| `getMoodIcon(moodKey)` | Get emoji icon for mood type |
+| `getMoodLabel(moodKey, locale)` | Get translated label for mood |
+
+### blog-posts.ts (Blog Post Data Loading - NEW)
+
+| Function | Purpose |
+|----------|---------|
+| `getSortedBlogPosts(locale)` | Load all blog posts, parse metadata, sort by date descending |
+| `getBlogPostData(id, locale)` | Load single blog post + render markdown to HTML |
+| `getAllBlogPostIds(locales)` | Static generation support (paths for all blog posts) |
+| `getAllBlogMoods(locale)` | Get all unique moods with occurrence counts |
+| `getBlogPostsByMood(mood, locale)` | Filter blog posts by mood |
+| `calculateReadingTime(contentHtml)` | Calculate reading time in minutes (200 words/min) |
+
+### Markdown Import Feature
+
+| Component | Purpose |
+|-----------|---------|
+| MarkdownImporter.tsx | Multi-step wizard (select file → preview → confirm) with autoFormat/autoTranslate toggles |
+| FileUploadZone.tsx | Drag-drop or click to upload (10MB limit, base64 encoding) |
+| StyleConverter.tsx | Convert HTML to Tailwind CSS classes |
+| MarkdownProcessor.ts | Parse frontmatter, validate structure, convert styles |
+| ContentSanitizer.ts | XSS prevention (allowed elements: h1-h6, p, code, ul, ol, li, table, blockquote, a, img, strong, em, code) |
+| MarkdownErrorHandler.ts | Bilingual error messages (EN/VI) |
+| UndoManager.ts | Revert last import (10 actions, 5min expiry) — now handles both original + translated files |
+| ChunkedProcessor.ts | Process large files in 10KB non-blocking chunks |
+| FileValidator.ts | Validate MIME type, size (5MB), required frontmatter fields |
+
+### NEW: Markdown Translation Feature
+
+| Component | Purpose |
+|-----------|---------|
+| TranslationService.ts | Google Translate API wrapper with chunking (>14KB splits) and retry logic |
+| MarkdownTranslator.ts | Markdown-aware translator using placeholder system to preserve code/links/images |
+| Translation Tests | 8+ test suites covering EN↔VI translation, placeholder handling, frontmatter translation |
+
+### NEW: Markdown Formatting Feature
+
+| Component | Purpose |
+|-----------|---------|
+| MarkdownFormatter.ts | Auto-formatter normalizing frontmatter, headings, code blocks, links, lists, whitespace |
+| Formatting Tests | 12+ test suites covering each formatting rule individually and in combination |
+
+### Notification System
+
+| Aspect | Implementation |
+|--------|----------------|
+| Context | NotificationContext (showSuccess, showError, showWarning, showInfo) |
+| Features | Auto-dismiss, manual dismiss, clearAll |
+| Types | 4 types: success, error, warning, info |
+| Use Cases | File upload feedback, import status, validation errors |
 
 ### SearchBar.tsx (Client Search - 216 LOC)
 
@@ -243,6 +357,21 @@ Browser Output (HTML + CSS + Tailwind styles)
 - No HTML sanitization (XSS risk if user-generated)
 - Supports Mermaid diagrams
 
+## Security Architecture
+
+### Content Sanitization
+- **Library:** isomorphic-dompurify 2.32.0
+- **Allowed Elements:** h1-h6, p, code, ul, ol, li, table, blockquote, a, img, strong, em, pre
+- **Allowed Attributes:** href (URLs validated), src, alt, title, className
+- **URL Validation:** Scheme-based whitelist (http, https, /relative)
+- **Usage:** All imported markdown sanitized before storage/display
+
+### File Upload Security
+- **Max Size:** 10MB (enforced on client & server)
+- **Allowed MIME:** text/markdown, text/plain, application/octet-stream
+- **Base64 Encoding:** Files encoded for safe transport
+- **Frontmatter Required:** title, description, date, tags, categories
+
 ## File Organization Conventions
 
 ### Component Files
@@ -250,6 +379,7 @@ Browser Output (HTML + CSS + Tailwind styles)
 - **Export:** Named component `export default`
 - **Props:** Define interface above component
 - **Directives:** `'use client'` for interactivity
+- **Size Limit:** Keep components under 200 LOC
 
 ### Page Files
 - **Pattern:** Dynamic routes use `[param]` notation
@@ -369,11 +499,25 @@ Tags are dynamically extracted from article frontmatter:
 2. Use keys like `Layout.navigation.home`
 3. Reference in components via `useTranslations()` hook
 
+## Codebase Metrics
+
+- **Total Lines:** ~18,500+ LOC across 100+ TypeScript/TSX files
+- **Pages:** 14+ pages/routes with locale prefixes (added: /blog, /blog/[slug])
+- **API Endpoints:** 3 endpoints (posts, markdown/import, markdown/undo)
+- **Components:** 16 UI components, 1 markdown component
+- **Test Files:** 50+ files (vitest 4.0.8 + @testing-library/react 16)
+  - 37 existing test files
+  - 13 new blog test suites (31 tests total)
+- **Utility Modules:** 22+ modules including:
+  - posts, blog-posts, blog-moods, markdown, translation, formatting
+  - security, performance, validation, undo, error-handling, accessibility
+- **Dependencies:** 36+ production dependencies (React, Next.js, TypeScript, Tailwind, remark, Mermaid, @vitalets/google-translate-api, etc.)
+
 ## Known Limitations & Considerations
 
-- **No Database:** Content is file-based (git-friendly but less scalable)
-- **No Authentication:** Public knowledge base (privacy features in Phase 2)
+- **No Database:** Content is file-based (git-friendly but scales to ~1000 articles)
+- **No Authentication:** Public knowledge base (Phase 2 feature)
 - **Client-Side Search:** No backend index (works well for <1000 posts)
-- **Static Generation:** Requires rebuild for new content
-- **XSS Risk:** HTML sanitization disabled in remark-html config
+- **Import via UI:** New in current version (vs. git-only before)
+- **Sanitization:** All markdown automatically sanitized via ContentSanitizer
 - **Locale Prefix Required:** All routes must include locale parameter

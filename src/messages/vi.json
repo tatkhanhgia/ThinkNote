@@ -6,7 +6,8 @@
       "home": "Trang Chủ",
       "topics": "Chủ Đề",
       "categories": "Danh Mục",
-      "importMarkdown": "Import Markdown"
+      "importMarkdown": "Import Markdown",
+      "blog": "Blog"
     },
     "search": {
       "placeholder": "Tìm kiếm bài viết...",
@@ -250,6 +251,20 @@
       "title": "Import Thành Công!",
       "description": "File Markdown của bạn đã được import và chuyển đổi thành công."
     },
+    "options": {
+      "title": "Tùy chọn import",
+      "autoFormat": "Tự động định dạng markdown",
+      "autoTranslate": "Tự động dịch sang {locale}",
+      "formatDescription": "Sửa frontmatter, tiêu đề, code block và khoảng trắng",
+      "translateDescription": "Tạo bản dịch trong thư mục {locale}"
+    },
+    "results": {
+      "savedTo": "Đã lưu tại {path}",
+      "translatedTo": "Bản dịch đã lưu tại {path}",
+      "formatChanges": "Đã áp dụng các thay đổi định dạng",
+      "translationFailed": "Dịch thất bại — file gốc đã được lưu thành công",
+      "bothFilesSaved": "Đã lưu cả hai phiên bản ngôn ngữ"
+    },
     "notifications": {
       "success": {
         "title": "Import Thành Công",
@@ -325,6 +340,33 @@
           "Liên hệ hỗ trợ nếu vấn đề vẫn tiếp tục"
         ]
       }
+    }
+  },
+  "BlogPage": {
+    "hero": {
+      "title": "Blog Của Tôi",
+      "subtitle": "Suy nghĩ cá nhân, chiêm nghiệm và trải nghiệm cuộc sống"
+    },
+    "filter": {
+      "all": "Tất cả",
+      "mood": "Tâm trạng"
+    },
+    "noPosts": {
+      "title": "Chưa Có Bài Viết",
+      "description": "Bài viết blog sẽ xuất hiện ở đây sớm."
+    },
+    "readingTime": "{minutes} phút đọc"
+  },
+  "BlogDetail": {
+    "breadcrumb": {
+      "home": "Trang Chủ",
+      "blog": "Blog"
+    },
+    "meta": {
+      "readTime": "{minutes} phút đọc"
+    },
+    "navigation": {
+      "backToBlog": "Quay về Blog"
     }
   },
   "notifications": {

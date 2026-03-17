@@ -112,18 +112,88 @@ export default function SearchBar() {
 ```typescript
 // File: src/components/ui/SearchBar.tsx
 // Pattern: PascalCase filename = PascalCase component name
+// Note: Don't use React.FC pattern; use function declaration instead
 
 interface SearchBarProps {
   className?: string;
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ className = '' }) => {
+export default function SearchBar({ className = '' }: SearchBarProps) {
   // Component implementation
   return <div className={className}>{/* content */}</div>;
-};
-
-export default SearchBar;
+}
 ```
+
+### Client Components with Navigation & State
+
+For client components that manage interaction state (navigation, modals, dropdowns):
+
+```typescript
+// File: src/components/ui/HeaderNav.tsx
+'use client';
+
+import React, { useState, useEffect, useRef } from 'react';
+import { usePathname } from 'next/navigation';
+
+interface HeaderNavProps {
+  locale: string;
+}
+
+export default function HeaderNav({ locale }: HeaderNavProps) {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = usePathname();
+
+  // Use usePathname for detecting active routes
+  const isActive = (href: string) => {
+    const exactHome = `/${locale}`;
+    if (href === exactHome) return pathname === exactHome || pathname === `${exactHome}/`;
+    return pathname === href || pathname.startsWith(`${href}/`);
+  };
+
+  // Manage focus and keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && mobileOpen) {
+        setMobileOpen(false);
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [mobileOpen]);
+
+  return (
+    <>
+      {/* Desktop: hidden below lg breakpoint */}
+      <nav className="hidden lg:flex items-center gap-8">
+        {/* nav items */}
+      </nav>
+
+      {/* Mobile: toggle button with Escape key support */}
+      <button
+        className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+        aria-expanded={mobileOpen}
+        aria-controls="mobile-nav-menu"
+      >
+        {/* menu icon */}
+      </button>
+
+      {/* Mobile: fixed dropdown menu (z-50 to stay above content) */}
+      {mobileOpen && (
+        <div id="mobile-nav-menu" className="lg:hidden fixed top-16 left-0 right-0 bg-white/95 backdrop-blur-md z-50">
+          {/* dropdown content */}
+        </div>
+      )}
+    </>
+  );
+}
+```
+
+**Key Patterns:**
+- Use `usePathname()` to detect active routes (replaces manual prop passing)
+- Separate desktop/mobile UI via `hidden lg:flex` and `lg:hidden`
+- Fixed positioning with `z-50` for dropdowns above sticky headers
+- `aria-expanded`, `aria-controls` for accessibility
+- Escape key handling for closing dropdowns
 
 ### Props Pattern
 - Always define interface for props
@@ -380,28 +450,114 @@ Order Tailwind classes logically:
 ```
 
 ### Custom CSS Classes (in globals.css)
+
+Core component styles:
+
 ```css
-/* Component-level abstractions */
-.btn-primary {
-  @apply inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors;
+/* Navigation Links */
+.nav-link {
+  position: relative;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  color: var(--gray-600);
+  transition: all 0.2s ease;
 }
 
+.nav-link:hover {
+  color: var(--primary-600);
+  background: rgba(14, 165, 233, 0.1);
+}
+
+/* Underline animation on hover */
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: var(--primary-500);
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+/* Active nav link state (applied via JS) */
+.nav-link-active {
+  color: var(--primary-600);
+  background: rgba(14, 165, 233, 0.08);
+}
+
+.nav-link-active::after {
+  width: 100%;
+}
+
+/* Glass Morphism Effect */
 .glass {
-  @apply bg-white/80 backdrop-blur-sm border border-gray-200;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
+/* Card Hover (minimal lift, no scale) */
+.modern-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modern-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.15);
+}
+
+/* Button Styles */
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 14px 0 rgba(14, 165, 233, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Typography */
 .heading-xl {
-  @apply text-4xl md:text-5xl font-bold leading-tight;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
 }
 
 .heading-lg {
-  @apply text-3xl md:text-4xl font-bold leading-tight;
+  font-size: clamp(1.875rem, 3vw, 2.5rem);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
 }
 
 .heading-md {
-  @apply text-2xl md:text-3xl font-bold leading-tight;
+  font-size: clamp(1.25rem, 2vw, 1.5rem);
+  font-weight: 600;
+  line-height: 1.3;
 }
 ```
+
+**Key Styling Decisions:**
+- **Global transitions removed:** Removed `* { transition: all }` for performance; individual elements define their own transitions
+- **Nav active state:** Applied via CSS class `.nav-link-active`, detected by JS `usePathname()`
+- **Card hover:** `translateY(-4px)` for subtle lift; no scale transform (reduces jank)
+- **Glass opacity:** 0.85 for better contrast; backdrop-filter blur for depth
 
 ### Responsive Design Pattern
 - **Mobile-first:** Default styles apply to all sizes
@@ -425,12 +581,27 @@ description: A brief one-line description of the article
 date: 2024-03-17
 tags: [tag1, tag2, tag3]
 categories: [Category1, Category2]
-gradientFrom: '#3b82f6'  # Optional hex color
-gradientTo: '#8b5cf6'    # Optional hex color
+gradientFrom: '#3b82f6'
+gradientTo: '#8b5cf6'
 ---
 
 # Article content in Markdown...
 ```
+
+**Field Details:**
+- **title** (string, required): Article title (max 200 chars recommended)
+- **description** (string, required): Brief summary for listings (max 160 chars)
+- **date** (string, required): ISO format YYYY-MM-DD
+- **tags** (array, required): 1+ tags for classification
+- **categories** (array, required): 1+ categories (will be auto-translated)
+- **gradientFrom** (hex string, optional): Starting color (#xxxxxx format)
+- **gradientTo** (hex string, optional): Ending color (#xxxxxx format)
+
+**Validation:**
+- All required fields must be present (enforced in FileValidator)
+- Tags/categories cannot be empty arrays
+- Date must be valid ISO format
+- Gradient colors must be valid hex if provided
 
 ### Content Format
 - Use GitHub Flavored Markdown (GFM)
@@ -475,12 +646,18 @@ const code = 'example';
 
 ## Testing Standards
 
+### Test Framework & Setup
+- **Framework:** vitest 4.0.8
+- **React Testing:** @testing-library/react 16
+- **Coverage Target:** 95%+ for Phase 1
+
 ### Unit Tests Pattern
 When writing tests:
 - Test behavior, not implementation
 - Use descriptive test names
 - Keep tests focused and small
 - Arrange-Act-Assert pattern
+- Test success and error paths
 
 ```typescript
 describe('getSortedPostsData', () => {
@@ -494,24 +671,54 @@ describe('getSortedPostsData', () => {
     // Assert
     expect(posts[0].date).toBeGreaterThanOrEqual(posts[1].date);
   });
+
+  it('should return empty array for invalid locale', () => {
+    // Arrange
+    const locale = 'invalid';
+
+    // Act
+    const posts = getSortedPostsData(locale);
+
+    // Assert
+    expect(posts).toEqual([]);
+  });
 });
 ```
 
+### Test Categories
+- **Unit Tests:** Posts.ts functions, utility modules, helpers
+- **Integration Tests:** API routes, page rendering, data flow
+- **Security Tests:** ContentSanitizer, XSS prevention, validation
+- **i18n Tests:** Locale detection, translation mapping, bilingual content
+- **Error Handling Tests:** Edge cases, error codes, recovery
+
 ## Security Considerations
 
-### XSS Prevention
-- **Aware:** remark-html uses `sanitize: false` (trusted content only)
-- **Implications:** User-generated content not supported
-- **Mitigation:** All markdown content is git-controlled
+### XSS Prevention (Multi-Layer)
+- **Layer 1 - File Validation:** FileValidator.ts checks MIME type, size, frontmatter
+- **Layer 2 - Content Sanitization:** ContentSanitizer.ts (isomorphic-dompurify) removes dangerous elements
+- **Layer 3 - Style Conversion:** StyleConverter.ts maps only safe HTML to Tailwind classes
+- **Layer 4 - Rendering:** React's default escaping + Tailwind safe classes only
+- **Implications:** User-generated markdown now safe via import API
+- **Allowed Elements:** h1-h6, p, code, ul, ol, li, table, blockquote, a, img, strong, em, pre
+- **Blocked:** script, iframe, style, onX attributes, dangerous URLs
+
+### URL Validation
+- **Allowed Schemes:** http, https, /relative paths
+- **Blocked:** javascript:, data:, vbscript:, etc.
+- **Implementation:** RegEx pattern in ContentSanitizer
 
 ### Environment Variables
 - Never commit `.env.local` files
 - Use `.env.example` for documentation
 - Reference `.env.example` in deployment docs
+- No sensitive secrets required (file-based app)
 
-### Trusted Content Only
-- This application assumes all markdown content is from trusted sources
-- Do not enable user-generated markdown without proper sanitization
+### File Upload Security
+- Max size: 10MB (enforced on client & server)
+- MIME validation: text/markdown, text/plain
+- Base64 encoding for safe transport
+- Server-side validation on all uploads
 
 ## Linting & Formatting
 

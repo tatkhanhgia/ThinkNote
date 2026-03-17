@@ -150,9 +150,10 @@ Display Dropdown Results
 RootLayout (src/app/layout.tsx)
 └─ LocaleLayout (src/app/[locale]/layout.tsx)
    │
-   ├─ Header (with LanguageSwitcher & SearchBar)
-   │  ├─ LanguageSwitcher (Client Component)
-   │  └─ SearchBar (Client Component)
+   ├─ Header (with HeaderNav, SearchBar & LanguageSwitcher)
+   │  ├─ HeaderNav (Client Component) - desktop/mobile nav with active state
+   │  ├─ SearchBar (Client Component)
+   │  └─ LanguageSwitcher (Client Component)
    │
    ├─ Main Page (Server Component)
    │  ├─ HomePage
@@ -179,10 +180,11 @@ RootLayout (src/app/layout.tsx)
    └─ Footer
 
 Key Components:
+├─ HeaderNav (Client) - Desktop/mobile navigation with active link detection via usePathname
 ├─ SearchBar (Client) - Real-time full-text search
 ├─ LanguageSwitcher (Client) - Locale switching with path preservation
 ├─ PostContent (Client) - Renders markdown HTML with Mermaid support
-├─ KnowledgeCard - Displays post metadata (reusable)
+├─ KnowledgeCard - Displays post metadata with smooth hover transitions
 └─ CustomButton - Reusable button component
 ```
 
@@ -240,9 +242,33 @@ Function: getTranslatedCategory(englishCategory, locale)
 GET /{locale}/api/posts
 ├─ Route: src/app/[locale]/api/posts/route.ts
 ├─ Params: locale (en | vi)
-├─ Returns: PostData[] (all posts without contentHtml)
+├─ Returns: PostData[] (sorted by date descending, no contentHtml)
 ├─ Used by: SearchBar component (client-side filtering)
 └─ Example: GET /en/api/posts → [{ id, title, description, tags, categories, ... }, ...]
+
+POST /api/markdown/import
+├─ Route: src/app/api/markdown/import/route.ts
+├─ Body: { base64: string, filename: string, locale: string, autoFormat?: boolean, autoTranslate?: boolean }
+├─ Returns: { success: boolean, filePath: string, translatedFilePath?: string, formatChanges?: [], translationWarnings?: [] }
+├─ Features:
+│  ├─ 10MB limit, base64 encoding, validation
+│  ├─ Auto-format markdown (fix frontmatter, headings, code blocks, lists, whitespace)
+│  ├─ Auto-translate EN↔VI using google-translate-api with placeholder preservation
+│  ├─ Save both locale files (en/file.md + vi/file.md)
+│  ├─ Content sanitization
+│  └─ Non-blocking translation (original saved first, translation async)
+├─ Used by: MarkdownImporter component + markdown-import page (both with format/translate toggles)
+└─ Errors: Bilingual error messages (EN/VI), translation failure returns warning not error
+
+DELETE /api/markdown/undo
+├─ Route: src/app/api/markdown/undo/route.ts
+├─ Returns: { success: boolean, previousId: string, deletedPaths: string[] }
+├─ Features:
+│  ├─ Revert last import (removes both original + translated files if both were created)
+│  ├─ 10 actions max, 5min expiry per action
+│  └─ Supports locale paths (en/, vi/)
+├─ Used by: Undo system after failed imports or user cancellation
+└─ Limitation: Only reverts most recent import session
 
 GET /{locale}/topics (Page)
 ├─ Route: src/app/[locale]/topics/page.tsx
@@ -500,10 +526,41 @@ Console logs in API routes:
 
 ## Security Architecture
 
-### Content Security
-- **Trusted Content Only:** All markdown from git repository
-- **HTML Injection:** remark-html `sanitize: false` (intentional for trusted content)
-- **No User Input:** No user-generated content accepted
+### Content Sanitization Pipeline
+```
+Markdown File (user upload or git)
+    ↓
+1. FileValidator
+   ├─ Check MIME type (text/markdown, text/plain)
+   ├─ Check file size (5MB, enforced)
+   └─ Validate frontmatter (title, description, date, tags, categories required)
+    ↓
+2. MarkdownProcessor
+   ├─ Parse YAML frontmatter
+   ├─ Convert markdown to HTML (remark)
+   └─ Apply GFM transformations
+    ↓
+3. StyleConverter
+   ├─ Convert inline HTML styles to Tailwind classes
+   └─ Map HTML tags to semantic elements
+    ↓
+4. ContentSanitizer (isomorphic-dompurify)
+   ├─ Allowed elements: h1-h6, p, code, ul, ol, li, table, blockquote, a, img, strong, em, pre
+   ├─ Allowed attributes: href (URL validated), src, alt, title, className
+   ├─ URL validation: Scheme whitelist (http, https, /relative paths)
+   └─ Remove all script tags, event handlers, dangerous attributes
+    ↓
+5. Storage
+   ├─ Store sanitized markdown in src/data/[locale]/
+   └─ Update via import API or git commits
+```
+
+### Security Controls
+- **XSS Prevention:** All user-uploaded markdown sanitized via isomorphic-dompurify
+- **File Upload Limits:** 10MB max size, MIME type validation, base64 encoding
+- **Frontmatter Validation:** Required fields enforced, format validation
+- **Safe HTML:** Only whitelisted elements/attributes allowed in final output
+- **URL Validation:** href and src attributes checked against scheme whitelist
 
 ### Environment Variables
 - **Sensitive Data:** None currently required in this public app
@@ -529,14 +586,102 @@ Console logs in API routes:
 3. **User Accounts:** Add authentication (Phase 2) for private knowledge bases
 4. **Dynamic Content:** Replace file-based system with database (future phase)
 
+## Performance Optimization Strategy
+
+### Chunked Processing
+- **Implementation:** ChunkedProcessor.ts breaks large files into 10KB chunks
+- **Benefit:** Non-blocking processing prevents UI freezes
+- **Use Case:** Large markdown imports (>5MB)
+- **Pattern:** Process chunks, yield to event loop, continue
+
+### Lazy Loading
+- **Components:** LazyLoader for expensive components
+- **Routes:** Dynamic imports for code splitting
+- **Data:** SearchBar caches posts on first mount
+
+### Performance Monitoring
+- **PerformanceMonitor.ts:** Track import time, sanitization time, rendering time
+- **Metrics:** Logged to console in development, captured by analytics in production
+
+## Markdown Translation & Formatting Pipeline
+
+### Translation Flow (NEW)
+
+```
+User imports markdown (EN)
+    ↓
+API receives: POST /api/markdown/import with autoTranslate=true
+    ↓
+1. Validate & Decode (base64 → UTF-8)
+    ↓
+2. Format (if autoFormat=true)
+   ├─ TranslationService.translate() checks length
+   └─ MarkdownFormatter.format() normalizes structure
+    ↓
+3. Sanitize & Save to src/data/{locale}/file.md
+    ↓
+4. Translate (if autoTranslate=true, async after original save)
+   ├─ MarkdownTranslator.translateMarkdown()
+   ├─ Extract placeholders (code blocks, links, images)
+   ├─ Translate text via TranslationService.translate()
+   ├─ Restore placeholders
+   └─ Handle >14KB chunks with splitting
+    ↓
+5. Save translated copy to src/data/{otherLocale}/file.md
+    ↓
+Response: { filePath, translatedFilePath, formatChanges, translationWarnings }
+```
+
+### Markdown Formatting Pipeline
+
+```
+Input markdown (possibly malformed)
+    ↓
+MarkdownFormatter.format(content, options)
+    ├─ formatFrontmatter()      → Auto-generate missing fields
+    ├─ formatHeadings()         → Promote levels, ensure h1 first
+    ├─ formatCodeBlocks()       → Balance fences, normalize language tags
+    ├─ formatLinks()            → Fix spacing, detect broken patterns
+    ├─ formatLists()            → Normalize markers, fix numbering
+    ├─ formatWhitespace()       → Trim, collapse excess blank lines
+    └─ Returns: { content, changes[], warnings[] }
+    ↓
+Output: Clean, project-standard markdown ready for translation
+```
+
+### Translation Architecture
+
+```
+TranslationService (thin wrapper)
+├─ translate(text, from, to)      → Calls google-translate-api, handles chunking
+├─ detectLanguage(text)            → Auto-detect source language
+└─ Retry with backoff on rate limit
+
+MarkdownTranslator (markdown-aware)
+├─ extractPlaceholders()           → Replace non-translatable segments
+├─ restorePlaceholders()           → Restore after translation
+└─ translateMarkdown()             → Full pipeline with preservation
+    ├─ Extract: code blocks, inline code, links, images, HTML
+    ├─ Translate: body text only
+    ├─ Translate: frontmatter (title, description only)
+    └─ Restore: all non-translatable segments
+```
+
 ## Technology Decisions & Rationale
 
 | Decision | Rationale |
 |----------|-----------|
 | **Next.js 14** | SSR, static generation, built-in optimization |
 | **Server Components** | Reduced client JS, direct file system access |
-| **Markdown Files** | Git-friendly, version control, no database |
-| **Client-Side Search** | Fast for <1000 articles, no backend needed |
+| **Markdown Files** | Git-friendly, version control, scalable to ~1000 articles |
+| **Client-Side Search** | Fast for <1000 articles, no backend infrastructure |
 | **Tailwind CSS** | Utility-first, minimal custom CSS, fast styling |
 | **next-intl** | Automatic i18n with minimal configuration |
-| **File System** | Zero infrastructure, local development simple |
+| **Markdown Import API** | Enable non-technical content creation, UI-based editing |
+| **ContentSanitizer** | Safe user-generated markdown support without XSS risk |
+| **Chunked Processing** | Large file imports remain responsive |
+| **UndoManager** | User error recovery, safe import workflow |
+| **@vitalets/google-translate-api** | Free, unofficial Google Translate — fallback returns original + warning |
+| **Markdown Formatter** | Auto-normalize structure before translation for better quality |
+| **Placeholder System** | Preserve code/links/images during translation via token replacement |
+| **Bi-directional i18n** | EN↔VI translation enables bilingual content with single import |

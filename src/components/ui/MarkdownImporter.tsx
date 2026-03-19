@@ -8,12 +8,13 @@ import ErrorDisplay from './ErrorDisplay';
 import { MarkdownProcessor, type MarkdownMetadata } from '../../lib/markdown/MarkdownProcessor';
 import { ErrorHandler } from '../../lib/error-handling';
 import { UndoManager } from '../../lib/undo';
-import { useNotifications } from '../../contexts/NotificationContext';
+import { toast } from 'sonner';
 
 interface MarkdownImporterProps {
   isOpen: boolean;
   onClose: () => void;
   onImportSuccess: (filePath: string) => void;
+  locale: string;
 }
 
 interface ImportState {
@@ -26,19 +27,25 @@ interface ImportState {
   step: 'upload' | 'preview' | 'processing' | 'complete';
   metadata: MarkdownMetadata | null;
   fileName: string;
+  autoTranslate: boolean;
+  autoFormat: boolean;
+  formatChanges: string[];
+  translatedPath: string;
+  translationWarnings: string[];
+  showFormatChanges: boolean;
 }
 
 export const MarkdownImporter: React.FC<MarkdownImporterProps> = ({
   isOpen,
   onClose,
-  onImportSuccess
+  onImportSuccess,
+  locale
 }) => {
   const t = useTranslations('markdown-import');
   const tNotifications = useTranslations('markdown-import.notifications');
   const modalRef = useRef<HTMLDivElement>(null);
-  const { showSuccess, showError } = useNotifications();
 
-  const [state, setState] = useState<ImportState>({
+  const defaultState: ImportState = {
     file: null,
     isProcessing: false,
     originalContent: '',
@@ -47,24 +54,23 @@ export const MarkdownImporter: React.FC<MarkdownImporterProps> = ({
     error: null,
     step: 'upload',
     metadata: null,
-    fileName: ''
-  });
+    fileName: '',
+    autoTranslate: true,
+    autoFormat: true,
+    formatChanges: [],
+    translatedPath: '',
+    translationWarnings: [],
+    showFormatChanges: false,
+  };
+
+  const [state, setState] = useState<ImportState>(defaultState);
 
   // Reset state when modal opens/closes
   useEffect(() => {
     if (isOpen) {
-      setState({
-        file: null,
-        isProcessing: false,
-        originalContent: '',
-        previewContent: '',
-        convertedContent: '',
-        error: null,
-        step: 'upload',
-        metadata: null,
-        fileName: ''
-      });
+      setState(defaultState);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
 
@@ -130,19 +136,9 @@ export const MarkdownImporter: React.FC<MarkdownImporterProps> = ({
 
   const handleCancel = useCallback(() => {
     console.log('handleCancel called');
-    // Clean up any temporary data
-    setState({
-      file: null,
-      isProcessing: false,
-      originalContent: '',
-      previewContent: '',
-      convertedContent: '',
-      error: null,
-      step: 'upload',
-      metadata: null,
-      fileName: ''
-    });
+    setState(defaultState);
     onClose();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onClose]);
 
   // Handle basic modal behavior
@@ -182,10 +178,12 @@ export const MarkdownImporter: React.FC<MarkdownImporterProps> = ({
           },
           body: JSON.stringify({
             fileName: state.fileName,
-            content: state.originalContent, // Send base64 encoded content
-            isBase64: true, // Flag to indicate base64 encoding
+            content: state.originalContent,
+            isBase64: true,
             metadata: state.metadata,
-            locale: 'vi' // Default to Vietnamese, can be made dynamic later
+            locale: locale,
+            autoTranslate: state.autoTranslate,
+            autoFormat: state.autoFormat,
           }),
         });
 
@@ -198,57 +196,54 @@ export const MarkdownImporter: React.FC<MarkdownImporterProps> = ({
       }, { maxAttempts: 3 });
 
       if (result.success && result.filePath) {
-        setState(prev => ({ ...prev, step: 'complete', isProcessing: false }));
+        setState(prev => ({
+          ...prev,
+          step: 'complete',
+          isProcessing: false,
+          formatChanges: result.formatChanges ?? [],
+          translatedPath: result.translatedFilePath ?? '',
+          translationWarnings: result.translationWarnings ?? [],
+        }));
 
         // Show security warnings if any
         if (result.securityWarnings && result.securityWarnings.length > 0) {
-          showError(
-            tNotifications('security.title'),
-            tNotifications('security.message', {
+          toast.error(tNotifications('security.title'), {
+            description: tNotifications('security.message', {
               warnings: result.securityWarnings.join(', ')
             })
-          );
+          });
         }
 
-        // Create undo action
+        // Create undo action (includes translated file for deletion)
         const undoId = UndoManager.addAction(
-          UndoManager.createFileImportUndo(result.filePath, result.fileName || state.fileName)
+          UndoManager.createFileImportUndo(result.filePath, result.fileName || state.fileName, result.translatedFilePath)
         );
 
         // Show success notification with undo option
-        showSuccess(
-          tNotifications('success.title'),
-          tNotifications('success.message', {
+        toast.success(tNotifications('success.title'), {
+          description: tNotifications('success.message', {
             fileName: result.fileName || state.fileName,
             filePath: result.filePath,
             processingTime: result.processingTime ? `${Math.round(result.processingTime)}ms` : ''
           }),
-          [{
+          action: {
             label: tNotifications('success.undoLabel'),
             onClick: async () => {
               try {
                 const success = await UndoManager.undoAction(undoId);
                 if (success) {
-                  showSuccess(
-                    tNotifications('undo.success'),
-                    ''
-                  );
+                  toast.success(tNotifications('undo.success'));
                 } else {
-                  showError(
-                    tNotifications('undo.failed'),
-                    ''
-                  );
+                  toast.error(tNotifications('undo.failed'));
                 }
               } catch (error) {
-                showError(
-                  tNotifications('undo.failed'),
-                  error instanceof Error ? error.message : 'Unknown error'
-                );
+                toast.error(tNotifications('undo.failed'), {
+                  description: error instanceof Error ? error.message : 'Unknown error'
+                });
               }
-            },
-            variant: 'secondary' as const
-          }]
-        );
+            }
+          }
+        });
 
         // Close modal after a moment
         setTimeout(() => {
@@ -268,17 +263,17 @@ export const MarkdownImporter: React.FC<MarkdownImporterProps> = ({
 
       // Show error notification
       const errorInfo = ErrorHandler.formatErrorForUser(error);
-      showError(
-        tNotifications('error.title'),
-        errorInfo.message,
-        errorInfo.canRetry ? [{
-          label: tNotifications('error.retryLabel'),
-          onClick: () => handleConfirmImport(),
-          variant: 'primary' as const
-        }] : undefined
-      );
+      toast.error(tNotifications('error.title'), {
+        description: errorInfo.message,
+        ...(errorInfo.canRetry && {
+          action: {
+            label: tNotifications('error.retryLabel'),
+            onClick: () => handleConfirmImport()
+          }
+        })
+      });
     }
-  }, [state.file, state.convertedContent, state.fileName, state.metadata, state.originalContent, onImportSuccess, handleCancel, showSuccess, showError, tNotifications]);
+  }, [state.file, state.convertedContent, state.fileName, state.metadata, state.originalContent, onImportSuccess, handleCancel, tNotifications]);
 
   const handleFileNameChange = useCallback((newName: string) => {
     setState(prev => ({ ...prev, fileName: newName }));
@@ -562,6 +557,31 @@ export const MarkdownImporter: React.FC<MarkdownImporterProps> = ({
                 </div>
               </div>
 
+              {/* Import Options */}
+              <div className="mt-4 bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+                <h4 className="text-sm font-semibold text-gray-900 mb-3">Import Options</h4>
+                <label className="flex items-center space-x-3 mb-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={state.autoFormat}
+                    onChange={e => setState(prev => ({ ...prev, autoFormat: e.target.checked }))}
+                    className="w-4 h-4 text-blue-600 rounded"
+                  />
+                  <span className="text-sm text-gray-700">Auto-format markdown</span>
+                </label>
+                <label className="flex items-center space-x-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={state.autoTranslate}
+                    onChange={e => setState(prev => ({ ...prev, autoTranslate: e.target.checked }))}
+                    className="w-4 h-4 text-blue-600 rounded"
+                  />
+                  <span className="text-sm text-gray-700">
+                    Auto-translate to {locale === 'en' ? 'Vietnamese' : 'English'}
+                  </span>
+                </label>
+              </div>
+
               {/* Metadata Display */}
               {state.metadata && Object.keys(state.metadata).length > 0 && (
                 <div className="mt-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
@@ -627,23 +647,43 @@ export const MarkdownImporter: React.FC<MarkdownImporterProps> = ({
       case 'complete':
         return (
           <div className="flex flex-col items-center justify-center h-full p-8">
-            <div className="max-w-md text-center">
-              <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mb-8 mx-auto shadow-lg">
+            <div className="max-w-lg w-full text-center">
+              <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mb-6 mx-auto shadow-lg">
                 <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">Import thành công!</h3>
-              <p className="text-lg text-gray-600 mb-6">
-                File Markdown đã được import và sẵn sàng sử dụng.
-              </p>
-              <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 border border-green-200">
-                <div className="flex items-center justify-center space-x-2 text-green-700">
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-sm font-medium">File đã được lưu thành công</span>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">Import successful!</h3>
+              <div className="space-y-3 mt-4 text-left">
+                <div className="bg-green-50 rounded-xl p-4 border border-green-200 text-sm text-green-800">
+                  <div className="font-medium mb-1">Files saved:</div>
+                  <div className="font-mono text-xs">{state.fileName}</div>
+                  {state.translatedPath && (
+                    <div className="font-mono text-xs mt-1 text-blue-700">{state.translatedPath} (translated)</div>
+                  )}
                 </div>
+                {state.translationWarnings.length > 0 && (
+                  <div className="bg-yellow-50 rounded-xl p-4 border border-yellow-200 text-sm text-yellow-800">
+                    <div className="font-medium mb-1">Translation warnings:</div>
+                    {state.translationWarnings.map((w, i) => <div key={i} className="text-xs">{w}</div>)}
+                  </div>
+                )}
+                {state.formatChanges.length > 0 && (
+                  <div className="bg-blue-50 rounded-xl p-4 border border-blue-200 text-sm">
+                    <button
+                      className="font-medium text-blue-800 w-full text-left flex justify-between"
+                      onClick={() => setState(prev => ({ ...prev, showFormatChanges: !prev.showFormatChanges }))}
+                    >
+                      <span>{state.formatChanges.length} format change(s) applied</span>
+                      <span>{state.showFormatChanges ? '▲' : '▼'}</span>
+                    </button>
+                    {state.showFormatChanges && (
+                      <ul className="mt-2 space-y-1">
+                        {state.formatChanges.map((c, i) => <li key={i} className="text-xs text-blue-700">• {c}</li>)}
+                      </ul>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </div>

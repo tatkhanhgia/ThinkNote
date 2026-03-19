@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getTranslations } from 'next-intl/server';
-import { Inter } from 'next/font/google';
+import { Fira_Sans } from 'next/font/google';
 import SearchBar from "@/components/ui/SearchBar";
 import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
 import ImportMarkdownButton from "@/components/ui/ImportMarkdownButton";
@@ -11,7 +11,11 @@ import HeaderNav from "@/components/ui/HeaderNav";
 import { Toaster } from 'sonner';
 import "../../styles/globals.css";
 
-const inter = Inter({ subsets: ['latin'] });
+const firaSans = Fira_Sans({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-fira-sans',
+});
 
 type Props = {
   children: React.ReactNode;
@@ -42,14 +46,14 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} className="scroll-smooth">
-      <body className={`min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 text-gray-800 antialiased ${inter.className}`}>
+      <body className={`min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 text-gray-800 antialiased ${firaSans.className}`}>
         <NextIntlClientProvider messages={messages}>
           <Toaster richColors position="top-right" />
             {/* Modern Header */}
             <header className="sticky top-0 z-50 w-full glass border-b border-white/20">
             <div className="container mx-auto flex h-16 items-center justify-between px-6">
               {/* Logo Section */}
-              <Link href={`/${locale}`} className="flex items-center gap-3 group">
+              <Link href={`/${locale}`} className="flex items-center gap-3 group cursor-pointer">
                 <div className="relative">
                   <LogoIcon className="w-8 h-8 text-blue-600 group-hover:text-blue-700 transition-colors" />
                   <div className="absolute -inset-1 bg-blue-600 rounded-full opacity-0 group-hover:opacity-20 transition-opacity blur-sm"></div>

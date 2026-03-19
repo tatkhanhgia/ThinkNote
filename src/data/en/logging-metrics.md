@@ -2,7 +2,7 @@
 title: "Understanding Logging Metrics"
 description: "A comprehensive guide to understanding and using metrics in logging for system monitoring and observability."
 tags: ["Logging", "Metrics", "Monitoring", "Observability", "Prometheus"]
-categories: ["DevCore", "System Design"]
+categories: ["Development Core", "System Design"]
 date: "2025-08-29"
 gradientFrom: "from-blue-500"
 gradientTo: "to-green-500"

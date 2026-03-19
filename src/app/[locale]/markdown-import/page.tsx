@@ -9,7 +9,7 @@ import { MarkdownProcessor, type MarkdownMetadata } from '../../../lib/markdown/
 import { MarkdownErrorHandler } from '../../../lib/markdown/MarkdownErrorHandler';
 import { ErrorHandler } from '../../../lib/error-handling';
 import { UndoManager } from '../../../lib/undo';
-import { useNotifications } from '../../../contexts/NotificationContext';
+import { toast } from 'sonner';
 
 interface ImportState {
   file: File | null;
@@ -21,14 +21,18 @@ interface ImportState {
   errorSuggestions: string[];
   step: 'upload' | 'preview' | 'processing' | 'complete';
   metadata: MarkdownMetadata | null;
-  fileName: string; // Full filename with extension for API
-  displayName: string; // Display name without extension for UI
+  fileName: string;
+  displayName: string;
+  autoTranslate: boolean;
+  autoFormat: boolean;
+  formatChanges: string[];
+  translatedPath: string;
+  translationWarnings: string[];
+  showFormatChanges: boolean;
 }
 
 export default function ImportMarkdownPage({ params: { locale } }: { params: { locale: string } }) {
   const router = useRouter();
-  const { showSuccess, showError } = useNotifications();
-
   const [state, setState] = useState<ImportState>({
     file: null,
     isProcessing: false,
@@ -40,7 +44,13 @@ export default function ImportMarkdownPage({ params: { locale } }: { params: { l
     step: 'upload',
     metadata: null,
     fileName: '',
-    displayName: ''
+    displayName: '',
+    autoTranslate: true,
+    autoFormat: true,
+    formatChanges: [],
+    translatedPath: '',
+    translationWarnings: [],
+    showFormatChanges: false,
   });
 
   const handleFileSelect = useCallback(async (file: File) => {
@@ -151,9 +161,11 @@ export default function ImportMarkdownPage({ params: { locale } }: { params: { l
         
         const requestBody = {
           fileName: state.fileName,
-          content: state.originalContent, // Send original markdown content
+          content: state.originalContent,
           metadata: state.metadata,
-          locale: 'en' // Set appropriate locale
+          locale: locale,
+          autoTranslate: state.autoTranslate,
+          autoFormat: state.autoFormat,
         };
         
         console.log('Request body:', requestBody);
@@ -180,55 +192,52 @@ export default function ImportMarkdownPage({ params: { locale } }: { params: { l
       }, { maxAttempts: 3 });
 
       if (result.success && result.filePath) {
-        setState(prev => ({ ...prev, step: 'complete', isProcessing: false }));
+        setState(prev => ({
+          ...prev,
+          step: 'complete',
+          isProcessing: false,
+          formatChanges: result.formatChanges ?? [],
+          translatedPath: result.translatedFilePath ?? '',
+          translationWarnings: result.translationWarnings ?? [],
+        }));
 
         // Show security warnings if any
         if (result.securityWarnings && result.securityWarnings.length > 0) {
-          showError(
-            locale === 'vi' ? 'Cảnh báo bảo mật' : 'Security Warning',
-            locale === 'vi' 
+          toast.error(locale === 'vi' ? 'Cảnh báo bảo mật' : 'Security Warning', {
+            description: locale === 'vi'
               ? `Phát hiện các vấn đề bảo mật: ${result.securityWarnings.join(', ')}`
               : `Security issues detected: ${result.securityWarnings.join(', ')}`
-          );
+          });
         }
 
-        // Create undo action
+        // Create undo action (includes translated file for deletion)
         const undoId = UndoManager.addAction(
-          UndoManager.createFileImportUndo(result.filePath, result.fileName || state.fileName)
+          UndoManager.createFileImportUndo(result.filePath, result.fileName || state.fileName, result.translatedFilePath)
         );
 
         // Show success notification with undo option
-        showSuccess(
-          locale === 'vi' ? 'Import thành công' : 'Import successful',
-          locale === 'vi' 
+        toast.success(locale === 'vi' ? 'Import thành công' : 'Import successful', {
+          description: locale === 'vi'
             ? `File "${result.fileName || state.fileName}" đã được import thành công vào ${result.filePath}${result.processingTime ? ` (${Math.round(result.processingTime)}ms)` : ''}`
             : `File "${result.fileName || state.fileName}" has been successfully imported to ${result.filePath}${result.processingTime ? ` (${Math.round(result.processingTime)}ms)` : ''}`,
-          [{
+          action: {
             label: locale === 'vi' ? 'Hoàn tác' : 'Undo',
             onClick: async () => {
               try {
                 const success = await UndoManager.undoAction(undoId);
                 if (success) {
-                  showSuccess(
-                    locale === 'vi' ? 'Đã hoàn tác' : 'Undone',
-                    ''
-                  );
+                  toast.success(locale === 'vi' ? 'Đã hoàn tác' : 'Undone');
                 } else {
-                  showError(
-                    locale === 'vi' ? 'Hoàn tác thất bại' : 'Undo failed',
-                    ''
-                  );
+                  toast.error(locale === 'vi' ? 'Hoàn tác thất bại' : 'Undo failed');
                 }
               } catch (error) {
-                showError(
-                  locale === 'vi' ? 'Hoàn tác thất bại' : 'Undo failed',
-                  error instanceof Error ? error.message : (locale === 'vi' ? 'Lỗi không xác định' : 'Unknown error')
-                );
+                toast.error(locale === 'vi' ? 'Hoàn tác thất bại' : 'Undo failed', {
+                  description: error instanceof Error ? error.message : (locale === 'vi' ? 'Lỗi không xác định' : 'Unknown error')
+                });
               }
-            },
-            variant: 'secondary' as const
-          }]
-        );
+            }
+          }
+        });
 
         // Navigate back after success
         setTimeout(() => {
@@ -256,17 +265,15 @@ export default function ImportMarkdownPage({ params: { locale } }: { params: { l
       }));
 
       // Show error notification with localized message
-      showError(
-        locale === 'vi' ? 'Lỗi import' : 'Import error',
-        formattedError.message,
-        [{
+      toast.error(locale === 'vi' ? 'Lỗi import' : 'Import error', {
+        description: formattedError.message,
+        action: {
           label: locale === 'vi' ? 'Thử lại' : 'Try again',
-          onClick: () => handleConfirmImport(),
-          variant: 'primary' as const
-        }]
-      );
+          onClick: () => handleConfirmImport()
+        }
+      });
     }
-  }, [state.file, state.convertedContent, state.fileName, state.metadata, state.originalContent, router, showSuccess, showError]);
+  }, [state.file, state.convertedContent, state.fileName, state.metadata, state.originalContent, router]);
 
   const handleFileNameChange = useCallback((newName: string) => {
     // Update both display name and full filename
@@ -331,7 +338,13 @@ export default function ImportMarkdownPage({ params: { locale } }: { params: { l
       step: 'upload',
       metadata: null,
       fileName: '',
-      displayName: ''
+      displayName: '',
+      autoTranslate: true,
+      autoFormat: true,
+      formatChanges: [],
+      translatedPath: '',
+      translationWarnings: [],
+      showFormatChanges: false,
     });
   };
 
@@ -489,6 +502,35 @@ export default function ImportMarkdownPage({ params: { locale } }: { params: { l
                 </div>
               </div>
 
+              {/* Import Options */}
+              <div className="mt-4 sm:mt-6 bg-white p-4 sm:p-6 rounded-2xl border border-gray-200 shadow-sm">
+                <h4 className="text-base font-semibold text-gray-900 mb-3">
+                  {locale === 'vi' ? 'Tùy chọn import' : 'Import Options'}
+                </h4>
+                <label className="flex items-center space-x-3 mb-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={state.autoFormat}
+                    onChange={e => setState(prev => ({ ...prev, autoFormat: e.target.checked }))}
+                    className="w-4 h-4 text-blue-600 rounded"
+                  />
+                  <span className="text-sm text-gray-700">
+                    {locale === 'vi' ? 'Tự động định dạng markdown' : 'Auto-format markdown'}
+                  </span>
+                </label>
+                <label className="flex items-center space-x-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={state.autoTranslate}
+                    onChange={e => setState(prev => ({ ...prev, autoTranslate: e.target.checked }))}
+                    className="w-4 h-4 text-blue-600 rounded"
+                  />
+                  <span className="text-sm text-gray-700">
+                    {locale === 'vi' ? 'Tự động dịch sang tiếng Anh' : 'Auto-translate to Vietnamese'}
+                  </span>
+                </label>
+              </div>
+
               {/* Metadata Display */}
               {state.metadata && Object.keys(state.metadata).length > 0 && (
                 <div className="mt-4 sm:mt-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-4 sm:p-6 border border-blue-100">
@@ -565,30 +607,53 @@ export default function ImportMarkdownPage({ params: { locale } }: { params: { l
       case 'complete':
         return (
           <div className="flex flex-col items-center justify-center min-h-[60vh] p-8">
-            <div className="max-w-lg text-center">
-              <div className="w-24 h-24 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mb-10 mx-auto shadow-xl">
+            <div className="max-w-lg w-full text-center">
+              <div className="w-24 h-24 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mb-8 mx-auto shadow-xl">
                 <svg className="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
               </div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">
                 {locale === 'vi' ? 'Import thành công!' : 'Import successful!'}
               </h2>
-              <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-                {locale === 'vi' 
-                  ? 'File Markdown đã được import và sẵn sàng sử dụng. Bạn sẽ được chuyển về trang chủ trong giây lát.'
-                  : 'The Markdown file has been imported and is ready to use. You will be redirected to the homepage shortly.'
-                }
-              </p>
-              <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-8 border border-green-200">
-                <div className="flex items-center justify-center space-x-3 text-green-700">
-                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-lg font-medium">
-                    {locale === 'vi' ? 'File đã được lưu thành công' : 'File saved successfully'}
-                  </span>
+              <div className="space-y-3 mt-4 text-left">
+                <div className="bg-green-50 rounded-2xl p-5 border border-green-200 text-sm text-green-800">
+                  <div className="font-semibold mb-2">
+                    {locale === 'vi' ? 'File đã lưu:' : 'Files saved:'}
+                  </div>
+                  <div className="font-mono text-xs">{state.fileName}</div>
+                  {state.translatedPath && (
+                    <div className="font-mono text-xs mt-1 text-blue-700">
+                      {state.translatedPath} ({locale === 'vi' ? 'đã dịch' : 'translated'})
+                    </div>
+                  )}
                 </div>
+                {state.translationWarnings.length > 0 && (
+                  <div className="bg-yellow-50 rounded-2xl p-5 border border-yellow-200 text-sm text-yellow-800">
+                    <div className="font-semibold mb-2">
+                      {locale === 'vi' ? 'Cảnh báo dịch:' : 'Translation warnings:'}
+                    </div>
+                    {state.translationWarnings.map((w, i) => <div key={i} className="text-xs">{w}</div>)}
+                  </div>
+                )}
+                {state.formatChanges.length > 0 && (
+                  <div className="bg-blue-50 rounded-2xl p-5 border border-blue-200 text-sm">
+                    <button
+                      className="font-semibold text-blue-800 w-full text-left flex justify-between"
+                      onClick={() => setState(prev => ({ ...prev, showFormatChanges: !prev.showFormatChanges }))}
+                    >
+                      <span>
+                        {state.formatChanges.length} {locale === 'vi' ? 'thay đổi định dạng' : 'format change(s) applied'}
+                      </span>
+                      <span>{state.showFormatChanges ? '▲' : '▼'}</span>
+                    </button>
+                    {state.showFormatChanges && (
+                      <ul className="mt-2 space-y-1">
+                        {state.formatChanges.map((c, i) => <li key={i} className="text-xs text-blue-700">• {c}</li>)}
+                      </ul>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </div>

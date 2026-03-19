@@ -2,7 +2,7 @@
 title: "Cross-Origin Resource Sharing (CORS) - A Deep Dive"
 description: "A detailed explanation of Cross-Origin Resource Sharing (CORS), including the Same-Origin Policy, preflight requests, and how to handle CORS headers on the backend."
 tags: ["CORS", "Security", "Web", "HTTP", "Frontend", "Backend", "Guide"]
-categories: ["Security", "Backend", "Frontend", "DevCore"]
+categories: ["Security", "Backend", "Frontend", "Development Core"]
 date: "2025-08-08"
 gradientFrom: "from-yellow-500"
 gradientTo: "to-orange-500"

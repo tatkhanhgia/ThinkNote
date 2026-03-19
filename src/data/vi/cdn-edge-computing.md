@@ -3,8 +3,9 @@ title: "Tìm hiểu về CDN và Edge Computing"
 description: "So sánh chi tiết giữa Mạng phân phối nội dung (CDN) và Điện toán biên (Edge Computing), giải thích cách chúng tăng tốc độ và hiệu suất trang web."
 tags: ["CDN", "Edge Computing", "Performance", "Networking"]
 date: "2025-08-29"
-category: "Web Performance"
-gradient: "from-green-400 to-blue-500"
+categories: ["Hiệu suất Web", "Backend"]
+gradientFrom: "from-green-400"
+gradientTo: "to-blue-500"
 ---
 
 ## CDN và Edge Computing là gì?

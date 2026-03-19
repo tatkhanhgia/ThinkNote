@@ -193,7 +193,8 @@ const categoryTranslationMap: { [key: string]: { [key: string]: string } } = {
   "Frontend": { "vi": "Frontend" },
   "Backend": { "vi": "Backend" },
   "IDE": { "vi": "IDE" },
-  // Add other categories as needed
+  "System Design": { "vi": "Thiết kế hệ thống" },
+  "Web Performance": { "vi": "Hiệu suất Web" },
 };
 
 // Function to get the translated category name

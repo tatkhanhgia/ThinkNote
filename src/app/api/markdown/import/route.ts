@@ -4,9 +4,10 @@ import { join, basename, extname } from 'path'
 import { existsSync } from 'fs'
 import { MarkdownProcessor } from '@/lib/markdown/MarkdownProcessor'
 import { FileValidator } from '@/lib/validation'
-
 import { ContentSanitizer } from '@/lib/security/ContentSanitizer'
 import { PerformanceMonitor } from '@/lib/performance/ChunkedProcessor'
+import { MarkdownFormatter } from '@/lib/formatting/MarkdownFormatter'
+import { MarkdownTranslator } from '@/lib/translation/MarkdownTranslator'
 
 export interface ImportRequest {
   fileName: string
@@ -15,17 +16,22 @@ export interface ImportRequest {
   targetPath?: string
   overwrite?: boolean
   locale?: string
+  autoTranslate?: boolean
+  autoFormat?: boolean
 }
 
 export interface ImportResponse {
   success: boolean
   filePath?: string
+  translatedFilePath?: string
   fileName?: string
   error?: string
   metadata?: any
   warnings?: string[]
   securityWarnings?: string[]
   processingTime?: number
+  formatChanges?: string[]
+  translationWarnings?: string[]
 }
 
 /**
@@ -45,7 +51,7 @@ export async function POST(request: NextRequest) {
       }
 
       const body: ImportRequest = await request.json()
-      const { fileName, content, isBase64 = false, targetPath, overwrite = false, locale } = body
+      const { fileName, content, isBase64 = false, targetPath, overwrite = false, locale, autoTranslate, autoFormat } = body
 
       // Detect locale from request headers if not provided
       const detectedLocale = locale || request.headers.get('accept-language')?.split(',')[0]?.split('-')[0] || 'en'
@@ -76,8 +82,22 @@ export async function POST(request: NextRequest) {
         };
       }
 
+      // Format markdown if enabled (before security scan and validation)
+      let formattedContent = decodedContent
+      let formatChanges: string[] = []
+      if (autoFormat !== false) {
+        try {
+          const formatResult = MarkdownFormatter.format(decodedContent, { fileName })
+          formattedContent = formatResult.content
+          formatChanges = formatResult.changes
+        } catch {
+          // Formatting failure is non-blocking
+          formattedContent = decodedContent
+        }
+      }
+
       // Security: Detect suspicious content patterns
-      const suspiciousPatterns = ContentSanitizer.detectSuspiciousContent(decodedContent);
+      const suspiciousPatterns = ContentSanitizer.detectSuspiciousContent(formattedContent);
       const securityWarnings: string[] = [];
       
       if (suspiciousPatterns.length > 0) {
@@ -105,32 +125,32 @@ export async function POST(request: NextRequest) {
       }
 
       // Validate content size (approximate)
-      const contentSizeBytes = Buffer.byteLength(decodedContent, 'utf8')
+      const contentSizeBytes = Buffer.byteLength(formattedContent, 'utf8')
       const sizeValidation = FileValidator.validateFileSize(contentSizeBytes)
       if (!sizeValidation.isValid) {
-        return { 
-          success: false, 
-          error: `File too large: ${sizeValidation.errors.join(', ')}` 
+        return {
+          success: false,
+          error: `File too large: ${sizeValidation.errors.join(', ')}`
         };
       }
 
       // Validate Markdown content
-      const contentValidation = MarkdownProcessor.validateMarkdownContent(decodedContent)
+      const contentValidation = MarkdownProcessor.validateMarkdownContent(formattedContent)
       if (!contentValidation.isValid) {
-        return { 
-          success: false, 
-          error: `Invalid Markdown content: ${contentValidation.errors.join(', ')}` 
+        return {
+          success: false,
+          error: `Invalid Markdown content: ${contentValidation.errors.join(', ')}`
         };
       }
 
       // Extract metadata only (don't convert to HTML)
       let metadataResult
       try {
-        metadataResult = await MarkdownProcessor.extractMetadataOnly(decodedContent)
+        metadataResult = await MarkdownProcessor.extractMetadataOnly(formattedContent)
       } catch (error) {
-        return { 
-          success: false, 
-          error: `Failed to extract metadata: ${error instanceof Error ? error.message : 'Unknown error'}` 
+        return {
+          success: false,
+          error: `Failed to extract metadata: ${error instanceof Error ? error.message : 'Unknown error'}`
         };
       }
 
@@ -205,32 +225,50 @@ export async function POST(request: NextRequest) {
         };
       }
 
-    // Prepare final content with metadata
-    let finalContent = decodedContent
-    
-    // If there's no existing frontmatter, add basic metadata
-    if (!decodedContent.startsWith('---')) {
-      const metadata = {
-        title: metadataResult.metadata.title || basename(finalFileName, extname(finalFileName)),
-        imported: new Date().toISOString(),
-        ...metadataResult.metadata
-      }
-      
-      const frontmatter = Object.entries(metadata)
-        .map(([key, value]) => `${key}: ${typeof value === 'string' ? value : JSON.stringify(value)}`)
-        .join('\n')
-      
-      finalContent = `---\n${frontmatter}\n---\n\n${decodedContent}`
-    }
+      // Use formatted content as final content (formatter already adds frontmatter if missing)
+      const finalContent = formattedContent
 
       // Save the file
       try {
         await writeFile(finalFilePath, finalContent, 'utf8')
       } catch (error) {
-        return { 
-          success: false, 
-          error: `Failed to save file: ${error instanceof Error ? error.message : 'Unknown error'}` 
+        return {
+          success: false,
+          error: `Failed to save file: ${error instanceof Error ? error.message : 'Unknown error'}`
         };
+      }
+
+      // Translate and save to the other locale directory
+      let translatedFilePath: string | undefined
+      let translationWarnings: string[] = []
+      if (autoTranslate !== false) {
+        try {
+          const otherLocale = finalLocale === 'en' ? 'vi' : 'en'
+          const { translatedContent, warnings } = await MarkdownTranslator.translateMarkdown(
+            finalContent, finalLocale, otherLocale
+          )
+          translationWarnings = warnings
+
+          const translatedDir = join(dataDir, otherLocale)
+          await mkdir(translatedDir, { recursive: true })
+
+          // Unique naming for translated file
+          let translatedFileName = finalFileName
+          const tBaseName = basename(finalFileName, extname(finalFileName))
+          const tExt = extname(finalFileName)
+          let tc = 1
+          while (existsSync(join(translatedDir, translatedFileName))) {
+            translatedFileName = `${tBaseName}_${tc}${tExt}`
+            tc++
+          }
+
+          await writeFile(join(translatedDir, translatedFileName), translatedContent, 'utf8')
+          translatedFilePath = join(otherLocale, translatedFileName).replace(/\\/g, '/')
+        } catch (error) {
+          translationWarnings.push(
+            `Translation failed: ${error instanceof Error ? error.message : 'Unknown'}`
+          )
+        }
       }
 
       // Collect all warnings
@@ -244,23 +282,17 @@ export async function POST(request: NextRequest) {
 
       // Return success response
       const relativePath = join(sanitizedTargetPath, finalFileName).replace(/\\/g, '/')
-      
-      // Include the final metadata (including any added metadata)
-      const finalMetadata = !decodedContent.startsWith('---') 
-        ? {
-            title: metadataResult.metadata.title || basename(finalFileName, extname(finalFileName)),
-            imported: new Date().toISOString(),
-            ...metadataResult.metadata
-          }
-        : metadataResult.metadata
-      
+
       return {
         success: true,
         filePath: relativePath,
+        translatedFilePath,
         fileName: finalFileName,
-        metadata: finalMetadata,
+        metadata: metadataResult.metadata,
         warnings: allWarnings.length > 0 ? allWarnings : undefined,
-        securityWarnings: securityWarnings.length > 0 ? securityWarnings : undefined
+        securityWarnings: securityWarnings.length > 0 ? securityWarnings : undefined,
+        formatChanges: formatChanges.length > 0 ? formatChanges : undefined,
+        translationWarnings: translationWarnings.length > 0 ? translationWarnings : undefined,
       };
 
     } catch (error) {

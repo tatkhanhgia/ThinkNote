@@ -2,7 +2,7 @@
 title: "Introduction to AI and Machine Learning"
 description: "A beginner's guide to artificial intelligence and machine learning concepts, algorithms, and practical applications."
 tags: ["Machine Learning", "AI", "Python", "Algorithms"]
-categories: ["AI", "DevCore", "Programming Languages"]
+categories: ["AI", "Development Core", "Programming Languages"]
 date: "2023-11-20"
 gradientFrom: "from-purple-500"
 gradientTo: "to-pink-500"

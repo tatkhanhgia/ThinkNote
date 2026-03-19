@@ -2,7 +2,7 @@
 title: "Tìm hiểu về Metrics trong Logging"
 description: "Hướng dẫn toàn diện về việc tìm hiểu và sử dụng metrics trong logging để giám sát hệ thống và khả năng quan sát."
 tags: ["Logging", "Metrics", "Monitoring", "Observability", "Prometheus"]
-categories: ["DevCore", "System Design"]
+categories: ["Lõi phát triển", "Thiết kế hệ thống"]
 date: "2025-08-29"
 gradientFrom: "from-blue-500"
 gradientTo: "to-green-500"

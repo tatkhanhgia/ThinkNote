@@ -1,8 +1,8 @@
 ---
 title: "Detailed Analysis of the Java Memory Model (JMM)"
 description: "An in-depth analysis of the Java Memory Model (JMM), explaining concepts like visibility, atomicity, reordering, and the roles of 'volatile' and 'synchronized'."
-tags: ["Java", "Quản Lý Bộ Nhớ", "Concurrency", "Tối Ưu Hóa", "JMM"]
-categories: ["Java", "DevCore", "Backend"]
+tags: ["Java", "Memory Management", "Concurrency", "Performance", "JMM"]
+categories: ["Java", "Development Core", "Backend"]
 date: "2025-08-05"
 gradientFrom: "from-indigo-500"
 gradientTo: "to-purple-500"

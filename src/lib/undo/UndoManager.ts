@@ -93,21 +93,24 @@ export class UndoManager {
   }
 
   /**
-   * Create an undo action for file import
+   * Create an undo action for file import.
+   * Optionally includes a translated file path to delete both on undo.
    */
-  static createFileImportUndo(filePath: string, fileName: string): Omit<UndoAction, 'id' | 'timestamp'> {
+  static createFileImportUndo(
+    filePath: string,
+    fileName: string,
+    translatedFilePath?: string
+  ): Omit<UndoAction, 'id' | 'timestamp'> {
+    const filePaths = [filePath, ...(translatedFilePath ? [translatedFilePath] : [])]
     return {
       type: 'file_import',
       description: `Import of ${fileName}`,
-      data: { filePath, fileName },
+      data: { filePath, translatedFilePath, fileName },
       undo: async () => {
-        // Delete the imported file
         const response = await fetch('/api/markdown/undo', {
           method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ filePath, type: 'import' })
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ filePaths, type: 'import' })
         })
 
         if (!response.ok) {

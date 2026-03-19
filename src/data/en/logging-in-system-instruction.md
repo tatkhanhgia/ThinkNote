@@ -1,8 +1,8 @@
 ---
 title: "Detailed Analysis: Logging in Software System Design"
 description: "A comprehensive guide to logging in software systems, covering log levels, best practices, structured logging, and examples with SLF4J, Logback, and Log4j2."
-tags: ["Java", "Logging", "Observability", "Monitoring", "Design", "Hướng dẫn"]
-categories: ["DevCore", "Backend", "Tool"]
+tags: ["Java", "Logging", "Observability", "Monitoring", "Design", "Guide"]
+categories: ["Development Core", "Backend", "Tool"]
 date: "2025-08-01"
 gradientFrom: "from-green-500"
 gradientTo: "to-lime-500"

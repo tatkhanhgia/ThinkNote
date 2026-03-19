@@ -2,7 +2,7 @@
 title: "Database Design Principles and Best Practices"
 description: "Learn fundamental database design concepts, normalization, indexing, and optimization techniques for better performance."
 tags: ["Database", "SQL", "Design", "Optimization"]
-categories: ["Database", "DevCore", "Backend"]
+categories: ["Database", "Development Core", "Backend"]
 date: "2023-10-15"
 gradientFrom: "from-green-400"
 gradientTo: "to-blue-500"

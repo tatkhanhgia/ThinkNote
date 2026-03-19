@@ -2,7 +2,7 @@
 title: "Visual Studio Code: Productivity Tips and Essential Extensions"
 description: "Maximize your coding efficiency with these VS Code tips, shortcuts, and must-have extensions for modern development."
 tags: ["VS Code", "Productivity", "Extensions", "Shortcuts"]
-categories: ["IDE", "Tool", "DevCore"]
+categories: ["IDE", "Tool", "Development Core"]
 date: "2023-11-10"
 gradientFrom: "from-blue-600"
 gradientTo: "to-purple-600"

@@ -3,7 +3,15 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { NextIntlClientProvider } from 'next-intl'
 import ImportMarkdownButton from '../ImportMarkdownButton'
-import { NotificationProvider } from '../../../contexts/NotificationContext'
+
+vi.mock('sonner', () => ({
+  toast: {
+    success: vi.fn(),
+    error: vi.fn(),
+    warning: vi.fn(),
+    info: vi.fn(),
+  }
+}))
 
 // Mock the MarkdownImporter component
 vi.mock('../MarkdownImporter', () => ({
@@ -51,9 +59,7 @@ const vietnameseMessages = {
 const renderWithLocale = (component: React.ReactElement, locale: string, messages: any) => {
   return render(
     <NextIntlClientProvider locale={locale} messages={messages}>
-      <NotificationProvider>
-        {component}
-      </NotificationProvider>
+      {component}
     </NextIntlClientProvider>
   )
 }
@@ -276,9 +282,7 @@ describe('ImportMarkdownButton Internationalization', () => {
       // Check hero variant has icon
       rerender(
         <NextIntlClientProvider locale="en" messages={englishMessages}>
-          <NotificationProvider>
-            <ImportMarkdownButton variant="hero" />
-          </NotificationProvider>
+          <ImportMarkdownButton variant="hero" />
         </NextIntlClientProvider>
       )
 

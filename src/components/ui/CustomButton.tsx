@@ -12,7 +12,7 @@ interface CustomButtonProps extends PolymorphicProps {
 
 const CustomButton = forwardRef<HTMLButtonElement | HTMLAnchorElement, CustomButtonProps>(
   ({ children, className = '', variant = 'primary', gradient = false, as = 'button', ...props }, ref) => {
-    let baseStyle = 'font-semibold py-2 px-6 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-opacity-75 transition duration-300 ease-in-out inline-block text-center';
+    let baseStyle = 'cursor-pointer font-semibold py-2 px-6 rounded-lg shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 transition-colors transition-transform duration-200 ease-in-out inline-block text-center';
 
     if (gradient) {
       baseStyle += ' bg-gradient-to-r text-white hover:shadow-lg';
@@ -21,25 +21,25 @@ const CustomButton = forwardRef<HTMLButtonElement | HTMLAnchorElement, CustomBut
     let variantStyle = '';
     switch (variant) {
       case 'primary':
-        variantStyle = gradient 
-          ? 'from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 focus:ring-purple-400' 
-          : 'bg-purple-600 text-white hover:bg-purple-700 focus:ring-purple-400';
+        variantStyle = gradient
+          ? 'from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 focus-visible:ring-blue-400'
+          : 'bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-400';
         break;
       case 'secondary':
         variantStyle = gradient
-          ? 'from-pink-500 to-orange-500 hover:from-pink-600 hover:to-orange-600 focus:ring-pink-400'
-          : 'bg-pink-500 text-white hover:bg-pink-600 focus:ring-pink-400';
+          ? 'from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 focus-visible:ring-orange-400'
+          : 'bg-orange-500 text-white hover:bg-orange-600 focus-visible:ring-orange-400';
         break;
       case 'outline':
-        variantStyle = 'bg-transparent border border-purple-500 text-purple-500 hover:bg-purple-500 hover:text-white focus:ring-purple-300';
+        variantStyle = 'bg-transparent border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white focus-visible:ring-blue-300';
         if (gradient) {
-          variantStyle = 'bg-transparent border border-purple-500 text-purple-500 hover:bg-gradient-to-r hover:from-purple-500 hover:to-indigo-600 hover:text-white focus:ring-purple-400';
+          variantStyle = 'bg-transparent border border-blue-500 text-blue-500 hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-600 hover:text-white focus-visible:ring-blue-400';
         }
         break;
       default:
         variantStyle = gradient
-          ? 'from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 focus:ring-gray-400'
-          : 'bg-gray-500 text-white hover:bg-gray-600 focus:ring-gray-400';
+          ? 'from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 focus-visible:ring-gray-400'
+          : 'bg-gray-500 text-white hover:bg-gray-600 focus-visible:ring-gray-400';
         break;
     }
 

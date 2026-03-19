@@ -32,19 +32,21 @@ Welcome to the ThinkNote documentation. This comprehensive guide covers everythi
 ## Documentation Files Overview
 
 ### 1. Project Overview & PDR
-**File:** `project-overview-pdr.md` | **Lines:** 116
+**File:** `project-overview-pdr.md` | **Lines:** 120+
 
 Overview of ThinkNote's vision, target users, key features, technology stack, success metrics, and roadmap through Phase 3.
 
 **Read if you want to:**
 - Understand the project's purpose and direction
+- Review Phase 1 status (75% complete)
 - Review success metrics and constraints
 - See the business model and value proposition
+- Understand tech versions and current capabilities
 
 ---
 
 ### 2. Codebase Summary
-**File:** `codebase-summary.md` | **Lines:** 379
+**File:** `codebase-summary.md` | **Lines:** 450+
 
 Complete overview of the codebase structure, technology stack, directory organization, core modules, data flow, and development conventions.
 
@@ -53,63 +55,75 @@ Complete overview of the codebase structure, technology stack, directory organiz
 - Learn about directory structure and file organization
 - Review core modules and their responsibilities
 - Understand data flow and design patterns
+- Learn about markdown import and security features
 
 **Key Topics:**
-- Technology stack (Next.js 14, TypeScript 5, Tailwind CSS)
-- Complete directory structure with 23 TSX/TS files
+- Technology stack (Next.js 14.2.4, TypeScript 5, Tailwind CSS 3.4.4)
+- Complete directory structure with 80 TypeScript/TSX files
+- 37 test files (vitest + @testing-library/react)
+- 13 UI components + 1 markdown component
+- 16+ utility modules (posts, markdown, security, performance, validation, undo, error-handling, accessibility)
 - Core data flow pipeline
-- Key modules (posts.ts with 10 functions, SearchBar, PostContent)
-- Performance characteristics
+- Key modules (posts.ts 292 LOC, SearchBar 216 LOC, MarkdownImporter, NotificationSystem)
+- Security: ContentSanitizer with isomorphic-dompurify, file validation, style conversion
+- Markdown import API (POST /api/markdown/import, DELETE /api/markdown/undo)
+- Performance: ChunkedProcessor, LazyLoader, PerformanceMonitor
 - Content organization (14+ categories, 86+ tags)
 
 ---
 
 ### 3. Code Standards
-**File:** `code-standards.md` | **Lines:** 589
+**File:** `code-standards.md` | **Lines:** 650+
 
-Comprehensive coding standards covering TypeScript, React, file naming, imports, error handling, and documentation conventions.
+Comprehensive coding standards covering TypeScript, React, file naming, imports, error handling, testing, and security.
 
 **Read if you want to:**
 - Follow consistent coding conventions
 - Understand TypeScript best practices
 - Learn React Server/Client Component patterns
-- Review comment and documentation guidelines
+- Review testing standards (vitest, @testing-library/react)
 - Understand file organization and sizing limits
+- Learn security best practices (XSS prevention, file upload, URL validation)
 
 **Key Topics:**
 - TypeScript strict mode and interfaces
-- React patterns (Server vs Client Components)
+- React patterns (Server vs Client Components) - function declaration preferred
 - Component props and composition
 - File naming conventions (PascalCase, camelCase, kebab-case)
 - Import organization and path aliases
 - Error handling patterns
-- Tailwind CSS conventions
-- Markdown content standards
-- Security considerations
-- Testing and commit message standards
+- Tailwind CSS conventions and organization
+- Markdown content standards (frontmatter validation, required fields)
+- Security: XSS prevention, file upload validation, URL whitelist
+- Testing: vitest 4.0.8, Arrange-Act-Assert pattern, 5 test categories
+- Commit message standards (Conventional Commits)
 
 ---
 
 ### 4. System Architecture
-**File:** `system-architecture.md` | **Lines:** 542
+**File:** `system-architecture.md` | **Lines:** 600+
 
-Deep dive into system design, data flow, component architecture, i18n system, API endpoints, and deployment options.
+Deep dive into system design, data flow, component architecture, security, API endpoints, and deployment options.
 
 **Read if you want to:**
 - Understand system design and data flow
-- Review API endpoint specifications
+- Review API endpoint specifications (3 endpoints + security implementation)
 - Learn about i18n architecture
-- Understand performance characteristics
+- Understand security sanitization pipeline
+- Learn performance optimization strategies
 - Explore deployment architectures
 
 **Key Topics:**
 - High-level architecture diagram
-- Data flow pipelines (6 stages)
+- Data flow pipelines (request processing, content loading, search)
 - Component hierarchy and communication
 - i18n architecture with locale routing
-- All 7 API endpoints documented
+- All 3 API endpoints documented (posts, markdown/import, markdown/undo)
+- Security architecture: multi-layer XSS prevention, ContentSanitizer, file validation
+- Sanitization pipeline: validation → processing → conversion → sanitizing
 - PostData interface specification
-- Caching strategies
+- Caching strategies (build-time ISR, client-side)
+- Performance optimization: ChunkedProcessor, LazyLoader, PerformanceMonitor
 - Page load performance timeline
 - Bundle size breakdown
 - Deployment options (Vercel, Docker, Self-hosted, Static)
@@ -117,27 +131,29 @@ Deep dive into system design, data flow, component architecture, i18n system, AP
 ---
 
 ### 5. Project Roadmap
-**File:** `project-roadmap.md` | **Lines:** 477
+**File:** `project-roadmap.md` | **Lines:** 500+
 
-Complete product roadmap covering Phase 1 (current, 70% complete) through Phase 4, with milestones, success metrics, dependencies, and risk assessment.
+Complete product roadmap covering Phase 1 (current, ~75% complete) through Phase 4, with milestones, success metrics, dependencies, and risk assessment.
 
 **Read if you want to:**
-- Understand current project status
+- Understand current project status (Phase 1 progress updated)
 - Plan future development phases
 - Review success metrics and KPIs
 - Identify known limitations and technical debt
 - Assess risks and dependencies
+- See Phase 1 remaining work priorities
 
 **Key Topics:**
-- Phase 1 completed and in-progress milestones
+- Phase 1: Newly completed (testing infrastructure with 37 files, markdown import API, notification system, security)
+- Phase 1: In progress (expand content, Vietnamese translations, E2E tests, accessibility, API docs)
 - Phase 2: Authentication, content contributions, advanced search
 - Phase 3: Community features, analytics, personalization
 - Phase 4: Enterprise features, scalability
-- Known limitations table (8 items)
-- Technical debt with priorities
+- Known limitations updated (HTML now sanitized, testing coverage at 60%+)
+- Technical debt with revised priorities
 - Success metrics for each phase
 - Risk assessment and mitigation
-- Release timeline (Q1-Q3 2026)
+- Release timeline (Sprint 1-4: Mar-Jun 2026)
 - Budget planning
 
 ---

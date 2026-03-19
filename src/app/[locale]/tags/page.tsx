@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { getSortedPostsData } from '@/lib/posts';
+import icons from '@/lib/category-icons';
 import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 
@@ -7,7 +8,7 @@ import { getTranslations } from 'next-intl/server';
 type CategoryMapping = {
   keywords: string[];
   color: string;
-  icon: string;
+  iconKey: string;
 };
 
 type CategoryMappings = {
@@ -19,32 +20,32 @@ const CATEGORY_MAPPINGS_EN: CategoryMappings = {
   'Programming Languages': {
     keywords: ['java', 'javascript', 'typescript', 'python', 'react', 'c++', 'c#', 'php', 'ruby', 'go', 'rust'],
     color: 'bg-blue-100 text-blue-800 border-blue-200',
-    icon: '💻'
+    iconKey: 'code'
   },
   'Development Core': {
     keywords: ['devcore', 'architecture', 'design', 'patterns', 'best', 'practices', 'solid', 'clean'],
     color: 'bg-purple-100 text-purple-800 border-purple-200',
-    icon: '⚡'
+    iconKey: 'bolt'
   },
   'Tools & IDE': {
     keywords: ['tool', 'ide', 'editor', 'vscode', 'intellij', 'eclipse', 'setup', 'configuration'],
     color: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-    icon: '🛠️'
+    iconKey: 'wrench'
   },
   'AI & Machine Learning': {
     keywords: ['ai', 'artificial', 'intelligence', 'machine', 'learning', 'ml', 'deep', 'neural', 'tensorflow', 'pytorch'],
     color: 'bg-rose-100 text-rose-800 border-rose-200',
-    icon: '🤖'
+    iconKey: 'cpu'
   },
   'Frontend Development': {
     keywords: ['frontend', 'css', 'tailwindcss', 'ui', 'ux', 'responsive', 'html', 'sass', 'bootstrap'],
     color: 'bg-amber-100 text-amber-800 border-amber-200',
-    icon: '🎨'
+    iconKey: 'palette'
   },
   'Backend Development': {
     keywords: ['backend', 'api', 'database', 'server', 'microservices', 'nodejs', 'express', 'spring', 'django'],
     color: 'bg-indigo-100 text-indigo-800 border-indigo-200',
-    icon: '🔧'
+    iconKey: 'cog'
   }
 };
 
@@ -53,32 +54,32 @@ const CATEGORY_MAPPINGS_VI: CategoryMappings = {
   'Ngôn ngữ lập trình': {
     keywords: ['java', 'javascript', 'typescript', 'python', 'react', 'c++', 'c#', 'php', 'ruby', 'go', 'rust'],
     color: 'bg-blue-100 text-blue-800 border-blue-200',
-    icon: '💻'
+    iconKey: 'code'
   },
   'Lõi phát triển': {
     keywords: ['devcore', 'architecture', 'design', 'patterns', 'best', 'practices', 'solid', 'clean', 'kiến trúc', 'thiết kế', 'mẫu'],
     color: 'bg-purple-100 text-purple-800 border-purple-200',
-    icon: '⚡'
+    iconKey: 'bolt'
   },
   'Công cụ & IDE': {
     keywords: ['tool', 'ide', 'editor', 'vscode', 'intellij', 'eclipse', 'setup', 'configuration', 'công cụ', 'trình soạn thảo', 'cấu hình'],
     color: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-    icon: '🛠️'
+    iconKey: 'wrench'
   },
   'AI & Học máy': {
     keywords: ['ai', 'artificial', 'intelligence', 'machine', 'learning', 'ml', 'deep', 'neural', 'tensorflow', 'pytorch', 'trí tuệ nhân tạo', 'học máy'],
     color: 'bg-rose-100 text-rose-800 border-rose-200',
-    icon: '🤖'
+    iconKey: 'cpu'
   },
   'Phát triển Frontend': {
     keywords: ['frontend', 'css', 'tailwindcss', 'ui', 'ux', 'responsive', 'html', 'sass', 'bootstrap'],
     color: 'bg-amber-100 text-amber-800 border-amber-200',
-    icon: '🎨'
+    iconKey: 'palette'
   },
   'Phát triển Backend': {
     keywords: ['backend', 'api', 'database', 'server', 'microservices', 'nodejs', 'express', 'spring', 'django', 'cơ sở dữ liệu', 'máy chủ'],
     color: 'bg-indigo-100 text-indigo-800 border-indigo-200',
-    icon: '🔧'
+    iconKey: 'cog'
   }
 };
 
@@ -91,22 +92,22 @@ export async function generateMetadata({params: {locale}}: {params: {locale: str
   };
 }
 
-function getCategoryForTag(tag: string, locale: string): { category: string; color: string; icon: string } | null {
+function getCategoryForTag(tag: string, locale: string): { category: string; color: string; iconKey: string } | null {
   const tagLower = tag.toLowerCase();
   const mappings = locale === 'vi' ? CATEGORY_MAPPINGS_VI : CATEGORY_MAPPINGS_EN;
-  
+
   for (const [categoryName, config] of Object.entries(mappings)) {
-    if (config.keywords.some(keyword => 
+    if (config.keywords.some(keyword =>
       tagLower.includes(keyword) || keyword.includes(tagLower)
     )) {
       return {
         category: categoryName,
         color: config.color,
-        icon: config.icon
+        iconKey: config.iconKey
       };
     }
   }
-  
+
   return null;
 }
 
@@ -211,23 +212,29 @@ export default function TagsPage({params: {locale}}: {params: {locale: string}})
           <div className="flex flex-wrap justify-center gap-4">
             <Link
               href={`/${locale}/categories`}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 transition-colors text-sm font-medium"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 transition-colors text-sm font-medium cursor-pointer"
             >
-              <span>📋</span>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              </svg>
               {t('quickActions.browseByCategories')}
             </Link>
             <Link
               href={`/${locale}/search`}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium cursor-pointer"
             >
-              <span>🔍</span>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
               {t('quickActions.searchArticles')}
             </Link>
             <Link
               href={`/${locale}/topics`}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors text-sm font-medium"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors text-sm font-medium cursor-pointer"
             >
-              <span>📚</span>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
               {t('quickActions.allTopics')}
             </Link>
           </div>
@@ -245,10 +252,14 @@ export default function TagsPage({params: {locale}}: {params: {locale: string}})
               return null;
             }
             
+            const CategoryIcon = icons[categoryConfig.iconKey] ?? icons.folder;
+
             return (
               <div key={categoryName} className="mb-16">
                 <div className="flex items-center gap-3 mb-8">
-                  <span className="text-2xl">{categoryConfig.icon}</span>
+                  <div className="w-6 h-6 flex-shrink-0">
+                    <CategoryIcon className="w-6 h-6 text-gray-600" />
+                  </div>
                   <h2 className="heading-md text-gray-800">{categoryName}</h2>
                   <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
                     {categoryTags.length} {t('tagsCount')}
@@ -260,7 +271,7 @@ export default function TagsPage({params: {locale}}: {params: {locale: string}})
                     <Link
                       key={tag}
                       href={`/${locale}/tags/${encodeURIComponent(tag.toLowerCase())}`}
-                      className={`modern-card group p-4 hover:scale-105 ${categoryConfig.color} border`}
+                      className={`modern-card group p-4 hover:scale-105 cursor-pointer ${categoryConfig.color} border`}
                       style={{
                         animationDelay: `${index * 50}ms`,
                         animationFillMode: 'both'
@@ -288,7 +299,11 @@ export default function TagsPage({params: {locale}}: {params: {locale: string}})
           {uncategorizedTags.length > 0 && (
             <div className="mb-16">
               <div className="flex items-center gap-3 mb-8">
-                <span className="text-2xl">🏷️</span>
+                <div className="w-6 h-6 flex-shrink-0">
+                  <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                  </svg>
+                </div>
                 <h2 className="heading-md text-gray-800">{t('uncategorized')}</h2>
                 <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
                   {uncategorizedTags.length} {t('tagsCount')}
@@ -300,7 +315,7 @@ export default function TagsPage({params: {locale}}: {params: {locale: string}})
                   <Link
                     key={tag}
                     href={`/${locale}/tags/${encodeURIComponent(tag.toLowerCase())}`}
-                    className="modern-card group p-4 hover:scale-105 bg-gray-100 text-gray-800 border-gray-200 border"
+                    className="modern-card group p-4 hover:scale-105 cursor-pointer bg-gray-100 text-gray-800 border-gray-200 border"
                     style={{
                       animationDelay: `${index * 50}ms`,
                       animationFillMode: 'both'

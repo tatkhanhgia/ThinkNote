@@ -3,8 +3,9 @@ title: "Understanding CDN and Edge Computing"
 description: "A detailed comparison between Content Delivery Networks (CDN) and Edge Computing, explaining how they improve website speed and performance."
 tags: ["CDN", "Edge Computing", "Performance", "Networking"]
 date: "2025-08-29"
-category: "Web Performance"
-gradient: "from-green-400 to-blue-500"
+categories: ["Web Performance", "Backend"]
+gradientFrom: "from-green-400"
+gradientTo: "to-blue-500"
 ---
 
 ## What Are CDN and Edge Computing?

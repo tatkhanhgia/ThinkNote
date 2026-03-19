@@ -27,10 +27,10 @@ const BlogCard: React.FC<BlogCardProps> = ({
   );
 
   return (
-    <Link href={href} className="block h-full group" aria-label={title}>
+    <Link href={href} className="block h-full group cursor-pointer" aria-label={title}>
       <article className="blog-card h-full flex flex-col p-6">
         {/* Date + reading time */}
-        <div className="flex items-center justify-between mb-3 text-sm text-gray-400">
+        <div className="flex items-center justify-between mb-3 text-sm text-gray-500">
           <time dateTime={date}>{formattedDate}</time>
           <ReadingTime minutes={readingTime} locale={locale} />
         </div>
@@ -43,12 +43,12 @@ const BlogCard: React.FC<BlogCardProps> = ({
         </div>
 
         {/* Title */}
-        <h2 className="font-bold text-gray-800 text-lg leading-snug mb-2 group-hover:text-[#C17765] transition-colors line-clamp-2">
+        <h2 className="font-bold text-gray-800 text-lg leading-snug mb-2 group-hover:text-[#C17765] transition-colors duration-150 line-clamp-2" title={title}>
           {title}
         </h2>
 
         {/* Description */}
-        <p className="text-gray-500 text-sm leading-relaxed flex-1 line-clamp-3 mb-4">
+        <p className="text-gray-500 text-sm leading-relaxed flex-1 line-clamp-3 mb-4" title={description}>
           {description}
         </p>
 

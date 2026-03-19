@@ -30,46 +30,54 @@ ThinkNote is a personal knowledge base web application designed to help develope
 
 ## Technology Stack
 
-| Layer | Technology |
-|-------|-----------|
-| **Framework** | Next.js 14 (App Router, SSR) |
-| **Language** | TypeScript 5 (strict mode) |
-| **Styling** | Tailwind CSS 3.4 with PostCSS |
-| **Internationalization** | next-intl v4.3.4 |
-| **Content Processing** | remark, remark-gfm, gray-matter |
-| **Diagrams** | Mermaid v11.9.0 |
-| **Linting** | ESLint 8 |
+| Layer | Technology | Version |
+|-------|-----------|---------|
+| **Framework** | Next.js | 14.2.4 (App Router, SSR) |
+| **Language** | TypeScript | 5.x (strict mode) |
+| **Styling** | Tailwind CSS | 3.4.4 with PostCSS |
+| **Internationalization** | next-intl | 4.3.4 |
+| **Markdown Processing** | remark, remark-gfm, gray-matter | 15.0.1, 4.0.3 |
+| **Security** | isomorphic-dompurify | 2.32.0 |
+| **Diagrams** | Mermaid | 11.9.0 |
+| **Testing** | vitest, @testing-library/react | 4.0.8, 16 |
+| **Linting** | ESLint | 8.x |
 
 ## Current Status
 
-**Phase:** Active Development & Maintenance
+**Phase:** Active Development (Phase 1 - ~75% Complete)
 
 - **Content:** 50+ knowledge articles (12+ English, 12+ Vietnamese translations)
 - **Categories:** 14 active categories with bilingual translations
 - **Tags:** 86+ tags for content classification
-- **Architecture:** Fully functional with SSR server components and client-side search
+- **Architecture:** Fully functional with SSR, markdown import, sanitization, undo system
+- **Testing:** 37 test files with vitest covering unit, integration, security, i18n, error handling
+- **Features:** Search, import, notifications, accessibility helpers
 - **Deployment:** Ready for production (Vercel recommended)
 
-## Success Metrics
+## Success Metrics (Phase 1)
 
-| Metric | Target | Current |
-|--------|--------|---------|
-| Article Count | 100+ | 50+ |
-| Category Coverage | 20+ | 14+ |
-| Search Performance | <100ms | Achieved |
-| Mobile Responsiveness | 100% | Achieved |
-| i18n Completeness | 100% (en, vi) | 90%+ |
-| Build Size | <2MB | On track |
-| Page Load Time | <2s | Achieved |
+| Metric | Target | Current | Status |
+|--------|--------|---------|--------|
+| Article Count | 100+ | 50+ | In Progress |
+| Category Coverage | 20+ | 14+ | In Progress |
+| Test Coverage | 95%+ | 60%+ | In Progress |
+| Search Performance | <100ms | Achieved | ✓ |
+| Mobile Responsiveness | 100% | Achieved | ✓ |
+| i18n Completeness | 100% (en, vi) | 90%+ | In Progress |
+| Page Load Time | <2s | Achieved | ✓ |
+| Security (XSS Prevention) | 100% | Achieved | ✓ |
+| Accessibility (WCAG AA) | 100% | 80%+ | In Progress |
 
 ## Key Constraints & Considerations
 
-- **Content Security:** Markdown processing uses `sanitize: false` for remark-html (trusted content only)
-- **Client-Side Search:** No backend search index; relies on client-side filtering
-- **File-Based Content:** Content stored as markdown files (no database required initially)
+- **Content Security:** All user-uploaded markdown sanitized via isomorphic-dompurify (XSS prevention)
+- **File Upload Limit:** 10MB max, base64 encoding, MIME validation
+- **Client-Side Search:** No backend index; scales to ~1000 articles
+- **File-Based Content:** Markdown files + YAML frontmatter (git-friendly, scalable to ~1000 articles)
 - **Locale Routing:** All routes require locale prefix (e.g., `/en/topics`, `/vi/topics`)
-- **Build Frequency:** Static content requires rebuild for new articles
+- **Build Frequency:** Static content requires rebuild for new articles (or API import)
 - **Browser Compatibility:** Modern browsers with ES2020+ support
+- **Import API:** Non-git users can import markdown via UI
 
 ## Unique Value Propositions
 

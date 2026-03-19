@@ -1,7 +1,7 @@
 ---
-title: "So sánh & hướng dẫn chọn công cụ AI cho vibecode (IDE/CLI & Web)"
-description: "Tổng hợp theo ghi chú của bạn và bám chuẩn frontmatter/taxonomy của dự án; có bảng so sánh và sơ đồ quyết định (Mermaid)."
-tags: ["AI", "Hướng dẫn", "Tiện Ích", "Năng Suất", "Frontend"]
+title: "AI Tool Comparison & Guide for Vibecode (IDE/CLI & Web)"
+description: "A curated comparison of AI tools for vibecode workflows — IDE/CLI and Web — with decision diagrams and feature tables."
+tags: ["AI", "Guide", "Utility", "Productivity", "Frontend"]
 categories: ["AI", "Tool", "IDE"]
 date: "2025-11-14"
 gradientFrom: "from-sky-400"

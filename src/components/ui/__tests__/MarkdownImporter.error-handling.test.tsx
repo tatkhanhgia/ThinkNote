@@ -3,7 +3,15 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { NextIntlClientProvider } from 'next-intl'
 import MarkdownImporter from '../MarkdownImporter'
-import { NotificationProvider } from '../../../contexts/NotificationContext'
+
+vi.mock('sonner', () => ({
+  toast: {
+    success: vi.fn(),
+    error: vi.fn(),
+    warning: vi.fn(),
+    info: vi.fn(),
+  }
+}))
 
 // Mock the MarkdownProcessor
 vi.mock('../../../lib/markdown/MarkdownProcessor', () => ({
@@ -83,9 +91,7 @@ const messages = {
 const renderWithProviders = (component: React.ReactElement) => {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
-      <NotificationProvider>
-        {component}
-      </NotificationProvider>
+      {component}
     </NextIntlClientProvider>
   )
 }
@@ -108,7 +114,7 @@ describe('MarkdownImporter Error Handling', () => {
     })
 
     renderWithProviders(
-      <MarkdownImporter
+      <MarkdownImporter locale="en"
         isOpen={true}
         onClose={mockOnClose}
         onImportSuccess={mockOnImportSuccess}
@@ -163,7 +169,7 @@ describe('MarkdownImporter Error Handling', () => {
     )
 
     renderWithProviders(
-      <MarkdownImporter
+      <MarkdownImporter locale="en"
         isOpen={true}
         onClose={mockOnClose}
         onImportSuccess={mockOnImportSuccess}
@@ -224,7 +230,7 @@ describe('MarkdownImporter Error Handling', () => {
     } as Response)
 
     renderWithProviders(
-      <MarkdownImporter
+      <MarkdownImporter locale="en"
         isOpen={true}
         onClose={mockOnClose}
         onImportSuccess={mockOnImportSuccess}
@@ -279,7 +285,7 @@ describe('MarkdownImporter Error Handling', () => {
     })
 
     renderWithProviders(
-      <MarkdownImporter
+      <MarkdownImporter locale="en"
         isOpen={true}
         onClose={mockOnClose}
         onImportSuccess={mockOnImportSuccess}
@@ -348,7 +354,7 @@ describe('MarkdownImporter Error Handling', () => {
     } as Response)
 
     renderWithProviders(
-      <MarkdownImporter
+      <MarkdownImporter locale="en"
         isOpen={true}
         onClose={mockOnClose}
         onImportSuccess={mockOnImportSuccess}

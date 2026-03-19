@@ -73,12 +73,12 @@ const KnowledgeCard: React.FC<KnowledgeCardProps> = ({
 
   // hover lift/shadow handled by .modern-card:hover in globals.css — no duplicate Tailwind class needed
   return (
-    <article className="modern-card group overflow-hidden h-full flex flex-col cursor-pointer">
+    <article aria-label={title} className="modern-card group overflow-hidden h-full flex flex-col cursor-pointer">
       {/* Gradient Header */}
       <div className={`${gradientClass} p-6 relative overflow-hidden`}>
         <div className="absolute inset-0 bg-black/10"></div>
         <div className="relative z-10">
-          <h3 className="text-xl font-bold text-white mb-2 line-clamp-2">
+          <h3 className="text-xl font-bold text-white mb-2 line-clamp-2" title={title}>
             {title}
           </h3>
           <div className="w-12 h-1 bg-white/30 rounded-full"></div>
@@ -91,7 +91,7 @@ const KnowledgeCard: React.FC<KnowledgeCardProps> = ({
 
       {/* Content */}
       <div className="p-6 flex-1 flex flex-col">
-        <p className="text-gray-600 mb-4 leading-relaxed text-sm flex-1">
+        <p className="text-gray-600 mb-4 leading-relaxed text-sm flex-1" title={description}>
           {description}
         </p>
 
@@ -108,7 +108,7 @@ const KnowledgeCard: React.FC<KnowledgeCardProps> = ({
               <Link 
                 href={`/${locale}/categories/${encodeURIComponent(category.toLowerCase().replace(/\s+/g, '-'))}`} 
                 key={index} 
-                className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700 hover:bg-purple-200 hover:text-purple-800 transition-colors"
+                className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 hover:bg-blue-200 hover:text-blue-800 transition-colors cursor-pointer"
               >
                 {category}
               </Link>
@@ -141,11 +141,11 @@ const KnowledgeCard: React.FC<KnowledgeCardProps> = ({
         <div className="mt-auto">
           <Link 
             href={href} 
-            className="inline-flex items-center justify-center gap-2 w-full py-3 px-4 bg-gray-50 hover:bg-blue-50 text-gray-700 hover:text-blue-700 rounded-lg font-medium text-sm transition-all duration-200 group-hover:bg-blue-50 group-hover:text-blue-700"
+            className="inline-flex items-center justify-center gap-2 w-full py-3 px-4 bg-blue-50 hover:bg-blue-100 text-blue-700 hover:text-blue-800 rounded-lg font-medium text-sm transition-colors duration-200 group-hover:bg-blue-100 group-hover:text-blue-800 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2"
           >
             <span>{t('readMore')}</span>
             <svg 
-              className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" 
+              className="w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-200"
               fill="none" 
               stroke="currentColor" 
               viewBox="0 0 24 24"

@@ -3,7 +3,15 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { NextIntlClientProvider } from 'next-intl'
 import MarkdownImporter from '../MarkdownImporter'
-import { NotificationProvider } from '../../../contexts/NotificationContext'
+
+vi.mock('sonner', () => ({
+  toast: {
+    success: vi.fn(),
+    error: vi.fn(),
+    warning: vi.fn(),
+    info: vi.fn(),
+  }
+}))
 
 // Mock the MarkdownProcessor
 vi.mock('../../../lib/markdown/MarkdownProcessor', () => ({
@@ -126,9 +134,7 @@ const vietnameseMessages = {
 const renderWithLocale = (component: React.ReactElement, locale: string, messages: any) => {
   return render(
     <NextIntlClientProvider locale={locale} messages={messages}>
-      <NotificationProvider>
-        {component}
-      </NotificationProvider>
+      {component}
     </NextIntlClientProvider>
   )
 }
@@ -144,7 +150,7 @@ describe('MarkdownImporter Internationalization', () => {
   describe('English Locale', () => {
     it('should display English text in modal header', () => {
       renderWithLocale(
-        <MarkdownImporter
+        <MarkdownImporter locale="en"
           isOpen={true}
           onClose={mockOnClose}
           onImportSuccess={mockOnImportSuccess}
@@ -159,7 +165,7 @@ describe('MarkdownImporter Internationalization', () => {
 
     it('should display English step titles', () => {
       renderWithLocale(
-        <MarkdownImporter
+        <MarkdownImporter locale="en"
           isOpen={true}
           onClose={mockOnClose}
           onImportSuccess={mockOnImportSuccess}
@@ -173,7 +179,7 @@ describe('MarkdownImporter Internationalization', () => {
 
     it('should display English button labels', () => {
       renderWithLocale(
-        <MarkdownImporter
+        <MarkdownImporter locale="en"
           isOpen={true}
           onClose={mockOnClose}
           onImportSuccess={mockOnImportSuccess}
@@ -190,7 +196,7 @@ describe('MarkdownImporter Internationalization', () => {
   describe('Vietnamese Locale', () => {
     it('should display Vietnamese text in modal header', () => {
       renderWithLocale(
-        <MarkdownImporter
+        <MarkdownImporter locale="en"
           isOpen={true}
           onClose={mockOnClose}
           onImportSuccess={mockOnImportSuccess}
@@ -205,7 +211,7 @@ describe('MarkdownImporter Internationalization', () => {
 
     it('should display Vietnamese step titles', () => {
       renderWithLocale(
-        <MarkdownImporter
+        <MarkdownImporter locale="en"
           isOpen={true}
           onClose={mockOnClose}
           onImportSuccess={mockOnImportSuccess}
@@ -219,7 +225,7 @@ describe('MarkdownImporter Internationalization', () => {
 
     it('should display Vietnamese button labels', () => {
       renderWithLocale(
-        <MarkdownImporter
+        <MarkdownImporter locale="en"
           isOpen={true}
           onClose={mockOnClose}
           onImportSuccess={mockOnImportSuccess}
@@ -254,7 +260,7 @@ describe('MarkdownImporter Internationalization', () => {
 
     it('should display English preview labels', async () => {
       renderWithLocale(
-        <MarkdownImporter
+        <MarkdownImporter locale="en"
           isOpen={true}
           onClose={mockOnClose}
           onImportSuccess={mockOnImportSuccess}
@@ -295,7 +301,7 @@ describe('MarkdownImporter Internationalization', () => {
 
     it('should display Vietnamese preview labels', async () => {
       renderWithLocale(
-        <MarkdownImporter
+        <MarkdownImporter locale="en"
           isOpen={true}
           onClose={mockOnClose}
           onImportSuccess={mockOnImportSuccess}
@@ -355,7 +361,7 @@ describe('MarkdownImporter Internationalization', () => {
       )
 
       renderWithLocale(
-        <MarkdownImporter
+        <MarkdownImporter locale="en"
           isOpen={true}
           onClose={mockOnClose}
           onImportSuccess={mockOnImportSuccess}
@@ -409,7 +415,7 @@ describe('MarkdownImporter Internationalization', () => {
       )
 
       renderWithLocale(
-        <MarkdownImporter
+        <MarkdownImporter locale="en"
           isOpen={true}
           onClose={mockOnClose}
           onImportSuccess={mockOnImportSuccess}
@@ -475,7 +481,7 @@ describe('MarkdownImporter Internationalization', () => {
       } as Response)
 
       renderWithLocale(
-        <MarkdownImporter
+        <MarkdownImporter locale="en"
           isOpen={true}
           onClose={mockOnClose}
           onImportSuccess={mockOnImportSuccess}
@@ -529,7 +535,7 @@ describe('MarkdownImporter Internationalization', () => {
       } as Response)
 
       renderWithLocale(
-        <MarkdownImporter
+        <MarkdownImporter locale="en"
           isOpen={true}
           onClose={mockOnClose}
           onImportSuccess={mockOnImportSuccess}
@@ -601,7 +607,7 @@ describe('MarkdownImporter Internationalization', () => {
       vi.mocked(MarkdownProcessor.convertToProjectFormat).mockResolvedValue('<h1 class="heading-1">Test</h1>')
 
       renderWithLocale(
-        <MarkdownImporter
+        <MarkdownImporter locale="en"
           isOpen={true}
           onClose={mockOnClose}
           onImportSuccess={mockOnImportSuccess}
@@ -671,7 +677,7 @@ describe('MarkdownImporter Internationalization', () => {
       vi.mocked(MarkdownProcessor.convertToProjectFormat).mockResolvedValue('<h1 class="heading-1">Test</h1>')
 
       renderWithLocale(
-        <MarkdownImporter
+        <MarkdownImporter locale="en"
           isOpen={true}
           onClose={mockOnClose}
           onImportSuccess={mockOnImportSuccess}

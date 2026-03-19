@@ -2,7 +2,7 @@
 title: "Java Fundamentals and Best Practices"
 description: "Essential Java concepts every developer should master, including OOP principles, collections, and memory management."
 tags: ["Java", "OOP", "Collections", "Memory Management"]
-categories: ["Java", "Programming Languages", "DevCore"]
+categories: ["Java", "Programming Languages", "Development Core"]
 date: "2023-12-01"
 gradientFrom: "from-orange-400"
 gradientTo: "to-red-500"

@@ -14,6 +14,7 @@ const HeaderNav: React.FC<HeaderNavProps> = ({ locale }) => {
   const pathname = usePathname();
   const t = useTranslations('Layout');
   const menuRef = useRef<HTMLButtonElement>(null);
+  const menuContainerRef = useRef<HTMLDivElement>(null);
 
   const navLinks = [
     { href: `/${locale}`, label: t('navigation.home') },
@@ -41,14 +42,50 @@ const HeaderNav: React.FC<HeaderNavProps> = ({ locale }) => {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [mobileOpen]);
 
+  // Focus trap for mobile menu
+  useEffect(() => {
+    if (!mobileOpen) return;
+
+    const menuEl = menuContainerRef.current;
+    if (!menuEl) return;
+
+    const focusableEls = menuEl.querySelectorAll<HTMLElement>('a, button');
+    if (focusableEls.length === 0) return;
+
+    const firstEl = focusableEls[0];
+    const lastEl = focusableEls[focusableEls.length - 1];
+
+    // Auto-focus first item when menu opens
+    firstEl.focus();
+
+    const trapFocus = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return;
+      if (e.shiftKey) {
+        if (document.activeElement === firstEl) {
+          e.preventDefault();
+          lastEl.focus();
+        }
+      } else {
+        if (document.activeElement === lastEl) {
+          e.preventDefault();
+          firstEl.focus();
+        }
+      }
+    };
+
+    menuEl.addEventListener('keydown', trapFocus);
+    return () => menuEl.removeEventListener('keydown', trapFocus);
+  }, [mobileOpen]);
+
   return (
     <>
       {/* Desktop Nav */}
-      <nav className="hidden lg:flex items-center gap-8">
+      <nav className="hidden lg:flex items-center gap-8" aria-label="Main navigation">
         {navLinks.map(({ href, label }) => (
           <Link
             key={href}
             href={href}
+            aria-current={isActive(href) ? 'page' : undefined}
             className={`nav-link ${isActive(href) ? 'nav-link-active' : ''}`}
           >
             {label}
@@ -80,14 +117,19 @@ const HeaderNav: React.FC<HeaderNavProps> = ({ locale }) => {
 
       {/* Mobile Dropdown — fixed below 64px (h-16) sticky header, z-50 matches header */}
       {mobileOpen && (
-        <div id="mobile-nav-menu" className="lg:hidden fixed top-16 left-0 right-0 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-lg z-50">
-          <nav className="container mx-auto px-6 py-4 flex flex-col gap-1">
+        <div
+          id="mobile-nav-menu"
+          ref={menuContainerRef}
+          className="lg:hidden fixed top-16 left-0 right-0 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-lg z-50"
+        >
+          <nav className="container mx-auto px-6 py-4 flex flex-col gap-1" aria-label="Mobile navigation">
             {navLinks.map(({ href, label }) => (
               <Link
                 key={href}
                 href={href}
+                aria-current={isActive(href) ? 'page' : undefined}
                 onClick={() => setMobileOpen(false)}
-                className={`px-4 py-3 rounded-lg font-medium text-sm transition-colors ${
+                className={`px-4 py-3 rounded-lg font-medium text-sm transition-colors duration-150 ${
                   isActive(href)
                     ? 'bg-blue-50 text-blue-700'
                     : 'text-gray-700 hover:bg-gray-50'

@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { getAllCategoriesWithSlug, getSortedPostsData, slugify } from '@/lib/posts';
+import { getAllCategoriesWithSlug, getSortedPostsData } from '@/lib/posts';
+import { getCategoryIcon } from '@/lib/category-icons';
 import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 
@@ -17,27 +18,11 @@ export default function CategoriesPage({params: {locale}}: {params: {locale: str
   const allPosts = getSortedPostsData(locale);
   const categories = getAllCategoriesWithSlug(locale);
 
-  // Category icons mapping
-  const categoryIcons: Record<string, string> = {
-    'Programming Languages': '💻',
-    'DevCore': '⚡',
-    'AI': '🤖',
-    'Tool': '🛠️',
-    'IDE': '🖥️',
-    'Frontend': '🎨',
-    'Backend': '⚙️',
-    'Database': '💾',
-    'Frameworks': '🏗️',
-    'Java': '☕',
-    'Libraries': '📚',
-    'Development Core': '⚡',
-    'Security': '🛡️',
-    'Design Patterns': '🎨',
-  };
-
+  // Unified color map (EN + VI) — locale-agnostic
   const categoryColors: Record<string, string> = {
     'Programming Languages': 'bg-blue-100 text-blue-800 border-blue-200',
     'DevCore': 'bg-purple-100 text-purple-800 border-purple-200',
+    'Development Core': 'bg-purple-100 text-purple-800 border-purple-200',
     'AI': 'bg-pink-100 text-pink-800 border-pink-200',
     'Tool': 'bg-emerald-100 text-emerald-800 border-emerald-200',
     'IDE': 'bg-indigo-100 text-indigo-800 border-indigo-200',
@@ -45,47 +30,21 @@ export default function CategoriesPage({params: {locale}}: {params: {locale: str
     'Backend': 'bg-gray-100 text-gray-800 border-gray-200',
     'Database': 'bg-green-100 text-green-800 border-green-200',
     'Frameworks': 'bg-orange-100 text-orange-800 border-orange-200',
+    'Framework': 'bg-orange-100 text-orange-800 border-orange-200',
     'Java': 'bg-amber-100 text-amber-800 border-amber-200',
     'Libraries': 'bg-teal-100 text-teal-800 border-teal-200',
-    'Development Core': 'bg-purple-100 text-purple-800 border-purple-200',
     'Security': 'bg-red-100 text-red-800 border-red-200',
     'Design Patterns': 'bg-yellow-100 text-yellow-800 border-yellow-200',
-  };
-
-  const categoryIconsVI: Record<string, string> = {
-    'Ngôn ngữ lập trình': '💻',
-    'Lõi phát triển': '⚡',
-    'Trí tuệ nhân tạo': '🤖',
-    'Công cụ': '🛠️',
-    'IDE': '🖥️',
-    'Frontend': '🎨',
-    'Backend': '⚙️',
-    'Cơ sở dữ liệu': '💾',
-    'Framework': '🏗️',
-    'Java': '☕',
-    'Thư viện': '📚',
-    'Bảo mật': '🛡️',
-    'Mẫu thiết kế': '🎨',
-  };
-
-  const categoryColorsVI: Record<string, string> = {
+    // VI
     'Ngôn ngữ lập trình': 'bg-blue-100 text-blue-800 border-blue-200',
     'Lõi phát triển': 'bg-purple-100 text-purple-800 border-purple-200',
     'Trí tuệ nhân tạo': 'bg-pink-100 text-pink-800 border-pink-200',
     'Công cụ': 'bg-emerald-100 text-emerald-800 border-emerald-200',
-    'IDE': 'bg-indigo-100 text-indigo-800 border-indigo-200',
-    'Frontend': 'bg-cyan-100 text-cyan-800 border-cyan-200',
-    'Backend': 'bg-gray-100 text-gray-800 border-gray-200',
     'Cơ sở dữ liệu': 'bg-green-100 text-green-800 border-green-200',
-    'Framework': 'bg-orange-100 text-orange-800 border-orange-200',
-    'Java': 'bg-amber-100 text-amber-800 border-amber-200',
     'Thư viện': 'bg-teal-100 text-teal-800 border-teal-200',
     'Bảo mật': 'bg-red-100 text-red-800 border-red-200',
     'Mẫu thiết kế': 'bg-yellow-100 text-yellow-800 border-yellow-200',
   };
-
-  const icons = locale === 'vi' ? categoryIconsVI : categoryIcons;
-  const colors = locale === 'vi' ? categoryColorsVI : categoryColors;
 
   return (
     <div className="min-h-screen">
@@ -142,9 +101,9 @@ export default function CategoriesPage({params: {locale}}: {params: {locale: str
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {categories.map(({slug, name, count}, index) => {
-                const icon = icons[name] || '📁';
-                const colorClass = colors[name] || 'bg-gray-100 text-gray-800 border-gray-200';
-                
+                const colorClass = categoryColors[name] || 'bg-gray-100 text-gray-800 border-gray-200';
+                const IconComponent = getCategoryIcon(name);
+
                 return (
                   <div
                     key={slug}
@@ -156,11 +115,13 @@ export default function CategoriesPage({params: {locale}}: {params: {locale: str
                   >
                     <Link
                       href={`/${locale}/categories/${slug}`}
-                      className={`modern-card p-6 group hover:scale-105 transition-all duration-300 block h-full border ${colorClass}`}
+                      className={`modern-card p-6 group hover:scale-105 transition-all duration-300 block h-full border cursor-pointer ${colorClass}`}
                     >
                       {/* Icon and Title */}
                       <div className="flex items-start gap-4 mb-6">
-                        <div className="text-3xl">{icon}</div>
+                        <div className="w-8 h-8 flex-shrink-0">
+                          <IconComponent className="w-8 h-8 text-current" />
+                        </div>
                         <div className="flex-1">
                           <h3 className="text-xl font-bold mb-2">{name}</h3>
                           <p className="text-sm opacity-80">

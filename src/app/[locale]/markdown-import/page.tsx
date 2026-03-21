@@ -130,7 +130,7 @@ export default function ImportMarkdownPage({ params: { locale } }: { params: { l
         errorSuggestions: formattedError.suggestions
       }));
     }
-  }, []);
+  }, [locale]);
 
   const handleError = useCallback((error: string) => {
     console.log('handleError called with:', error);
@@ -273,7 +273,7 @@ export default function ImportMarkdownPage({ params: { locale } }: { params: { l
         }
       });
     }
-  }, [state.file, state.convertedContent, state.fileName, state.metadata, state.originalContent, router]);
+  }, [locale, state.autoFormat, state.autoTranslate, state.file, state.convertedContent, state.fileName, state.metadata, state.originalContent, router]);
 
   const handleFileNameChange = useCallback((newName: string) => {
     // Update both display name and full filename

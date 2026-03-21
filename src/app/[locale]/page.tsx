@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useTranslations } from 'next-intl';
 import SearchBar from "@/components/ui/SearchBar";
+import { getSortedPostsData, getAllCategoriesWithSlug, getAllTags } from '@/lib/posts';
 
 type Props = {
   params: { locale: string };
@@ -8,7 +9,10 @@ type Props = {
 
 export default function HomePage({ params: { locale } }: Props) {
   const t = useTranslations('HomePage');
-  const tLayout = useTranslations('Layout');
+
+  const posts = getSortedPostsData(locale);
+  const categories = getAllCategoriesWithSlug(locale);
+  const tags = getAllTags(locale);
 
   return (
     <div className="min-h-screen">
@@ -37,17 +41,17 @@ export default function HomePage({ params: { locale } }: Props) {
                 href={`/${locale}/topics`}
                 className="btn-primary inline-flex items-center justify-center gap-2 text-lg px-8 py-4"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
                 </svg>
                 {t('hero.exploreTopics')}
               </Link>
-              
+
               <Link
                 href={`/${locale}/categories`}
                 className="btn-secondary inline-flex items-center justify-center gap-2 text-lg px-8 py-4"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                 </svg>
                 {t('hero.browseCategories')}
@@ -62,20 +66,20 @@ export default function HomePage({ params: { locale } }: Props) {
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div className="p-6">
-              <div className="text-3xl font-bold text-blue-600 mb-2">50+</div>
+              <div className="text-3xl font-bold text-blue-600 mb-2">{posts.length}</div>
               <div className="text-gray-600">{t('stats.articles')}</div>
             </div>
             <div className="p-6">
-              <div className="text-3xl font-bold text-purple-600 mb-2">10+</div>
+              <div className="text-3xl font-bold text-purple-600 mb-2">{categories.length}</div>
               <div className="text-gray-600">{t('stats.categories')}</div>
             </div>
             <div className="p-6">
-              <div className="text-3xl font-bold text-emerald-600 mb-2">25+</div>
+              <div className="text-3xl font-bold text-emerald-600 mb-2">{Object.keys(tags).length}</div>
               <div className="text-gray-600">{t('stats.technologies')}</div>
             </div>
             <div className="p-6">
-              <div className="text-3xl font-bold text-rose-600 mb-2">24/7</div>
-              <div className="text-gray-600">{t('stats.alwaysLearning')}</div>
+              <div className="text-3xl font-bold text-rose-600 mb-2">2</div>
+              <div className="text-gray-600">{t('stats.languages')}</div>
             </div>
           </div>
         </div>
@@ -96,7 +100,7 @@ export default function HomePage({ params: { locale } }: Props) {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Category Card 1 - Programming Languages */}
             <Link
-              href={`/${locale}/categories`}
+              href={`/${locale}/categories/programming-languages`}
               className="modern-card p-8 group hover:scale-105 bg-blue-50 border-blue-200 cursor-pointer"
             >
               <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
@@ -112,7 +116,7 @@ export default function HomePage({ params: { locale } }: Props) {
               </p>
               <div className="flex items-center gap-2 text-blue-600 font-medium">
                 <span>{t('featuredCategories.programmingLanguages.action')}</span>
-                <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </div>
@@ -120,7 +124,7 @@ export default function HomePage({ params: { locale } }: Props) {
 
             {/* Category Card 2 - Development Core */}
             <Link
-              href={`/${locale}/categories`}
+              href={`/${locale}/categories/development-core`}
               className="modern-card p-8 group hover:scale-105 bg-purple-50 border-purple-200 cursor-pointer"
             >
               <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
@@ -136,7 +140,7 @@ export default function HomePage({ params: { locale } }: Props) {
               </p>
               <div className="flex items-center gap-2 text-purple-600 font-medium">
                 <span>{t('featuredCategories.developmentCore.action')}</span>
-                <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </div>
@@ -144,7 +148,7 @@ export default function HomePage({ params: { locale } }: Props) {
 
             {/* Category Card 3 - Tools & AI */}
             <Link
-              href={`/${locale}/categories`}
+              href={`/${locale}/categories/tool`}
               className="modern-card p-8 group hover:scale-105 bg-emerald-50 border-emerald-200 cursor-pointer"
             >
               <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
@@ -160,7 +164,7 @@ export default function HomePage({ params: { locale } }: Props) {
               </p>
               <div className="flex items-center gap-2 text-emerald-600 font-medium">
                 <span>{t('featuredCategories.toolsAI.action')}</span>
-                <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </div>
@@ -180,7 +184,7 @@ export default function HomePage({ params: { locale } }: Props) {
               href={`/${locale}/search`}
               className="inline-flex items-center gap-2 px-6 py-3 bg-white/80 backdrop-blur-sm text-gray-700 rounded-lg hover:bg-white border border-gray-200 transition-colors cursor-pointer"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
               {t('quickAccess.searchArticles')}
@@ -189,7 +193,7 @@ export default function HomePage({ params: { locale } }: Props) {
               href={`/${locale}/tags`}
               className="inline-flex items-center gap-2 px-6 py-3 bg-white/80 backdrop-blur-sm text-gray-700 rounded-lg hover:bg-white border border-gray-200 transition-colors cursor-pointer"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
               </svg>
               {t('quickAccess.browseAllTags')}
@@ -198,7 +202,7 @@ export default function HomePage({ params: { locale } }: Props) {
               href={`/${locale}/topics`}
               className="inline-flex items-center gap-2 px-6 py-3 bg-white/80 backdrop-blur-sm text-gray-700 rounded-lg hover:bg-white border border-gray-200 transition-colors cursor-pointer"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
               </svg>
               {t('quickAccess.allArticles')}

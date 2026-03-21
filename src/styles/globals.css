@@ -37,17 +37,15 @@
   --accent-amber:   #f59e0b;
 }
 
-/* Modern Typography */
-@import url('https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
-
+/* Modern Typography — fonts loaded via next/font in layout.tsx */
 body {
-  font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--font-fira-sans), -apple-system, BlinkMacSystemFont, sans-serif;
   font-feature-settings: 'rlig' 1, 'calt' 1;
 }
 
 /* Code Typography */
 code, pre {
-  font-family: 'Fira Code', Consolas, monospace;
+  font-family: var(--font-fira-code), Consolas, monospace;
 }
 
 /* Smooth Animations - NOTE: avoid global transition:all (perf) */
@@ -111,6 +109,7 @@ code, pre {
     0 20px 40px -12px rgba(0, 0, 0, 0.15),
     0 0 0 1px rgba(255, 255, 255, 0.3);
   background: rgba(255, 255, 255, 1);
+  will-change: transform;
 }
 
 /* Knowledge Card Gradients */
@@ -562,7 +561,7 @@ code, pre {
   border-radius: 12px;
   padding: 12px 16px;
   font-size: 1rem;
-  transition: all 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
   width: 100%;
 }
 
@@ -581,8 +580,8 @@ code, pre {
   width: 100% !important;
   background: white !important;
   padding: 1rem !important;
-  border: 2px solid #000000 !important;
-  border-radius: 8px !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 12px !important;
   margin: 1.5rem 0 !important;
 }
 
@@ -595,28 +594,28 @@ code, pre {
   margin: 0 auto !important;
 }
 
-/* Force white background and black borders for all Mermaid elements */
+/* Mermaid node and edge colors — softer to match design system */
 .mermaid .node rect,
 .mermaid .node circle,
 .mermaid .node ellipse,
 .mermaid .node polygon {
   fill: white !important;
-  stroke: #000000 !important;
-  stroke-width: 2px !important;
+  stroke: #94a3b8 !important;
+  stroke-width: 1.5px !important;
 }
 
 .mermaid .edgePath path {
-  stroke: #000000 !important;
-  stroke-width: 2px !important;
+  stroke: #64748b !important;
+  stroke-width: 1.5px !important;
 }
 
 .mermaid .arrowheadPath {
-  fill: #000000 !important;
-  stroke: #000000 !important;
+  fill: #64748b !important;
+  stroke: #64748b !important;
 }
 
 .mermaid text {
-  fill: #000000 !important;
+  fill: #334155 !important;
   font-family: inherit !important;
   font-size: 14px !important;
   font-weight: 500 !important;
@@ -674,19 +673,14 @@ code, pre {
    ============================================================ */
 
 .blog-layout {
-  --blog-cream:      #F9F7F3;
-  --blog-terracotta: #C17765;
-  --blog-terracotta-dark: #A0624F;
-  --blog-sage:       #8B9D83;
-  --blog-warm-gray:  #7C7269;
   --blog-card-bg:    #FFFFFF;
-  --blog-shadow:     0 2px 12px rgba(130, 90, 70, 0.10);
-  --blog-shadow-lg:  0 8px 32px rgba(130, 90, 70, 0.16);
-  background-color: var(--blog-cream);
+  --blog-shadow:     0 2px 12px rgba(30, 64, 175, 0.08);
+  --blog-shadow-lg:  0 8px 32px rgba(30, 64, 175, 0.14);
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, #eff6ff 100%);
   min-height: 100vh;
 }
 
-/* Blog Cards */
+/* Blog Cards — aligned with modern-card aesthetic */
 .blog-card {
   background: var(--blog-card-bg);
   border-radius: 16px;
@@ -723,10 +717,10 @@ code, pre {
 
 /* Blog Prose (article content) */
 .blog-prose {
-  font-family: Georgia, 'Times New Roman', serif;
+  font-family: var(--font-fira-sans), -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 1.125rem;
   line-height: 1.85;
-  color: #3d3530;
+  color: #334155;
   max-width: 720px;
   margin: 0 auto;
 }
@@ -735,15 +729,15 @@ code, pre {
 .blog-prose h2,
 .blog-prose h3,
 .blog-prose h4 {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--font-fira-sans), -apple-system, BlinkMacSystemFont, sans-serif;
   font-weight: 700;
-  color: #2d2420;
+  color: #1e293b;
   margin-top: 2rem;
   margin-bottom: 0.75rem;
 }
 
 .blog-prose h1 { font-size: 2rem; line-height: 1.2; }
-.blog-prose h2 { font-size: 1.5rem; border-bottom: 2px solid #ede8e3; padding-bottom: 0.4rem; }
+.blog-prose h2 { font-size: 1.5rem; border-bottom: 2px solid var(--gray-200); padding-bottom: 0.4rem; }
 .blog-prose h3 { font-size: 1.25rem; }
 
 .blog-prose p {
@@ -751,23 +745,23 @@ code, pre {
 }
 
 .blog-prose blockquote {
-  border-left: 4px solid var(--blog-terracotta);
+  border-left: 4px solid var(--primary-500);
   margin: 1.5rem 0;
   padding: 1rem 1.25rem;
-  background: #fdf5f0;
+  background: var(--primary-50);
   border-radius: 0 8px 8px 0;
   font-style: italic;
-  color: var(--blog-warm-gray);
+  color: var(--gray-600);
 }
 
 .blog-prose a {
-  color: var(--blog-terracotta);
+  color: var(--primary-600);
   text-decoration: underline;
   text-underline-offset: 2px;
 }
 
 .blog-prose a:hover {
-  color: var(--blog-terracotta-dark);
+  color: var(--primary-700);
 }
 
 .blog-prose ul,
@@ -793,9 +787,9 @@ code, pre {
   max-width: 100%;
 }
 
-/* Blog Hero */
+/* Blog Hero — aligned with KB page header gradients */
 .blog-hero {
-  background: linear-gradient(135deg, #f5ede6 0%, #ede8e3 50%, #e8f0e5 100%);
+  background: linear-gradient(135deg, #eff6ff 0%, #f8fafc 50%, #f0f9ff 100%);
   padding: 4rem 1.5rem;
 }
 

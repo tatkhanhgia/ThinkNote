@@ -91,7 +91,7 @@ const KnowledgeCard: React.FC<KnowledgeCardProps> = ({
 
       {/* Content */}
       <div className="p-6 flex-1 flex flex-col">
-        <p className="text-gray-600 mb-4 leading-relaxed text-sm flex-1" title={description}>
+        <p className="text-gray-600 mb-4 leading-relaxed text-sm line-clamp-2" title={description}>
           {description}
         </p>
 

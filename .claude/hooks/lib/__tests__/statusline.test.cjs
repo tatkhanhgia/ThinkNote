@@ -44,11 +44,17 @@ let passed = 0;
 let failed = 0;
 const failures = [];
 
-function test(name, fn) {
+async function test(name, fn) {
   try {
-    fn();
-    console.log(`✓ ${name}`);
-    passed++;
+    const result = fn();
+    if (result instanceof Promise) {
+      await result;
+      console.log(`✓ ${name}`);
+      passed++;
+    } else {
+      console.log(`✓ ${name}`);
+      passed++;
+    }
   } catch (e) {
     console.log(`✗ ${name}`);
     console.log(`  Error: ${e.message}`);

@@ -304,10 +304,11 @@ export async function POST(request: NextRequest) {
     }
   });
 
+  const status = result.success ? 200 : 400;
   return NextResponse.json<ImportResponse>({
     ...result,
     processingTime: duration
-  });
+  }, { status });
 }
 
 

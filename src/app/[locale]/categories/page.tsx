@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { getAllCategoriesWithSlug, getSortedPostsData } from '@/lib/posts';
+import PageHeader from '@/components/ui/PageHeader';
 import { getCategoryIcon } from '@/lib/category-icons';
 import { useTranslations } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
@@ -48,34 +49,14 @@ export default function CategoriesPage({params: {locale}}: {params: {locale: str
 
   return (
     <div className="min-h-screen">
-      {/* Header Section */}
-      <section className="bg-gradient-to-r from-blue-50 to-purple-50 py-16 sm:py-20">
-        <div className="container mx-auto px-6 text-center">
-          <h1 className="heading-xl text-gray-800 mb-6">
-            {t('title')}
-          </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            {t('description')}
-          </p>
-          
-          {/* Stats */}
-          <div className="mt-10 flex justify-center">
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg">
-              <div className="flex items-center gap-6 text-center">
-                <div>
-                  <div className="text-2xl font-bold text-blue-600">{categories.length}</div>
-                  <div className="text-sm text-gray-600">{t('stats.categories')}</div>
-                </div>
-                <div className="w-px h-8 bg-gray-300"></div>
-                <div>
-                  <div className="text-2xl font-bold text-purple-600">{allPosts.length}</div>
-                  <div className="text-sm text-gray-600">{t('stats.totalArticles')}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <PageHeader
+        title={t('title')}
+        description={t('description')}
+        stats={[
+          { label: t('stats.categories'), value: categories.length, color: 'text-blue-600' },
+          { label: t('stats.totalArticles'), value: allPosts.length, color: 'text-purple-600' },
+        ]}
+      />
 
       {/* Categories Grid */}
       <section className="content-section">
@@ -91,8 +72,8 @@ export default function CategoriesPage({params: {locale}}: {params: {locale: str
               <p className="text-lg text-gray-600 mb-8 max-w-md mx-auto">
                 {t('noCategories.description')}
               </p>
-              <Link 
-                href="/topics" 
+              <Link
+                href={`/${locale}/topics`}
                 className="btn-primary inline-flex items-center gap-2"
               >
                 {t('noCategories.browseAllTopics')}
@@ -109,7 +90,7 @@ export default function CategoriesPage({params: {locale}}: {params: {locale: str
                     key={slug}
                     className="animate-in"
                     style={{
-                      animationDelay: `${index * 100}ms`,
+                      animationDelay: `${Math.min(index * 80, 400)}ms`,
                       animationFillMode: 'both'
                     }}
                   >
@@ -149,7 +130,7 @@ export default function CategoriesPage({params: {locale}}: {params: {locale: str
                         <div className="text-2xl font-bold">
                           {count}
                         </div>
-                        <div className="flex items-center text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="flex items-center text-sm font-medium opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                           <span className="mr-2">{t('card.explore')}</span>
                           <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -176,13 +157,13 @@ export default function CategoriesPage({params: {locale}}: {params: {locale: str
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href="/topics"
+              href={`/${locale}/topics`}
               className="btn-primary"
             >
               {t('cta.browseAllArticles')}
             </Link>
             <Link
-              href="/tags"
+              href={`/${locale}/tags`}
               className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

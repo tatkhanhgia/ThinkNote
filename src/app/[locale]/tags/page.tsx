@@ -23,27 +23,27 @@ const CATEGORY_MAPPINGS_EN: CategoryMappings = {
     iconKey: 'code'
   },
   'Development Core': {
-    keywords: ['devcore', 'architecture', 'design', 'patterns', 'best', 'practices', 'solid', 'clean'],
+    keywords: ['devcore', 'architecture', 'design', 'patterns', 'best', 'practices', 'solid', 'clean', 'oop', 'object-oriented', 'object oriented', 'refactoring', 'testing', 'tdd', 'ddd', 'principles'],
     color: 'bg-purple-100 text-purple-800 border-purple-200',
     iconKey: 'bolt'
   },
   'Tools & IDE': {
-    keywords: ['tool', 'ide', 'editor', 'vscode', 'intellij', 'eclipse', 'setup', 'configuration'],
+    keywords: ['tool', 'ide', 'editor', 'vscode', 'intellij', 'eclipse', 'setup', 'configuration', 'git', 'github', 'cli', 'terminal', 'debugging'],
     color: 'bg-emerald-100 text-emerald-800 border-emerald-200',
     iconKey: 'wrench'
   },
   'AI & Machine Learning': {
-    keywords: ['ai', 'artificial', 'intelligence', 'machine', 'learning', 'ml', 'deep', 'neural', 'tensorflow', 'pytorch'],
+    keywords: ['ai', 'artificial', 'intelligence', 'machine', 'learning', 'ml', 'deep', 'neural', 'tensorflow', 'pytorch', 'llm', 'gpt', 'prompt'],
     color: 'bg-rose-100 text-rose-800 border-rose-200',
     iconKey: 'cpu'
   },
   'Frontend Development': {
-    keywords: ['frontend', 'css', 'tailwindcss', 'ui', 'ux', 'responsive', 'html', 'sass', 'bootstrap'],
+    keywords: ['frontend', 'css', 'tailwindcss', 'ui', 'ux', 'responsive', 'html', 'sass', 'bootstrap', 'performance', 'cdn', 'edge', 'caching', 'web performance', 'core web vitals', 'pwa'],
     color: 'bg-amber-100 text-amber-800 border-amber-200',
     iconKey: 'palette'
   },
   'Backend Development': {
-    keywords: ['backend', 'api', 'database', 'server', 'microservices', 'nodejs', 'express', 'spring', 'django'],
+    keywords: ['backend', 'api', 'database', 'server', 'microservices', 'nodejs', 'express', 'spring', 'django', 'logging', 'monitoring', 'observability', 'metrics', 'tracing', 'redis', 'kafka', 'queue', 'cache'],
     color: 'bg-indigo-100 text-indigo-800 border-indigo-200',
     iconKey: 'cog'
   }
@@ -57,27 +57,27 @@ const CATEGORY_MAPPINGS_VI: CategoryMappings = {
     iconKey: 'code'
   },
   'Lõi phát triển': {
-    keywords: ['devcore', 'architecture', 'design', 'patterns', 'best', 'practices', 'solid', 'clean', 'kiến trúc', 'thiết kế', 'mẫu'],
+    keywords: ['devcore', 'architecture', 'design', 'patterns', 'best', 'practices', 'solid', 'clean', 'oop', 'object-oriented', 'refactoring', 'testing', 'tdd', 'ddd', 'kiến trúc', 'thiết kế', 'mẫu'],
     color: 'bg-purple-100 text-purple-800 border-purple-200',
     iconKey: 'bolt'
   },
   'Công cụ & IDE': {
-    keywords: ['tool', 'ide', 'editor', 'vscode', 'intellij', 'eclipse', 'setup', 'configuration', 'công cụ', 'trình soạn thảo', 'cấu hình'],
+    keywords: ['tool', 'ide', 'editor', 'vscode', 'intellij', 'eclipse', 'setup', 'configuration', 'git', 'github', 'cli', 'terminal', 'debugging', 'công cụ', 'trình soạn thảo', 'cấu hình'],
     color: 'bg-emerald-100 text-emerald-800 border-emerald-200',
     iconKey: 'wrench'
   },
   'AI & Học máy': {
-    keywords: ['ai', 'artificial', 'intelligence', 'machine', 'learning', 'ml', 'deep', 'neural', 'tensorflow', 'pytorch', 'trí tuệ nhân tạo', 'học máy'],
+    keywords: ['ai', 'artificial', 'intelligence', 'machine', 'learning', 'ml', 'deep', 'neural', 'tensorflow', 'pytorch', 'llm', 'gpt', 'prompt', 'trí tuệ nhân tạo', 'học máy'],
     color: 'bg-rose-100 text-rose-800 border-rose-200',
     iconKey: 'cpu'
   },
   'Phát triển Frontend': {
-    keywords: ['frontend', 'css', 'tailwindcss', 'ui', 'ux', 'responsive', 'html', 'sass', 'bootstrap'],
+    keywords: ['frontend', 'css', 'tailwindcss', 'ui', 'ux', 'responsive', 'html', 'sass', 'bootstrap', 'performance', 'cdn', 'edge', 'caching', 'web performance', 'pwa'],
     color: 'bg-amber-100 text-amber-800 border-amber-200',
     iconKey: 'palette'
   },
   'Phát triển Backend': {
-    keywords: ['backend', 'api', 'database', 'server', 'microservices', 'nodejs', 'express', 'spring', 'django', 'cơ sở dữ liệu', 'máy chủ'],
+    keywords: ['backend', 'api', 'database', 'server', 'microservices', 'nodejs', 'express', 'spring', 'django', 'logging', 'monitoring', 'observability', 'metrics', 'redis', 'kafka', 'queue', 'cache', 'cơ sở dữ liệu', 'máy chủ'],
     color: 'bg-indigo-100 text-indigo-800 border-indigo-200',
     iconKey: 'cog'
   }
@@ -271,7 +271,7 @@ export default function TagsPage({params: {locale}}: {params: {locale: string}})
                     <Link
                       key={tag}
                       href={`/${locale}/tags/${encodeURIComponent(tag.toLowerCase())}`}
-                      className={`modern-card group p-4 hover:scale-105 cursor-pointer ${categoryConfig.color} border`}
+                      className={`modern-card group p-4 hover:scale-[1.02] cursor-pointer ${categoryConfig.color} border`}
                       style={{
                         animationDelay: `${index * 50}ms`,
                         animationFillMode: 'both'
@@ -315,7 +315,7 @@ export default function TagsPage({params: {locale}}: {params: {locale: string}})
                   <Link
                     key={tag}
                     href={`/${locale}/tags/${encodeURIComponent(tag.toLowerCase())}`}
-                    className="modern-card group p-4 hover:scale-105 cursor-pointer bg-gray-100 text-gray-800 border-gray-200 border"
+                    className="modern-card group p-4 hover:scale-[1.02] cursor-pointer bg-gray-100 text-gray-800 border-gray-200 border"
                     style={{
                       animationDelay: `${index * 50}ms`,
                       animationFillMode: 'both'

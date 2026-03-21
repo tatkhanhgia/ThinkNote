@@ -141,6 +141,7 @@ describe('UndoManager', () => {
       expect(undoAction.description).toBe('Import of test.md')
       expect(undoAction.data).toEqual({
         filePath: 'imported/test.md',
+        translatedFilePath: undefined,
         fileName: 'test.md'
       })
       expect(typeof undoAction.undo).toBe('function')
@@ -162,7 +163,7 @@ describe('UndoManager', () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          filePath: 'imported/test.md',
+          filePaths: ['imported/test.md'],
           type: 'import'
         })
       })

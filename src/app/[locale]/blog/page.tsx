@@ -34,7 +34,7 @@ export default async function BlogPage({ params: { locale } }: Props) {
             {moods.length > 0 && (
               <>
                 <span>·</span>
-                <span>{moods.length} moods</span>
+                <span>{moods.length} {moods.length === 1 ? 'mood' : 'moods'}</span>
               </>
             )}
           </div>
@@ -57,12 +57,12 @@ export default async function BlogPage({ params: { locale } }: Props) {
         <div className="container mx-auto px-6 text-center">
           <Link
             href={`/${locale}`}
-            className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-[#C17765] transition-colors"
+            className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-blue-600 transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
-            {locale === 'vi' ? 'Về trang chủ' : 'Back to home'}
+            {t('backToHome')}
           </Link>
         </div>
       </section>

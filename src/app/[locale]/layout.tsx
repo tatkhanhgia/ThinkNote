@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getTranslations } from 'next-intl/server';
-import { Fira_Sans } from 'next/font/google';
+import { Fira_Sans, Fira_Code } from 'next/font/google';
 import SearchBar from "@/components/ui/SearchBar";
 import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
 import ImportMarkdownButton from "@/components/ui/ImportMarkdownButton";
@@ -12,9 +12,15 @@ import { Toaster } from 'sonner';
 import "../../styles/globals.css";
 
 const firaSans = Fira_Sans({
-  subsets: ['latin'],
+  subsets: ['latin', 'vietnamese'],
   weight: ['400', '500', '600', '700'],
   variable: '--font-fira-sans',
+});
+
+const firaCode = Fira_Code({
+  subsets: ['latin'],
+  weight: ['400', '500'],
+  variable: '--font-fira-code',
 });
 
 type Props = {
@@ -46,9 +52,16 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} className="scroll-smooth">
-      <body className={`min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 text-gray-800 antialiased ${firaSans.className}`}>
+      <body className={`min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 text-gray-800 antialiased ${firaSans.variable} ${firaCode.variable}`}>
         <NextIntlClientProvider messages={messages}>
           <Toaster richColors position="top-right" />
+          {/* Skip to main content — accessibility */}
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:top-2 focus:left-2 focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded-lg"
+          >
+            Skip to main content
+          </a>
             {/* Modern Header */}
             <header className="sticky top-0 z-50 w-full glass border-b border-white/20">
             <div className="container mx-auto flex h-16 items-center justify-between px-6">
@@ -88,7 +101,7 @@ export default async function LocaleLayout({
           </header>
 
           {/* Main Content */}
-          <main className="flex-1">
+          <main id="main-content" className="flex-1">
             {children}
           </main>
 

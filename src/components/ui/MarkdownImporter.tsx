@@ -273,7 +273,7 @@ export const MarkdownImporter: React.FC<MarkdownImporterProps> = ({
         })
       });
     }
-  }, [state.file, state.convertedContent, state.fileName, state.metadata, state.originalContent, onImportSuccess, handleCancel, tNotifications]);
+  }, [locale, state.file, state.convertedContent, state.fileName, state.metadata, state.originalContent, state.autoFormat, state.autoTranslate, onImportSuccess, handleCancel, tNotifications]);
 
   const handleFileNameChange = useCallback((newName: string) => {
     setState(prev => ({ ...prev, fileName: newName }));

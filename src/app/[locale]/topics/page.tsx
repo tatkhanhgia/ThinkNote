@@ -1,7 +1,9 @@
 import Link from 'next/link';
-import { getSortedPostsData } from '@/lib/posts';
-import KnowledgeCard from '@/components/ui/KnowledgeCard';
+import { Suspense } from 'react';
+import { getSortedPostsData, getAllCategoriesWithSlug } from '@/lib/posts';
 import { getTranslations } from 'next-intl/server';
+import TopicsClient from './TopicsClient';
+import PageHeader from '@/components/ui/PageHeader';
 
 type Props = {
   params: { locale: string };
@@ -22,8 +24,8 @@ export async function generateMetadata({
 
 export default async function TopicsPage({ params: { locale } }: Props) {
   const allPosts = getSortedPostsData(locale);
+  const categories = getAllCategoriesWithSlug(locale);
   const t = await getTranslations('TopicsPage');
-  const tCommon = await getTranslations('Common');
 
   if (!allPosts || allPosts.length === 0) {
     return (
@@ -54,69 +56,31 @@ export default async function TopicsPage({ params: { locale } }: Props) {
 
   return (
     <div className="min-h-screen">
-      {/* Header Section */}
-      <section className="bg-gradient-to-r from-blue-50 to-purple-50 py-16 sm:py-20">
-        <div className="container mx-auto px-6 text-center">
-          <h1 className="heading-xl text-gray-800 mb-6">
-            {t('title')}
-          </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            {t('description')}
-          </p>
-          
-          {/* Stats */}
-          <div className="mt-10 flex justify-center">
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg">
-              <div className="flex items-center gap-6 text-center">
-                <div>
-                  <div className="text-2xl font-bold text-blue-600">{allPosts.length}</div>
-                  <div className="text-sm text-gray-600">{t('stats.articles')}</div>
-                </div>
-                <div className="w-px h-8 bg-gray-300"></div>
-                <div>
-                  <div className="text-2xl font-bold text-purple-600">
-                    {Array.from(new Set(allPosts.flatMap(post => post.categories || []))).length}
-                  </div>
-                  <div className="text-sm text-gray-600">{t('stats.categories')}</div>
-                </div>
-                <div className="w-px h-8 bg-gray-300"></div>
-                <div>
-                  <div className="text-2xl font-bold text-emerald-600">
-                    {Array.from(new Set(allPosts.flatMap(post => post.tags || []))).length}
-                  </div>
-                  <div className="text-sm text-gray-600">{t('stats.tags')}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <PageHeader
+        title={t('title')}
+        description={t('description')}
+        stats={[
+          { label: t('stats.articles'), value: allPosts.length, color: 'text-blue-600' },
+          { label: t('stats.categories'), value: categories.length, color: 'text-purple-600' },
+          { label: t('stats.tags'), value: Array.from(new Set(allPosts.flatMap(p => p.tags || []))).length, color: 'text-emerald-600' },
+        ]}
+      />
 
-      {/* Topics Grid */}
+      {/* Topics Grid with Category Filter */}
       <section className="content-section">
         <div className="container mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {allPosts.map((post, index) => (
-              <div
-                key={post.id}
-                className="animate-in"
-                style={{
-                  animationDelay: `${index * 100}ms`,
-                  animationFillMode: 'both'
-                }}
-              >
-                <KnowledgeCard
-                  title={post.title}
-                  description={post.description}
-                  tags={post.tags}
-                  categories={post.categories}
-                  href={`/${locale}/topics/${post.id}`}
-                  gradientFrom={post.gradientFrom || 'from-blue-500'}
-                  gradientTo={post.gradientTo || 'to-purple-600'}
-                />
-              </div>
-            ))}
-          </div>
+          <Suspense fallback={
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="modern-card p-6 animate-pulse">
+                  <div className="h-4 bg-gray-200 rounded mb-4"></div>
+                  <div className="h-20 bg-gray-200 rounded"></div>
+                </div>
+              ))}
+            </div>
+          }>
+            <TopicsClient posts={allPosts} categories={categories} locale={locale} />
+          </Suspense>
         </div>
       </section>
 

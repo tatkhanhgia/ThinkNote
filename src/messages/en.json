@@ -32,9 +32,10 @@
     },
     "stats": {
       "articles": "Knowledge Articles",
-      "categories": "Categories", 
+      "categories": "Categories",
       "technologies": "Technologies",
-      "alwaysLearning": "Always Learning"
+      "alwaysLearning": "Always Learning",
+      "languages": "Languages"
     },
     "featuredCategories": {
       "title": "Popular Categories",
@@ -337,6 +338,7 @@
       "title": "My Blog",
       "subtitle": "Personal thoughts, reflections, and life experiences"
     },
+    "backToHome": "Back to home",
     "filter": {
       "all": "All",
       "mood": "Mood"

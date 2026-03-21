@@ -36,6 +36,29 @@ export default async function TopicDetailPage({ params }: Props) {
   const t = await getTranslations('TopicDetail');
   const { locale } = params;
 
+  const wordCount = (postData.contentHtml || '').replace(/<[^>]*>/g, '').split(/\s+/).filter(Boolean).length;
+  const readingTime = Math.max(1, Math.ceil(wordCount / 200));
+
+  // Extract TOC from h2/h3 headings
+  const tocItems: { id: string; text: string; level: number }[] = [];
+  const headingRegex = /<h([23])[^>]*>([\s\S]*?)<\/h\1>/gi;
+  let match;
+  while ((match = headingRegex.exec(postData.contentHtml || '')) !== null) {
+    const text = match[2].replace(/<[^>]*>/g, '').trim();
+    const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    tocItems.push({ id, text, level: parseInt(match[1]) });
+  }
+
+  // Add IDs to headings in rendered HTML for anchor navigation
+  const contentWithIds = (postData.contentHtml || '').replace(
+    /<h([23])([^>]*)>([\s\S]*?)<\/h\1>/gi,
+    (_, level, attrs, inner) => {
+      const text = inner.replace(/<[^>]*>/g, '').trim();
+      const id = text.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+      return `<h${level}${attrs} id="${id}">${inner}</h${level}>`;
+    }
+  );
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -43,20 +66,20 @@ export default async function TopicDetailPage({ params }: Props) {
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto">
             {/* Breadcrumb */}
-            <nav className="mb-8 flex items-center gap-2 text-sm text-gray-300">
+            <nav className="mb-8 flex items-center gap-2 text-sm text-gray-200">
               <Link href={`/${locale}`} className="hover:text-white transition-colors">
                 {t('breadcrumb.home')}
               </Link>
-              <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
               <Link href={`/${locale}/topics`} className="hover:text-white transition-colors">
                 {t('breadcrumb.topics')}
               </Link>
-              <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
-              <span className="text-gray-400">{postData.title}</span>
+              <span className="text-gray-300 max-w-[200px] md:max-w-none truncate md:overflow-visible">{postData.title}</span>
             </nav>
 
             {/* Title and Meta */}
@@ -80,7 +103,7 @@ export default async function TopicDetailPage({ params }: Props) {
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
-                <span>{t('meta.readTime', { minutes: 5 })}</span>
+                <span>{t('meta.readTime', { minutes: readingTime })}</span>
               </div>
             </div>
 
@@ -124,8 +147,34 @@ export default async function TopicDetailPage({ params }: Props) {
       <article className="py-16">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto">
+            {/* Table of Contents — only shown for articles with 3+ headings */}
+            {tocItems.length >= 3 && (
+              <details className="mb-6 bg-blue-50 border border-blue-200 rounded-xl" open>
+                <summary className="px-6 py-4 cursor-pointer font-semibold text-gray-800 flex items-center gap-2 select-none">
+                  <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h10" />
+                  </svg>
+                  Table of Contents
+                </summary>
+                <nav className="px-6 pb-4">
+                  <ol className="space-y-1 text-sm">
+                    {tocItems.map((item, i) => (
+                      <li key={i} className={item.level === 3 ? 'ml-4' : ''}>
+                        <a
+                          href={`#${item.id}`}
+                          className="text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                        >
+                          {item.text}
+                        </a>
+                      </li>
+                    ))}
+                  </ol>
+                </nav>
+              </details>
+            )}
+
             <div className="modern-card p-8 lg:p-12">
-              <PostContent contentHtml={postData.contentHtml || ''} />
+              <PostContent contentHtml={contentWithIds} />
             </div>
           </div>
         </div>
@@ -135,35 +184,16 @@ export default async function TopicDetailPage({ params }: Props) {
       <section className="py-12 bg-gray-50">
         <div className="container mx-auto px-6">
           <div className="max-w-4xl mx-auto">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <Link 
+            <div className="flex items-center">
+              <Link
                 href={`/${locale}/topics`}
                 className="inline-flex items-center gap-2 px-6 py-3 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
                 {t('navigation.backToTopics')}
               </Link>
-
-              <div className="flex items-center gap-4">
-                <button
-                  aria-label="Like this article"
-                  className="cursor-pointer p-2 rounded-lg bg-white border border-gray-300 hover:bg-gray-50 transition-colors"
-                >
-                  <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                  </svg>
-                </button>
-                <button
-                  aria-label="Share this article"
-                  className="cursor-pointer p-2 rounded-lg bg-white border border-gray-300 hover:bg-gray-50 transition-colors"
-                >
-                  <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-                  </svg>
-                </button>
-              </div>
             </div>
           </div>
         </div>

@@ -33,8 +33,9 @@
     "stats": {
       "articles": "Bài Viết Tri Thức",
       "categories": "Danh Mục",
-      "technologies": "Công Nghệ", 
-      "alwaysLearning": "Luôn Học Tập"
+      "technologies": "Công Nghệ",
+      "alwaysLearning": "Luôn Học Tập",
+      "languages": "Ngôn Ngữ"
     },
     "featuredCategories": {
       "title": "Danh Mục Phổ Biến",
@@ -347,6 +348,7 @@
       "title": "Blog Của Tôi",
       "subtitle": "Suy nghĩ cá nhân, chiêm nghiệm và trải nghiệm cuộc sống"
     },
+    "backToHome": "Về trang chủ",
     "filter": {
       "all": "Tất cả",
       "mood": "Tâm trạng"

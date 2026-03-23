@@ -1,8 +1,8 @@
 ---
 title: "Redis In-Depth Analysis & System Design Guide"
 description: "A deep dive into Redis, covering its architecture, core data types, popular use cases like caching and message brokering, and advanced system design patterns."
-tags: ["Redis", "Cơ Sở Dữ Liệu", "Java", "Design", "Tối Ưu Hóa", "Caching", "In-Memory", "Hướng dẫn"]
-categories: ["Database", "Backend", "DevCore"]
+tags: ["Redis", "Database", "Java", "Design", "Performance", "Caching", "In-Memory", "Guide"]
+categories: ["Database", "Backend", "Development Core"]
 date: "2025-08-09"
 gradientFrom: "from-red-500"
 gradientTo: "to-red-600"

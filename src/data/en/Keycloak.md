@@ -2,7 +2,7 @@
 title: "Keycloak In-Depth Analysis & System Design Guide"
 description: "A comprehensive guide to Keycloak for Identity and Access Management (IAM), covering core concepts like SSO, OIDC, OAuth 2.0, system design patterns, and practical integration examples."
 tags: ["Keycloak", "Security", "Authentication", "Authorization", "SSO", "OIDC", "OAuth2.0", "Java", "Design", "Guide"]
-categories: ["Security", "Backend", "Tool", "DevCore"]
+categories: ["Security", "Backend", "Tool", "Development Core"]
 date: "2025-08-10"
 gradientFrom: "from-gray-700"
 gradientTo: "to-gray-800"

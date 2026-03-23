@@ -44,18 +44,18 @@ export default async function BlogDetailPage({ params: { locale, slug } }: Props
   return (
     <div className="blog-layout min-h-screen">
       {/* Article Header */}
-      <header className="blog-hero">
-        <div className="container mx-auto px-6 max-w-3xl">
+      <header className="blog-hero relative">
+        <div className="container mx-auto px-6 max-w-3xl relative z-10">
           {/* Breadcrumb */}
-          <nav className="mb-6 flex items-center gap-2 text-sm text-gray-500" aria-label="Breadcrumb">
-            <Link href={`/${locale}`} className="hover:text-[#C17765] transition-colors">
+          <nav className="mb-6 flex items-center gap-2 text-sm text-gray-300" aria-label="Breadcrumb">
+            <Link href={`/${locale}`} className="hover:text-white transition-colors">
               {t('breadcrumb.home')}
             </Link>
-            <span>/</span>
-            <Link href={`/${locale}/blog`} className="hover:text-[#C17765] transition-colors">
+            <span className="text-gray-400">/</span>
+            <Link href={`/${locale}/blog`} className="hover:text-white transition-colors">
               {t('breadcrumb.blog')}
             </Link>
-            <span>/</span>
+            <span className="text-gray-400">/</span>
             <span className="text-gray-400 truncate max-w-[200px]">{post.title}</span>
           </nav>
 
@@ -67,12 +67,12 @@ export default async function BlogDetailPage({ params: { locale, slug } }: Props
           </div>
 
           {/* Title */}
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 leading-tight mb-4">
+          <h1 className="text-3xl sm:text-4xl font-bold text-white leading-tight mb-4">
             {post.title}
           </h1>
 
           {/* Meta */}
-          <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+          <div className="flex flex-wrap items-center gap-4 text-sm text-gray-300">
             <time dateTime={post.date}>{formattedDate}</time>
             <span>·</span>
             <ReadingTime minutes={post.readingTime} locale={locale} />

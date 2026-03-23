@@ -121,12 +121,12 @@
 
 ## Success Criteria
 
-- [ ] No duplicate font requests in Network tab
-- [ ] Vietnamese text renders with Fira Sans (no system font fallback)
-- [ ] Categories CTA links work in both `/en` and `/vi`
-- [ ] Homepage stats match actual content counts
-- [ ] Animation delay capped at 400ms max
-- [ ] Skip-to-content visible on Tab key press
-- [ ] Blog shows "1 mood" not "1 moods"
-- [ ] Reading time varies by article length
-- [ ] No WCAG AA contrast failures on text elements
+- [x] No duplicate font requests in Network tab
+- [x] Vietnamese text renders with Fira Sans (no system font fallback)
+- [x] Categories CTA links work in both `/en` and `/vi`
+- [x] Homepage stats match actual content counts
+- [x] Animation delay capped at 400ms max
+- [x] Skip-to-content visible on Tab key press
+- [x] Blog shows "1 mood" not "1 moods"
+- [x] Reading time varies by article length
+- [x] No WCAG AA contrast failures on text elements

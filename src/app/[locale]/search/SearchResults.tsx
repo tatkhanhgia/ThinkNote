@@ -82,7 +82,7 @@ export default function SearchResults() {
   if (isLoading) {
     return (
       <div className="min-h-screen">
-        <section className="bg-gradient-to-r from-blue-50 to-purple-50 py-16 sm:py-20">
+        <section className="page-header relative overflow-hidden py-16 sm:py-20">
           <div className="container mx-auto px-6">
             <div className="max-w-4xl mx-auto text-center">
               <div className="animate-pulse">
@@ -99,10 +99,10 @@ export default function SearchResults() {
   return (
     <div className="min-h-screen">
       {/* Header Section */}
-      <section className="bg-gradient-to-r from-blue-50 to-purple-50 py-12 sm:py-16">
-        <div className="container mx-auto px-6">
+      <section className="page-header relative overflow-hidden py-12 sm:py-16">
+        <div className="container mx-auto px-6 relative z-10">
           <div className="max-w-2xl mx-auto text-center">
-            <h1 className="heading-xl text-gray-800 mb-6">
+            <h1 className="heading-xl text-white mb-6">
               {query ? 'Search Results' : 'Search'}
             </h1>
 
@@ -131,11 +131,11 @@ export default function SearchResults() {
             </form>
 
             {query && (
-              <p className="mt-4 text-gray-600">
+              <p className="mt-4 text-gray-300">
                 {filteredPosts.length > 0
                   ? `Found ${filteredPosts.length} result${filteredPosts.length !== 1 ? 's' : ''} for `
                   : 'No results found for '}
-                <span className="font-semibold text-gray-800">&ldquo;{query}&rdquo;</span>
+                <span className="font-semibold text-white">&ldquo;{query}&rdquo;</span>
               </p>
             )}
           </div>

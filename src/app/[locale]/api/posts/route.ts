@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server';
-import { getSortedPostsData } from '@/lib/posts';
+import { getMergedPosts } from '@/lib/community-posts';
 
 export async function GET(
   request: Request,
   { params }: { params: { locale: string } }
 ) {
   try {
-    const posts = getSortedPostsData(params.locale);
+    const posts = await getMergedPosts(params.locale);
     return NextResponse.json(posts);
   } catch (error) {
     console.error('Error fetching posts:', error);

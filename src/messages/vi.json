@@ -373,5 +373,170 @@
   },
   "notifications": {
     "dismiss": "Đóng thông báo"
+  },
+  "Auth": {
+    "login": {
+      "title": "Chào Mừng Trở Lại",
+      "description": "Đăng nhập vào tài khoản ThinkNote của bạn",
+      "email": "Email",
+      "password": "Mật Khẩu",
+      "submit": "Đăng Nhập",
+      "submitting": "Đang đăng nhập...",
+      "noAccount": "Chưa có tài khoản?",
+      "register": "Tạo tài khoản",
+      "forgotPassword": "Quên mật khẩu?",
+      "errors": {
+        "invalidCredentials": "Email hoặc mật khẩu không đúng",
+        "emailNotVerified": "Vui lòng xác thực email trước khi đăng nhập",
+        "generic": "Đã xảy ra lỗi. Vui lòng thử lại."
+      }
+    },
+    "register": {
+      "title": "Tạo Tài Khoản",
+      "description": "Tham gia ThinkNote để bắt đầu xây dựng kho tri thức của bạn",
+      "name": "Họ và Tên",
+      "email": "Email",
+      "password": "Mật Khẩu",
+      "confirmPassword": "Xác Nhận Mật Khẩu",
+      "submit": "Tạo Tài Khoản",
+      "submitting": "Đang tạo tài khoản...",
+      "hasAccount": "Đã có tài khoản?",
+      "login": "Đăng nhập",
+      "errors": {
+        "passwordMismatch": "Mật khẩu không khớp",
+        "emailExists": "Đã có tài khoản với email này",
+        "passwordTooShort": "Mật khẩu phải có ít nhất 8 ký tự",
+        "generic": "Đã xảy ra lỗi. Vui lòng thử lại."
+      }
+    },
+    "verifyEmail": {
+      "title": "Kiểm Tra Email Của Bạn",
+      "description": "Chúng tôi đã gửi liên kết xác thực đến {email}",
+      "instructions": "Nhấp vào liên kết trong email để xác thực tài khoản. Kiểm tra thư mục spam nếu bạn không thấy.",
+      "resend": "Gửi lại email xác thực",
+      "resending": "Đang gửi...",
+      "resent": "Đã gửi email xác thực!",
+      "verified": "Email Đã Xác Thực!",
+      "verifiedDescription": "Email của bạn đã được xác thực. Đang chuyển hướng đến trang đăng nhập...",
+      "backToLogin": "Quay Lại Đăng Nhập"
+    },
+    "button": {
+      "signIn": "Đăng Nhập",
+      "profile": "Hồ Sơ",
+      "writeArticle": "Viết Bài",
+      "myArticles": "Bài Viết Của Tôi",
+      "admin": "Bảng Quản Trị",
+      "signOut": "Đăng Xuất"
+    }
+  },
+  "Profile": {
+    "title": "Hồ Sơ Của Bạn",
+    "description": "Quản lý cài đặt tài khoản",
+    "info": {
+      "name": "Họ và Tên",
+      "email": "Email",
+      "avatar": "URL Ảnh Đại Diện",
+      "avatarHelp": "Nhập URL đến một ảnh (ví dụ: Gravatar, ảnh đại diện GitHub)",
+      "role": "Vai Trò",
+      "memberSince": "Thành viên từ"
+    },
+    "actions": {
+      "save": "Lưu Thay Đổi",
+      "saving": "Đang lưu...",
+      "saved": "Đã lưu thay đổi thành công",
+      "error": "Không thể lưu thay đổi"
+    },
+    "password": {
+      "title": "Đổi Mật Khẩu",
+      "current": "Mật Khẩu Hiện Tại",
+      "new": "Mật Khẩu Mới",
+      "confirm": "Xác Nhận Mật Khẩu Mới",
+      "change": "Đổi Mật Khẩu",
+      "changing": "Đang đổi...",
+      "changed": "Đổi mật khẩu thành công",
+      "mismatch": "Mật khẩu không khớp",
+      "wrongCurrent": "Mật khẩu hiện tại không đúng",
+      "tooShort": "Mật khẩu phải có ít nhất 8 ký tự",
+      "error": "Không thể đổi mật khẩu"
+    },
+    "sessions": {
+      "title": "Phiên Đăng Nhập Đang Hoạt Động",
+      "current": "Phiên hiện tại",
+      "revokeOthers": "Đăng xuất các phiên khác"
+    }
+  },
+  "Admin": {
+    "title": "Bảng Quản Trị",
+    "navigation": {
+      "dashboard": "Tổng Quan",
+      "users": "Người Dùng",
+      "articles": "Bài Viết"
+    },
+    "dashboard": {
+      "title": "Tổng Quan",
+      "totalUsers": "Tổng Người Dùng",
+      "bannedUsers": "Bị Cấm",
+      "adminUsers": "Quản Trị Viên"
+    },
+    "users": {
+      "title": "Quản Lý Người Dùng",
+      "search": "Tìm kiếm người dùng...",
+      "table": {
+        "name": "Tên",
+        "email": "Email",
+        "role": "Vai Trò",
+        "status": "Trạng Thái",
+        "joined": "Ngày Tham Gia",
+        "actions": "Thao Tác"
+      },
+      "status": {
+        "verified": "Đã Xác Thực",
+        "unverified": "Chưa Xác Thực",
+        "banned": "Bị Cấm"
+      },
+      "actions": {
+        "setAdmin": "Đặt Làm Admin",
+        "setUser": "Xóa Quyền Admin",
+        "ban": "Cấm Người Dùng",
+        "unban": "Bỏ Cấm",
+        "remove": "Xóa Người Dùng",
+        "confirmRemove": "Bạn có chắc muốn xóa người dùng này? Hành động này không thể hoàn tác."
+      },
+      "banDialog": {
+        "title": "Cấm Người Dùng",
+        "reason": "Lý do cấm (tùy chọn)",
+        "confirm": "Xác Nhận Cấm",
+        "cancel": "Hủy"
+      },
+      "noUsers": "Không tìm thấy người dùng",
+      "pagination": {
+        "previous": "Trước",
+        "next": "Tiếp",
+        "showing": "Hiển thị {from}-{to} trong tổng số {total}"
+      }
+    },
+    "notAdmin": "Bạn không có quyền truy cập trang này."
+  },
+  "Articles": {
+    "create": { "title": "Viết Bài", "description": "Chia sẻ kiến thức của bạn với cộng đồng" },
+    "edit": { "title": "Chỉnh Sửa Bài Viết" },
+    "form": {
+      "title": "Tiêu Đề", "titlePlaceholder": "Nhập tiêu đề bài viết...",
+      "description": "Mô Tả", "descriptionPlaceholder": "Tóm tắt ngắn...",
+      "content": "Nội Dung",
+      "categories": "Danh Mục", "tags": "Thẻ",
+      "locale": "Ngôn Ngữ",
+      "saveDraft": "Lưu Nháp", "saving": "Đang lưu...",
+      "submitReview": "Gửi Duyệt", "submitting": "Đang gửi...",
+      "unsaved": "Chưa lưu", "lastSaved": "Đã lưu lúc {time}",
+      "gradientFrom": "Màu thẻ bắt đầu", "gradientTo": "Màu thẻ kết thúc"
+    }
+  },
+  "MyArticles": {
+    "title": "Bài Viết Của Tôi",
+    "description": "Quản lý bài viết của bạn",
+    "writeNew": "Viết Bài Mới",
+    "empty": "Chưa có bài viết. Bắt đầu viết ngay!",
+    "confirmDelete": "Bạn có chắc muốn xóa bài viết này không?"
   }
 }

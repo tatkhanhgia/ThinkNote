@@ -21,15 +21,15 @@ export default async function BlogPage({ params: { locale } }: Props) {
   return (
     <div className="blog-layout min-h-screen">
       {/* Hero */}
-      <section className="blog-hero text-center">
-        <div className="container mx-auto px-6 max-w-3xl">
-          <h1 className="text-4xl sm:text-5xl font-bold text-gray-800 mb-4">
+      <section className="blog-hero text-center relative">
+        <div className="container mx-auto px-6 max-w-3xl relative z-10">
+          <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4">
             {t('hero.title')}
           </h1>
-          <p className="text-lg text-gray-600 leading-relaxed">
+          <p className="text-lg text-gray-200 leading-relaxed">
             {t('hero.subtitle')}
           </p>
-          <div className="mt-6 flex justify-center gap-6 text-sm text-gray-500">
+          <div className="mt-6 flex justify-center gap-6 text-sm text-gray-300">
             <span>{posts.length} {posts.length === 1 ? 'post' : 'posts'}</span>
             {moods.length > 0 && (
               <>

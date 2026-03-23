@@ -79,8 +79,8 @@ const HeaderNav: React.FC<HeaderNavProps> = ({ locale }) => {
 
   return (
     <>
-      {/* Desktop Nav */}
-      <nav className="hidden lg:flex items-center gap-8" aria-label="Main navigation">
+      {/* Desktop Nav — visible md+, positioned right after logo */}
+      <nav className="hidden md:flex items-center gap-1 lg:gap-2 ml-6" aria-label="Main navigation">
         {navLinks.map(({ href, label }) => (
           <Link
             key={href}
@@ -93,34 +93,32 @@ const HeaderNav: React.FC<HeaderNavProps> = ({ locale }) => {
         ))}
       </nav>
 
-      {/* Mobile Menu Button */}
+      {/* Mobile Menu Button — order-last pushes it after action buttons on mobile */}
       <button
         ref={menuRef}
-        className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+        className="md:hidden order-last p-2 rounded-lg hover:bg-gray-100 transition-colors"
         onClick={() => setMobileOpen((prev) => !prev)}
         aria-label="Toggle navigation menu"
         aria-expanded={mobileOpen}
         aria-controls="mobile-nav-menu"
       >
         {mobileOpen ? (
-          // X icon
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         ) : (
-          // Hamburger icon
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         )}
       </button>
 
-      {/* Mobile Dropdown — fixed below 64px (h-16) sticky header, z-50 matches header */}
+      {/* Mobile Dropdown — fixed below header */}
       {mobileOpen && (
         <div
           id="mobile-nav-menu"
           ref={menuContainerRef}
-          className="lg:hidden fixed top-16 left-0 right-0 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-lg z-50"
+          className="md:hidden fixed top-16 left-0 right-0 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-lg z-50"
         >
           <nav className="container mx-auto px-6 py-4 flex flex-col gap-1" aria-label="Mobile navigation">
             {navLinks.map(({ href, label }) => (

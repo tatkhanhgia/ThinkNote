@@ -173,32 +173,32 @@ export default function TagsPage({params: {locale}}: {params: {locale: string}})
   return (
     <div className="min-h-screen">
       {/* Header Section */}
-      <section className="bg-gradient-to-r from-purple-50 to-blue-50 py-16 sm:py-20">
-        <div className="container mx-auto px-6 text-center">
-          <h1 className="heading-xl text-gray-800 mb-6">
+      <section className="page-header relative py-16 sm:py-20 overflow-hidden">
+        <div className="container mx-auto px-6 text-center relative z-10">
+          <h1 className="heading-xl text-white mb-6">
             {t('title')}
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl text-gray-200 max-w-3xl mx-auto leading-relaxed">
             {t('description')}
           </p>
-          
+
           {/* Stats */}
           <div className="mt-10 flex justify-center">
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg">
+            <div className="bg-white/15 backdrop-blur-md rounded-2xl p-6 border border-white/20">
               <div className="flex items-center gap-6 text-center">
                 <div>
-                  <div className="text-2xl font-bold text-purple-600">{sortedTags.length}</div>
-                  <div className="text-sm text-gray-600">{t('stats.tags')}</div>
+                  <div className="text-2xl font-bold text-white">{sortedTags.length}</div>
+                  <div className="text-sm text-gray-300">{t('stats.tags')}</div>
                 </div>
-                <div className="w-px h-8 bg-gray-300"></div>
+                <div className="w-px h-8 bg-white/30"></div>
                 <div>
-                  <div className="text-2xl font-bold text-blue-600">{allPosts.length}</div>
-                  <div className="text-sm text-gray-600">{t('stats.articles')}</div>
+                  <div className="text-2xl font-bold text-white">{allPosts.length}</div>
+                  <div className="text-sm text-gray-300">{t('stats.articles')}</div>
                 </div>
-                <div className="w-px h-8 bg-gray-300"></div>
+                <div className="w-px h-8 bg-white/30"></div>
                 <div>
-                  <div className="text-2xl font-bold text-emerald-600">{Object.keys(tagsByCategory).length}</div>
-                  <div className="text-sm text-gray-600">{t('stats.categories')}</div>
+                  <div className="text-2xl font-bold text-white">{Object.keys(tagsByCategory).length}</div>
+                  <div className="text-sm text-gray-300">{t('stats.categories')}</div>
                 </div>
               </div>
             </div>
@@ -341,7 +341,7 @@ export default function TagsPage({params: {locale}}: {params: {locale: string}})
       </section>
 
       {/* Call to Action */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-gradient-to-r from-blue-50/80 via-white to-purple-50/80">
         <div className="container mx-auto px-6 text-center">
           <h2 className="heading-md text-gray-800 mb-4">
             {t('cta.title')}

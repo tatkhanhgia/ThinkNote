@@ -10,41 +10,44 @@ interface KnowledgeCardProps {
   href: string;
   gradientFrom?: string;
   gradientTo?: string;
+  source?: 'system' | 'community';
+  author?: { name: string; image?: string };
 }
 
 // Map category names (EN + VI) to consistent gradient CSS classes
 const CATEGORY_GRADIENT_MAP: Record<string, string> = {
-  // Security
-  'Security': 'gradient-purple',
-  'Bảo mật': 'gradient-purple',
-  // AI
-  'AI': 'gradient-emerald',
-  'Trí tuệ nhân tạo': 'gradient-emerald',
-  // Database
-  'Database': 'gradient-amber',
-  'Cơ sở dữ liệu': 'gradient-amber',
-  // Design Patterns
-  'Design Patterns': 'gradient-rose',
-  'Mẫu thiết kế': 'gradient-rose',
-  // Java
-  'Java': 'gradient-amber',
-  // System Design / Web Performance
-  'System Design': 'gradient-emerald',
-  'Thiết kế hệ thống': 'gradient-emerald',
-  'Web Performance': 'gradient-emerald',
-  'Hiệu suất Web': 'gradient-emerald',
-  // Frontend / Framework / IDE / Tool
-  'Frontend': 'gradient-blue',
-  'Framework': 'gradient-blue',
-  'IDE': 'gradient-blue',
-  'Tool': 'gradient-blue',
-  'Công cụ': 'gradient-blue',
-  // Backend / Development Core / Programming Languages
+  // Security & Performance - rose (pink-to-yellow, alert/energy)
+  'Security': 'gradient-rose',
+  'Bảo mật': 'gradient-rose',
+  'Web Performance': 'gradient-rose',
+  'Hiệu suất Web': 'gradient-rose',
+
+  // AI & Design - purple (pink-to-red, innovation/abstract)
+  'AI': 'gradient-purple',
+  'Trí tuệ nhân tạo': 'gradient-purple',
+  'Design Patterns': 'gradient-purple',
+  'Mẫu thiết kế': 'gradient-purple',
+  'System Design': 'gradient-purple',
+  'Thiết kế hệ thống': 'gradient-purple',
+
+  // Frontend & Tools - emerald (blue-to-cyan, creative/utility)
+  'Frontend': 'gradient-emerald',
+  'Framework': 'gradient-emerald',
+  'Tool': 'gradient-emerald',
+  'Công cụ': 'gradient-emerald',
+  'IDE': 'gradient-emerald',
+
+  // Data & Backend - blue (indigo-to-purple, foundational)
+  'Database': 'gradient-blue',
+  'Cơ sở dữ liệu': 'gradient-blue',
   'Backend': 'gradient-blue',
   'Development Core': 'gradient-blue',
   'Lõi phát triển': 'gradient-blue',
-  'Programming Languages': 'gradient-blue',
-  'Ngôn ngữ lập trình': 'gradient-blue',
+
+  // Languages - amber (warm/classic)
+  'Java': 'gradient-amber',
+  'Programming Languages': 'gradient-amber',
+  'Ngôn ngữ lập trình': 'gradient-amber',
 };
 
 /** Pick gradient based on first matching category; fallback to gradient-blue */
@@ -65,6 +68,8 @@ const KnowledgeCard: React.FC<KnowledgeCardProps> = ({
   tags,
   categories,
   href,
+  source,
+  author,
 }) => {
   const locale = useLocale();
   const t = useTranslations('Common');
@@ -84,6 +89,14 @@ const KnowledgeCard: React.FC<KnowledgeCardProps> = ({
           <div className="w-12 h-1 bg-white/30 rounded-full"></div>
         </div>
         
+        {/* Community badge */}
+        {source === 'community' && (
+          <span className="absolute top-3 right-3 z-20 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-500/80 text-white backdrop-blur-sm">
+            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v1h8v-1zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-1a5.97 5.97 0 00-.75-2.906A3.005 3.005 0 0119 15v1h-3zM4.75 14.094A5.973 5.973 0 004 17v1H1v-1a3 3 0 013.75-2.906z" /></svg>
+            Community
+          </span>
+        )}
+
         {/* Decorative Elements */}
         <div className="absolute -top-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
         <div className="absolute -bottom-2 -left-2 w-16 h-16 bg-white/5 rounded-full blur-lg"></div>
@@ -134,6 +147,19 @@ const KnowledgeCard: React.FC<KnowledgeCardProps> = ({
                 {tag}
               </Link>
             ))}
+          </div>
+        )}
+
+        {/* Author (community articles only) */}
+        {author && (
+          <div className="flex items-center gap-2 mb-3 text-xs text-gray-500">
+            {author.image ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={author.image} alt={author.name} className="w-5 h-5 rounded-full object-cover" />
+            ) : (
+              <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-xs">{author.name.charAt(0).toUpperCase()}</span>
+            )}
+            <span>{author.name}</span>
           </div>
         )}
 

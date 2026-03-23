@@ -108,11 +108,11 @@
 
 ## Success Criteria
 
-- [ ] All stats are real computed values
-- [ ] Mermaid borders match design system
-- [ ] Tag hover feels subtle, not jumpy
-- [ ] No `transition: all` in CSS
-- [ ] Blog has zero hardcoded locale strings
-- [ ] Card hover uses GPU compositing hints
-- [ ] PageHeader component reused across 4+ pages
-- [ ] All decorative SVGs have `aria-hidden="true"`
+- [x] All stats are real computed values
+- [x] Mermaid borders match design system
+- [x] Tag hover feels subtle, not jumpy
+- [x] No `transition: all` in CSS
+- [x] Blog has zero hardcoded locale strings
+- [x] Card hover uses GPU compositing hints
+- [x] PageHeader component reused across 4+ pages
+- [x] All decorative SVGs have `aria-hidden="true"`

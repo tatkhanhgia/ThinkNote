@@ -50,6 +50,28 @@ code, pre {
 
 /* Smooth Animations - NOTE: avoid global transition:all (perf) */
 
+/* Page Header — sub-page variant of hero-section (lighter but cohesive) */
+.page-header {
+  background: linear-gradient(135deg,
+    rgba(15, 23, 42, 0.92) 0%,
+    rgba(30, 41, 59, 0.88) 30%,
+    rgba(51, 65, 85, 0.82) 60%,
+    rgba(71, 85, 105, 0.75) 100%
+  );
+}
+
+.page-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    radial-gradient(circle at 30% 70%, rgba(120, 119, 198, 0.2) 0%, transparent 50%),
+    radial-gradient(circle at 70% 30%, rgba(120, 219, 255, 0.15) 0%, transparent 50%);
+}
+
 /* Hero Section Modern Styling */
 .hero-section {
   background: linear-gradient(135deg, 
@@ -84,8 +106,8 @@ code, pre {
 
 /* Glass Morphism Effect */
 .glass {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
@@ -240,11 +262,10 @@ code, pre {
 /* Content Sections */
 .content-section {
   padding: 80px 0;
-  background: linear-gradient(135deg, 
-    var(--gray-50) 0%, 
-    rgba(248, 250, 252, 0.8) 50%, 
-    var(--primary-50) 100%
-  );
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 80%, rgba(59, 130, 246, 0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 20%, rgba(139, 92, 246, 0.06) 0%, transparent 60%),
+    linear-gradient(160deg, var(--gray-50) 0%, #f0f4ff 40%, #faf5ff 70%, var(--primary-50) 100%);
 }
 
 /* Typography Improvements */
@@ -676,7 +697,10 @@ code, pre {
   --blog-card-bg:    #FFFFFF;
   --blog-shadow:     0 2px 12px rgba(30, 64, 175, 0.08);
   --blog-shadow-lg:  0 8px 32px rgba(30, 64, 175, 0.14);
-  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, #eff6ff 100%);
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 20%, rgba(139, 92, 246, 0.05) 0%, transparent 60%),
+    linear-gradient(160deg, #f8fafc 0%, #f0f4ff 40%, #faf5ff 70%, #eff6ff 100%);
   min-height: 100vh;
 }
 
@@ -787,10 +811,25 @@ code, pre {
   max-width: 100%;
 }
 
-/* Blog Hero — aligned with KB page header gradients */
+/* Blog Hero — aligned with page-header style */
 .blog-hero {
-  background: linear-gradient(135deg, #eff6ff 0%, #f8fafc 50%, #f0f9ff 100%);
+  background: linear-gradient(135deg,
+    rgba(15, 23, 42, 0.92) 0%,
+    rgba(30, 41, 59, 0.88) 30%,
+    rgba(51, 65, 85, 0.82) 60%,
+    rgba(71, 85, 105, 0.75) 100%
+  );
   padding: 4rem 1.5rem;
+  position: relative;
+}
+
+.blog-hero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image:
+    radial-gradient(circle at 30% 70%, rgba(120, 119, 198, 0.2) 0%, transparent 50%),
+    radial-gradient(circle at 70% 30%, rgba(120, 219, 255, 0.15) 0%, transparent 50%);
 }
 
 @media (max-width: 768px) {
@@ -802,3 +841,32 @@ code, pre {
     padding: 2.5rem 1rem;
   }
 }
+
+/* TipTap Article Editor */
+.tiptap-editor .ProseMirror {
+  min-height: 400px;
+  outline: none;
+  padding: 1.25rem 1.5rem;
+  line-height: 1.7;
+}
+
+.tiptap-editor .ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #adb5bd;
+  pointer-events: none;
+  height: 0;
+}
+
+.tiptap-editor .ProseMirror h1 { font-size: 1.75rem; font-weight: 700; margin: 1.25rem 0 0.5rem; }
+.tiptap-editor .ProseMirror h2 { font-size: 1.35rem; font-weight: 600; margin: 1.1rem 0 0.4rem; }
+.tiptap-editor .ProseMirror h3 { font-size: 1.1rem; font-weight: 600; margin: 1rem 0 0.35rem; }
+.tiptap-editor .ProseMirror blockquote { border-left: 3px solid #cbd5e1; padding-left: 1rem; color: #64748b; margin: 0.75rem 0; }
+.tiptap-editor .ProseMirror code { background: #f1f5f9; padding: 0.15em 0.4em; border-radius: 0.25rem; font-size: 0.875em; }
+.tiptap-editor .ProseMirror pre { background: #1e293b; color: #e2e8f0; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; margin: 0.75rem 0; }
+.tiptap-editor .ProseMirror pre code { background: transparent; padding: 0; }
+.tiptap-editor .ProseMirror table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+.tiptap-editor .ProseMirror th, .tiptap-editor .ProseMirror td { border: 1px solid #e2e8f0; padding: 0.5rem 0.75rem; text-align: left; }
+.tiptap-editor .ProseMirror th { background: #f8fafc; font-weight: 600; }
+.tiptap-editor .ProseMirror ul, .tiptap-editor .ProseMirror ol { padding-left: 1.5rem; margin: 0.5rem 0; }
+.tiptap-editor .ProseMirror a { color: #2563eb; text-decoration: underline; }

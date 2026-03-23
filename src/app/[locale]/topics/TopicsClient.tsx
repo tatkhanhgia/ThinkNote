@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import KnowledgeCard from '@/components/ui/KnowledgeCard';
+import { slugify } from '@/lib/slugify';
 
 interface PostData {
   id: string;
@@ -13,6 +14,8 @@ interface PostData {
   categories?: string[];
   gradientFrom?: string;
   gradientTo?: string;
+  source?: 'system' | 'community';
+  author?: { name: string; image?: string };
 }
 
 interface TopicsClientProps {
@@ -30,7 +33,7 @@ export default function TopicsClient({ posts, categories, locale }: TopicsClient
     ? posts
     : posts.filter(post =>
         post.categories?.some(c =>
-          c.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') === activeCategory
+          slugify(c) === activeCategory
         )
       );
 
@@ -96,9 +99,11 @@ export default function TopicsClient({ posts, categories, locale }: TopicsClient
                 description={post.description}
                 tags={post.tags}
                 categories={post.categories}
-                href={`/${locale}/topics/${post.id}`}
+                href={post.source === 'community' ? `/${locale}/articles/${post.id}` : `/${locale}/topics/${post.id}`}
                 gradientFrom={post.gradientFrom || 'from-blue-500'}
                 gradientTo={post.gradientTo || 'to-purple-600'}
+                source={post.source}
+                author={post.author}
               />
             </div>
           ))}

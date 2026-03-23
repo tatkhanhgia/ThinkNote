@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Suspense } from 'react';
-import { getSortedPostsData, getAllCategoriesWithSlug } from '@/lib/posts';
+import { getAllCategoriesWithSlug, getUniqueTagCount } from '@/lib/posts';
+import { getMergedPosts } from '@/lib/community-posts';
 import { getTranslations } from 'next-intl/server';
 import TopicsClient from './TopicsClient';
 import PageHeader from '@/components/ui/PageHeader';
@@ -23,7 +24,7 @@ export async function generateMetadata({
 }
 
 export default async function TopicsPage({ params: { locale } }: Props) {
-  const allPosts = getSortedPostsData(locale);
+  const allPosts = await getMergedPosts(locale);
   const categories = getAllCategoriesWithSlug(locale);
   const t = await getTranslations('TopicsPage');
 
@@ -62,7 +63,7 @@ export default async function TopicsPage({ params: { locale } }: Props) {
         stats={[
           { label: t('stats.articles'), value: allPosts.length, color: 'text-blue-600' },
           { label: t('stats.categories'), value: categories.length, color: 'text-purple-600' },
-          { label: t('stats.tags'), value: Array.from(new Set(allPosts.flatMap(p => p.tags || []))).length, color: 'text-emerald-600' },
+          { label: t('stats.tags'), value: getUniqueTagCount(locale), color: 'text-emerald-600' },
         ]}
       />
 
@@ -85,7 +86,7 @@ export default async function TopicsPage({ params: { locale } }: Props) {
       </section>
 
       {/* Call to Action */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-gradient-to-r from-blue-50/80 via-white to-purple-50/80">
         <div className="container mx-auto px-6 text-center">
           <h2 className="heading-md text-gray-800 mb-4">
             {t('cta.title')}

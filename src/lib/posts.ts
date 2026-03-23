@@ -1,9 +1,11 @@
 import fs from 'fs';
 import path from 'path';
-import matter from 'gray-matter'; 
+import matter from 'gray-matter';
 import { remark } from 'remark';
-import html from 'remark-html'; 
-import remarkGfm from 'remark-gfm'; 
+import html from 'remark-html';
+import remarkGfm from 'remark-gfm';
+import { slugify } from './slugify';
+export { slugify } from './slugify';
 
 const postsDirectory = path.join(process.cwd(), 'src/data');
 
@@ -16,7 +18,11 @@ export interface PostData {
   categories: string[];
   gradientFrom?: string;
   gradientTo?: string;
-  contentHtml?: string; // Sẽ dùng cho trang chi tiết
+  contentHtml?: string;
+  /** 'system' = file-based, 'community' = user-submitted DB article */
+  source?: 'system' | 'community';
+  author?: { name: string; image?: string };
+  articleId?: string; // DB article primary key for community articles
   [key: string]: any;
 }
 
@@ -168,16 +174,40 @@ export function getPostsByCategory(category: string, locale: string = 'en'): Pos
   return allPosts.filter(post => post.categories && post.categories.includes(category));
 }
 
-export const slugify = (text: string) =>
-  text
-    .toString()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, '-')
-    .replace(/[^a-z0-9-]/g, '')
-    .replace(/-+/g, '-');
+// Maps English tag names to their locale translations
+const tagTranslationMap: { [key: string]: { [key: string]: string } } = {
+  "Machine Learning": { "vi": "Học Máy" },
+  "Algorithms": { "vi": "Thuật Toán" },
+  "Guide": { "vi": "Hướng dẫn" },
+  "Database": { "vi": "Cơ Sở Dữ Liệu" },
+  "Design": { "vi": "Thiết Kế" },
+  "Optimization": { "vi": "Tối Ưu Hóa" },
+  "Memory Management": { "vi": "Quản Lý Bộ Nhớ" },
+  "Design Patterns": { "vi": "Mẫu Thiết Kế" },
+  "Behavioral Patterns": { "vi": "Mẫu Hành Vi" },
+  "Setup": { "vi": "Cài Đặt" },
+  "Productivity": { "vi": "Năng Suất" },
+  "Extensions": { "vi": "Tiện Ích" },
+  "Shortcuts": { "vi": "Phím Tắt" },
+};
+
+// Reverse-map a locale tag back to its canonical English tag
+function getCanonicalTag(localeTag: string, locale: string): string {
+  if (locale === 'en') return localeTag;
+  const englishTag = Object.keys(tagTranslationMap).find(
+    key => tagTranslationMap[key][locale] === localeTag
+  );
+  return englishTag || localeTag;
+}
+
+// Count unique canonical (English) tags for a given locale
+export function getUniqueTagCount(locale: string = 'en'): number {
+  const allPosts = getSortedPostsData(locale);
+  const canonicalTags = new Set(
+    allPosts.flatMap(p => (p.tags || []).map(tag => getCanonicalTag(tag, locale)))
+  );
+  return canonicalTags.size;
+}
 
 const categoryTranslationMap: { [key: string]: { [key: string]: string } } = {
   // English to Vietnamese

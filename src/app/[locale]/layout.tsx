@@ -5,9 +5,9 @@ import { getMessages, getTranslations } from 'next-intl/server';
 import { Fira_Sans, Fira_Code } from 'next/font/google';
 import SearchBar from "@/components/ui/SearchBar";
 import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
-import ImportMarkdownButton from "@/components/ui/ImportMarkdownButton";
 import LogoIcon from "@/components/ui/LogoIcon";
 import HeaderNav from "@/components/ui/HeaderNav";
+import AuthButton from "@/components/ui/auth-button";
 import { Toaster } from 'sonner';
 import "../../styles/globals.css";
 
@@ -64,9 +64,9 @@ export default async function LocaleLayout({
           </a>
             {/* Modern Header */}
             <header className="sticky top-0 z-50 w-full glass border-b border-white/20">
-            <div className="container mx-auto flex h-16 items-center justify-between px-6">
-              {/* Logo Section */}
-              <Link href={`/${locale}`} className="flex items-center gap-3 group cursor-pointer">
+            <div className="container mx-auto flex h-16 items-center px-6 gap-1 md:gap-2">
+              {/* Logo */}
+              <Link href={`/${locale}`} className="flex items-center gap-3 group cursor-pointer flex-shrink-0">
                 <div className="relative">
                   <LogoIcon className="w-8 h-8 text-blue-600 group-hover:text-blue-700 transition-colors" />
                   <div className="absolute -inset-1 bg-blue-600 rounded-full opacity-0 group-hover:opacity-20 transition-opacity blur-sm"></div>
@@ -76,27 +76,18 @@ export default async function LocaleLayout({
                 </span>
               </Link>
 
-              {/* Search Bar - Hidden on mobile, shown on tablet+ */}
-              <div className="hidden md:flex flex-1 max-w-md mx-8">
-                <SearchBar className="w-full" />
-              </div>
+              {/* Primary Nav — visible on md+ (tablets and up), right after logo */}
+              <HeaderNav locale={locale} />
 
-              {/* Navigation, Actions & Language Switcher */}
-              <div className="flex items-center gap-4">
-                {/* Import Markdown Button */}
-                <ImportMarkdownButton />
+              {/* Spacer */}
+              <div className="flex-1" />
 
-                {/* Language Switcher */}
+              {/* Action buttons — search toggle, language, auth */}
+              <div className="flex items-center gap-1 md:gap-3">
+                <SearchBar mode="toggle" />
                 <LanguageSwitcher />
-
-                {/* Desktop Nav + Mobile Menu (HeaderNav handles both) */}
-                <HeaderNav locale={locale} />
+                <AuthButton locale={locale} />
               </div>
-            </div>
-
-            {/* Mobile Search Bar */}
-            <div className="md:hidden border-t border-white/20 p-4">
-              <SearchBar className="w-full" />
             </div>
           </header>
 

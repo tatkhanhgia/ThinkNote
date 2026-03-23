@@ -1,7 +1,7 @@
 ---
 title: "Fix KnowledgeCard Color Inconsistency"
 description: "Replace broken gradient mapping with category-based color assignment for consistent, meaningful card colors"
-status: pending
+status: completed
 priority: P2
 effort: 1h
 branch: master
@@ -58,8 +58,8 @@ All 5 gradient classes get used. Good visual variety.
 
 ## Phases
 
-- [Phase 1: Update KnowledgeCard component](./phase-01-update-component.md) - `pending`
-- [Phase 2: Verify & clean up](./phase-02-verify-cleanup.md) - `pending`
+- [Phase 1: Update KnowledgeCard component](./phase-01-update-component.md) - `completed`
+- [Phase 2: Verify & clean up](./phase-02-verify-cleanup.md) - `completed`
 
 ## Files to Modify
 

@@ -82,10 +82,10 @@
 
 ## Success Criteria
 
-- [ ] Search page has prominent search input in content area
-- [ ] Empty search state shows popular tags or recent articles
-- [ ] Category cards link to specific category detail pages
-- [ ] Like/Share buttons either work or are removed
-- [ ] Topics page has category filter tabs
-- [ ] Breadcrumb truncates on mobile
-- [ ] Categories "Explore" visible on touch devices
+- [x] Search page has prominent search input in content area
+- [x] Empty search state shows popular tags or recent articles
+- [x] Category cards link to specific category detail pages
+- [x] Like/Share buttons either work or are removed
+- [x] Topics page has category filter tabs
+- [x] Breadcrumb truncates on mobile
+- [x] Categories "Explore" visible on touch devices

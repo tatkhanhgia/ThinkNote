@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { unlink } from 'fs/promises'
 import { join } from 'path'
 import { existsSync } from 'fs'
+import { requireAuth } from '@/lib/auth-guard'
 
 export interface UndoRequest {
   filePath?: string
@@ -28,6 +29,10 @@ function isValidImportPath(filePath: string): boolean {
  * Handle undo operations for markdown files
  */
 export async function DELETE(request: NextRequest) {
+  // Require authentication — unauthenticated requests return 401
+  const { error: authError } = await requireAuth();
+  if (authError) return authError;
+
   try {
     const body: UndoRequest = await request.json()
     const { filePath, filePaths, type } = body

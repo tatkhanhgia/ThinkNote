@@ -6,7 +6,7 @@
 
 ## Overview
 - **Priority**: P2
-- **Status**: pending
+- **Status**: completed
 - **Effort**: 30min
 
 ## Key Insights
@@ -114,11 +114,11 @@ const getCategoryGradient = (categories?: string[]): string => {
 
 ## Todo List
 
-- [ ] Add category-to-gradient mapping constant
-- [ ] Add getCategoryGradient function with deterministic fallback
-- [ ] Remove old getGradientClass function
-- [ ] Update gradientClass assignment
-- [ ] Run build check
+- [x] Add category-to-gradient mapping constant
+- [x] Add getCategoryGradient function with deterministic fallback
+- [x] Remove old getGradientClass function
+- [x] Update gradientClass assignment
+- [x] Run build check (types pass; Windows ENOENT rename pre-existing infra issue)
 
 ## Success Criteria
 

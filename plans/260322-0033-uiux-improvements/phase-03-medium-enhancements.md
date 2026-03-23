@@ -80,8 +80,8 @@
 
 ## Success Criteria
 
-- [ ] Blog visually consistent with KB (same colors, fonts, patterns)
-- [ ] Long articles have auto-generated TOC
-- [ ] Search empty state shows popular tags
-- [ ] "Other Tags" section reduced to <10 items
-- [ ] Card descriptions consistently truncated at 2 lines
+- [x] Blog visually consistent with KB (same colors, fonts, patterns)
+- [x] Long articles have auto-generated TOC
+- [x] Search empty state shows popular tags
+- [x] "Other Tags" section reduced to <10 items
+- [x] Card descriptions consistently truncated at 2 lines

@@ -1,7 +1,7 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useState, useRef, useEffect } from 'react';
 
 const FlagUS = () => (
@@ -32,13 +32,12 @@ const locales = [
 export default function LanguageSwitcher() {
   const currentLocale = useLocale();
   const pathname = usePathname();
-  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
-  const currentLocaleData = locales.find(locale => locale.code === currentLocale) || locales[0];
+  const currentLocaleData = locales.find(l => l.code === currentLocale) || locales[0];
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -52,11 +51,9 @@ export default function LanguageSwitcher() {
   }, []);
 
   const switchLocale = (locale: string) => {
-    const currentPathWithoutLocale = pathname.replace(`/${currentLocale}`, '') || '/';
-    const newPath = `/${locale}${currentPathWithoutLocale}`;
-    router.push(newPath);
-    setIsOpen(false);
-    setActiveIndex(-1);
+    if (locale === currentLocale) { setIsOpen(false); return; }
+    const pathWithoutLocale = pathname.replace(`/${currentLocale}`, '') || '/';
+    window.location.href = `/${locale}${pathWithoutLocale}`;
   };
 
   const handleTriggerKeyDown = (e: React.KeyboardEvent) => {

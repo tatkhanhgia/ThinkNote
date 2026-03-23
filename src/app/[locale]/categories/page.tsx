@@ -147,7 +147,7 @@ export default function CategoriesPage({params: {locale}}: {params: {locale: str
       </section>
 
       {/* Call to Action */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-gradient-to-r from-blue-50/80 via-white to-purple-50/80">
         <div className="container mx-auto px-6 text-center">
           <h2 className="heading-md text-gray-800 mb-4">
             {t('cta.title')}

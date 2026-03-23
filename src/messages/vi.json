@@ -470,7 +470,8 @@
     "navigation": {
       "dashboard": "Tổng Quan",
       "users": "Người Dùng",
-      "articles": "Bài Viết"
+      "articles": "Bài Viết",
+      "import": "Import Bài Viết"
     },
     "dashboard": {
       "title": "Tổng Quan",

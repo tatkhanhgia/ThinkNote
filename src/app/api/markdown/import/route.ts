@@ -8,7 +8,7 @@ import { ContentSanitizer } from '@/lib/security/ContentSanitizer'
 import { PerformanceMonitor } from '@/lib/performance/ChunkedProcessor'
 import { MarkdownFormatter } from '@/lib/formatting/MarkdownFormatter'
 import { MarkdownTranslator } from '@/lib/translation/MarkdownTranslator'
-import { requireAuth } from '@/lib/auth-guard'
+import { requireAdmin } from '@/lib/auth-guard'
 
 export interface ImportRequest {
   fileName: string
@@ -40,8 +40,8 @@ export interface ImportResponse {
  * Handle Markdown file upload and processing with security measures
  */
 export async function POST(request: NextRequest) {
-  // Require authentication — unauthenticated requests return 401
-  const { error: authError } = await requireAuth();
+  // Require admin role — non-admin requests return 403
+  const { error: authError } = await requireAdmin();
   if (authError) return authError;
 
   const { result, duration } = await PerformanceMonitor.measureAsync(async (): Promise<ImportResponse> => {

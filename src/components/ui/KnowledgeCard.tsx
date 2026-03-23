@@ -150,7 +150,7 @@ const KnowledgeCard: React.FC<KnowledgeCardProps> = ({
           </div>
         )}
 
-        {/* Author (community articles only) */}
+        {/* Author */}
         {author && (
           <div className="flex items-center gap-2 mb-3 text-xs text-gray-500">
             {author.image ? (

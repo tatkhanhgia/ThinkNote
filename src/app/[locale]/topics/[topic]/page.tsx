@@ -88,6 +88,21 @@ export default async function TopicDetailPage({ params }: Props) {
             </h1>
             
             <div className="flex flex-wrap items-center gap-6 mb-8">
+              {/* Author */}
+              {postData.author && (
+                <div className="flex items-center gap-2 text-gray-300">
+                  {postData.author.image ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={postData.author.image} alt={postData.author.name} className="w-6 h-6 rounded-full object-cover" />
+                  ) : (
+                    <span className="w-6 h-6 rounded-full bg-white/20 text-white flex items-center justify-center font-bold text-xs">
+                      {postData.author.name.charAt(0).toUpperCase()}
+                    </span>
+                  )}
+                  <span>{postData.author.name}</span>
+                </div>
+              )}
+
               <div className="flex items-center gap-2 text-gray-300">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -98,7 +113,7 @@ export default async function TopicDetailPage({ params }: Props) {
                   day: 'numeric'
                 })}</span>
               </div>
-              
+
               <div className="flex items-center gap-2 text-gray-300">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />

@@ -47,6 +47,7 @@ export default function ArticleEditor({ content = '', placeholder = 'Start writi
       TableCell,
       TableHeader,
     ],
+    immediatelyRender: false,
     content,
     onUpdate: ({ editor: e }) => onChange(e.getHTML()),
     editorProps: {

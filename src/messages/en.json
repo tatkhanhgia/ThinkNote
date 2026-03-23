@@ -460,7 +460,8 @@
     "navigation": {
       "dashboard": "Dashboard",
       "users": "Users",
-      "articles": "Articles"
+      "articles": "Articles",
+      "import": "Import Article"
     },
     "dashboard": {
       "title": "Dashboard",

@@ -6,6 +6,7 @@ import html from 'remark-html';
 import remarkGfm from 'remark-gfm';
 import { slugify } from './slugify';
 export { slugify } from './slugify';
+import { siteConfig } from '@/config/site';
 
 const postsDirectory = path.join(process.cwd(), 'src/data');
 
@@ -53,15 +54,18 @@ export function getSortedPostsData(locale: string = 'en'): PostData[] {
 
       return {
         id,
-        ...(matterResult.data as { 
-          title: string; 
-          description: string; 
-          date: string; 
-          tags: string[],
-          categories: string[],
+        source: 'system' as const,
+        ...(matterResult.data as {
+          title: string;
+          description: string;
+          date: string;
+          tags: string[];
+          categories: string[];
           gradientFrom?: string;
           gradientTo?: string;
         }),
+        // Use author from frontmatter if present, otherwise fallback to site default
+        author: (matterResult.data as any).author ?? siteConfig.defaultAuthor,
       };
     })
     .filter(post => post !== null) as PostData[];
@@ -93,16 +97,19 @@ export async function getPostData(id: string, locale: string = 'en'): Promise<Po
   // Combine the data with the id and contentHtml
   return {
     id,
+    source: 'system' as const,
     contentHtml,
-    ...(matterResult.data as { 
-      title: string; 
-      description: string; 
-      date: string; 
-      tags: string[],
-      categories: string[],
+    ...(matterResult.data as {
+      title: string;
+      description: string;
+      date: string;
+      tags: string[];
+      categories: string[];
       gradientFrom?: string;
       gradientTo?: string;
     }),
+    // Use author from frontmatter if present, otherwise fallback to site default
+    author: (matterResult.data as any).author ?? siteConfig.defaultAuthor,
   };
 }
 

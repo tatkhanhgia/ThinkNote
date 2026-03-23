@@ -2,7 +2,7 @@
 
 ## Current Status: Active Development (Phase 1)
 
-**Overall Progress:** 75% - Core features + blog feature fully implemented, content library growing, production-ready
+**Overall Progress:** 85% - Core features + blog + community publishing fully implemented, content library growing, production-ready
 
 ## Phase 1: Foundation & Core Features (In Progress - ~70% Complete)
 
@@ -48,6 +48,26 @@
 - [x] Bilingual blog support (English & Vietnamese)
 - [x] Blog-specific CSS styling (warm palette, serif fonts, max-width prose)
 - [x] 31 new tests for blog functionality (13 lib + 18 components)
+
+#### Community Article Publishing ✓ (NEW)
+- [x] PostgreSQL database with Article model (Prisma ORM)
+- [x] ArticleStatus enum (DRAFT, PENDING, PUBLISHED, REJECTED)
+- [x] Full CRUD API endpoints (/api/articles/*)
+- [x] Article submission workflow (draft → pending → published/rejected)
+- [x] TipTap WYSIWYG editor with toolbar
+- [x] Image upload with magic bytes validation (5MB limit)
+- [x] Auto-save functionality (30s interval)
+- [x] Admin review dashboard (/admin/articles)
+- [x] User article management page (/articles/my)
+- [x] Community article detail page (/articles/[slug])
+- [x] Article creation page (/articles/create)
+- [x] Article editor page (/articles/[slug]/edit)
+- [x] Category & tag support with autocomplete
+- [x] Integration with existing KB (unified search, topics, categories)
+- [x] DOMPurify HTML sanitization
+- [x] Auth guards and ownership verification
+- [x] Bilingual article support
+- [x] "Community" badge on published articles in listings
 
 #### Technical Infrastructure ✓
 - [x] next-intl v4.3.4 for internationalization
@@ -108,46 +128,54 @@
 
 ### Authentication & User Profiles
 
-**Objective:** Enable personal and team knowledge bases
+**Objective:** Enable personal and team knowledge bases with authentication
 
 #### Features
-- [ ] User authentication (email + password, OAuth)
+- [ ] User authentication (email + password, OAuth via NextAuth.js)
+- [ ] Email verification system
 - [ ] User profiles with avatar and bio
 - [ ] Public / private knowledge bases
 - [ ] Team-based access control
 - [ ] Share articles with specific users/teams
 
 #### Technical Requirements
-- [ ] Add database (PostgreSQL or Supabase)
-- [ ] Authentication service (Auth0, Supabase Auth, or NextAuth.js)
-- [ ] User management API
-- [ ] Permission checking in routes
+- [ ] Complete NextAuth.js integration (Prisma adapter)
+- [ ] Email service setup
+- [ ] User management API refinements
+- [ ] Permission checking in article routes
+- [ ] Session management
 
 #### Success Metrics
 - Authentication latency <500ms
 - Support 1000+ concurrent users
 - 99.9% auth uptime
 
-### Content Contribution System
+### Content Contribution Enhancement
 
-**Objective:** Enable collaborative knowledge building
+**Objective:** Build on community article publishing (Phase 1 complete)
 
-#### Features
-- [ ] Edit articles UI (vs. git commits)
-- [ ] Article draft and review workflow
+#### Features (Phase 1 Complete)
+- [x] Article draft and review workflow
+- [x] Rich text editor (TipTap WYSIWYG)
+- [x] Moderation queue for content review
+
+#### New Phase 2 Features
 - [ ] Contribution history and version tracking
 - [ ] Comments and discussions on articles
-- [ ] Contributor badges and attribution
+- [ ] Contributor badges and reputation system
+- [ ] Edit suggestions and collaborative editing
+- [ ] Article publishing statistics and analytics
 
 #### Technical Requirements
-- [ ] Rich text editor (Slate, ProseMirror, or Monaco)
-- [ ] Version control system (git or custom)
-- [ ] Notification system (email, in-app)
-- [ ] Moderation queue for new content
+- [ ] Comment system database model
+- [ ] Version history tracking
+- [ ] Real-time collaboration (optional)
+- [ ] Analytics pipeline for article performance
 
 #### Success Metrics
 - 50+ active contributors
 - <10 minute average review time
+- 20+ published community articles
 
 ### Advanced Search & Filtering
 
@@ -291,14 +319,14 @@
 
 | Limitation | Impact | Status |
 |-----------|--------|--------|
-| **No Authentication** | Public read-only KB only | Phase 2 |
-| **File-Based Content** | Scales to ~1000 articles max | Phase 4 |
-| **Client-Side Search** | Search works up to 1000 articles | Phase 2 |
-| **No User Accounts** | No personalization possible | Phase 2 |
-| **No Comments/Discussions** | Limited user interaction | Phase 2 |
-| **HTML Sanitized** | All user-generated content sanitized (isomorphic-dompurify) | Phase 1 ✓ |
-| **No Analytics** | Can't track user behavior | Phase 3 |
-| **Manual Content Publishing** | No editorial workflow | Phase 2 |
+| **Limited Authentication** | Community publishing working; user profile features pending | Phase 2 |
+| **Hybrid Content Storage** | File-based KB (~1000 articles) + Database articles (unlimited) | Scalable |
+| **Client-Side Search** | Search includes both KB + DB articles, works to ~2000 articles | Phase 2 |
+| **Basic User Accounts** | Minimal user profile; enhanced profiles in Phase 2 | Phase 1 ✓ |
+| **No Comments/Discussions** | Users can contribute articles; comments TBD | Phase 2 |
+| **HTML Sanitized** | All user-generated content sanitized (DOMPurify) | Phase 1 ✓ |
+| **No Analytics** | Can't track user behavior per article | Phase 3 |
+| **Editorial Workflow** | Admin review + approval working; auto-publish notifications TBD | Phase 1 ✓ |
 
 ### Technical Debt
 

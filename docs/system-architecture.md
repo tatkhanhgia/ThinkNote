@@ -270,6 +270,71 @@ DELETE /api/markdown/undo
 ├─ Used by: Undo system after failed imports or user cancellation
 └─ Limitation: Only reverts most recent import session
 
+### Article Publishing API (NEW)
+
+```
+GET /api/articles
+├─ Route: src/app/api/articles/route.ts
+├─ Query: status (DRAFT|PENDING|PUBLISHED|REJECTED), locale, authorId, limit, offset
+├─ Auth: Required (checks user authentication)
+├─ Returns: { articles: Article[], total: number, page: number }
+└─ Features: Filters by status, locale, author; pagination support
+
+POST /api/articles
+├─ Route: src/app/api/articles/route.ts
+├─ Auth: Required (user must be authenticated)
+├─ Body: { title, slug, description, content, locale, categories, tags, gradientFrom?, gradientTo? }
+├─ Returns: { id, createdAt, status: DRAFT }
+├─ Features: Creates draft article for authenticated user
+└─ Validation: Title + slug + locale uniqueness enforced
+
+GET /api/articles/[id]
+├─ Route: src/app/api/articles/[id]/route.ts
+├─ Auth: Optional (public articles visible without auth)
+├─ Returns: Article object with author info
+└─ Features: Fetch single article (published articles public, drafts require ownership)
+
+PATCH /api/articles/[id]
+├─ Route: src/app/api/articles/[id]/route.ts
+├─ Auth: Required (author or admin only)
+├─ Body: { title?, description?, content?, categories?, tags?, ... }
+├─ Returns: Updated Article object
+└─ Features: Update draft/pending articles only
+
+DELETE /api/articles/[id]
+├─ Route: src/app/api/articles/[id]/route.ts
+├─ Auth: Required (author or admin only)
+├─ Returns: { success: boolean, id: string }
+└─ Features: Delete article (author can delete own, admin can delete any)
+
+POST /api/articles/[id]/submit
+├─ Route: src/app/api/articles/[id]/route.ts
+├─ Auth: Required (author only)
+├─ Returns: { status: PENDING, submittedAt: DateTime }
+└─ Features: Move draft to pending review
+
+POST /api/articles/[id]/publish
+├─ Route: src/app/api/articles/[id]/route.ts
+├─ Auth: Required (admin only)
+├─ Returns: { status: PUBLISHED, publishedAt: DateTime }
+└─ Features: Admin approval moves article to published
+
+POST /api/articles/[id]/reject
+├─ Route: src/app/api/articles/[id]/route.ts
+├─ Auth: Required (admin only)
+├─ Body: { reason: string }
+├─ Returns: { status: REJECTED, reviewNote: string }
+└─ Features: Admin rejects with feedback for author
+
+POST /api/upload
+├─ Route: src/app/api/upload/route.ts
+├─ Auth: Required
+├─ Body: FormData with image file
+├─ Returns: { url: string, filename: string, size: number }
+├─ Features: Upload image for article (magic bytes validation, size limit)
+└─ Validation: PNG, JPG, WebP supported; max 5MB
+```
+
 GET /{locale}/topics (Page)
 ├─ Route: src/app/[locale]/topics/page.tsx
 ├─ Displays: All articles paginated
@@ -420,6 +485,19 @@ Per-Route Code Splitting:
 ├─ Common modules shared across routes
 └─ Dynamic imports for optional features
 ```
+
+## Community Article Publishing System (NEW)
+
+**See `/docs/community-publishing.md` for comprehensive documentation of the article publishing system, including architecture, API endpoints, components, pages, and integration details.**
+
+### Quick Summary
+- PostgreSQL Article model with status workflow (DRAFT → PENDING → PUBLISHED/REJECTED)
+- TipTap WYSIWYG editor with auto-save, image upload, and toolbar
+- Full CRUD API endpoints with auth guards and ownership verification
+- Admin review dashboard at `/admin/articles`
+- User article management at `/articles/my`
+- Integration with existing KB: shared search, categories, tags
+- DOMPurify HTML sanitization and magic bytes image validation
 
 ## Deployment Architecture
 

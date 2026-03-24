@@ -8,20 +8,40 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Development Commands
 
+### Core Commands
 - **`npm run dev`** - Start development server at `http://localhost:3000`
 - **`npm run build`** - Build for production
 - **`npm run start`** - Start production server
 - **`npm run lint`** - Run ESLint
 
+### Database Commands
+- **`npm run db:up`** - Start PostgreSQL Docker container (docker-compose)
+- **`npm run db:down`** - Stop PostgreSQL Docker container
+- **`npm run db:push`** - Sync Prisma schema with database
+- **`npm run db:studio`** - Open Prisma Studio web UI for database inspection
+- **`npm run db:generate`** - Generate Prisma client
+
+### Testing Commands
+- **`npm run test`** - Run all tests (vitest watch mode)
+- **`npm run test:run`** - Run tests once (CI mode)
+- **`npm run test:ui`** - Open vitest UI dashboard
+
 ## Architecture Overview
 
 ### Technology Stack
 - **Framework:** Next.js 14 with App Router
-- **Language:** TypeScript
-- **Styling:** Tailwind CSS with PostCSS
-- **i18n:** `next-intl` for English/Vietnamese localization
+- **Language:** TypeScript 5 (strict mode)
+- **Database:** PostgreSQL 16 + Prisma ORM 7.5+
+- **Authentication:** better-auth 1.5.6 (email/password, email verification, admin plugin)
+- **Styling:** Tailwind CSS 3.4+ with PostCSS
+- **i18n:** `next-intl` 4.3.4 for English/Vietnamese localization
 - **Markdown:** `remark`, `remark-gfm`, `remark-html`, `gray-matter`
-- **Diagram Support:** Mermaid
+- **Rich Text:** Tiptap 3.20.4 WYSIWYG editor
+- **Email:** nodemailer 8.0.3 (SMTP)
+- **Diagram Support:** Mermaid 11.9.0
+- **Sanitization:** isomorphic-dompurify 2.36.0
+- **Translation:** @vitalets/google-translate-api 9.2.1
+- **Testing:** vitest 4.0.8, @testing-library/react 16+
 
 ### Directory Structure
 
@@ -31,55 +51,97 @@ src/
 │   ├── [locale]/                 # Locale-specific pages (en, vi)
 │   │   ├── page.tsx              # Home page
 │   │   ├── layout.tsx            # Locale layout with header/footer
+│   │   ├── api/                  # API routes
+│   │   │   ├── auth/             # better-auth routes
+│   │   │   ├── posts/            # GET posts data
+│   │   │   ├── articles/         # CRUD articles endpoints
+│   │   │   ├── upload/           # Image upload
+│   │   │   └── markdown/         # Import/undo endpoints
 │   │   ├── search/               # Full-text search pages
 │   │   ├── categories/           # Category browsing pages
 │   │   ├── tags/                 # Tag browsing pages
-│   │   └── topics/               # Individual article detail page (renamed from [topic])
+│   │   ├── blog/                 # Blog listing and detail pages
+│   │   ├── topics/               # Knowledge base article detail
+│   │   ├── articles/             # Community articles (create, edit, view, my)
+│   │   └── admin/                # Admin moderation dashboard
 │   ├── layout.tsx                # Root layout
 │   ├── page.tsx                  # Root redirect to default locale
 │   └── not-found.tsx             # Custom 404 page
+│
 ├── lib/
-│   └── posts.ts                  # Core post data loading and filtering logic
-├── components/ui/                # Reusable React components
-│   ├── SearchBar.tsx
-│   ├── LanguageSwitcher.tsx
-│   ├── PostContent.tsx           # Renders markdown with HTML
-│   ├── KnowledgeCard.tsx
-│   └── CustomButton.tsx
+│   ├── posts.ts                  # File-based KB post loading (330 LOC)
+│   ├── community-posts.ts        # Database articles, merged posts (87 LOC)
+│   ├── auth.ts                   # better-auth config (55 LOC)
+│   ├── auth-guard.ts             # requireAuth, requireAdmin helpers (57 LOC)
+│   ├── markdown/                 # Markdown processing modules
+│   │   ├── MarkdownProcessor.ts  # Parse, validate, convert
+│   │   └── MarkdownErrorHandler.ts
+│   ├── security/
+│   │   └── ContentSanitizer.ts   # XSS prevention with DOMPurify (273 LOC)
+│   ├── validation/
+│   │   └── FileValidator.ts      # Upload validation (219 LOC)
+│   ├── performance/
+│   │   └── ChunkedProcessor.ts   # Non-blocking file processing (287 LOC)
+│   ├── error-handling/
+│   │   └── ErrorHandler.ts       # Error categorization (189 LOC)
+│   └── translation/
+│       └── TranslationService.ts # Google Translate API wrapper
+│
+├── components/
+│   ├── ui/                       # 42 UI components (4,075 LOC)
+│   │   ├── SearchBar.tsx
+│   │   ├── LanguageSwitcher.tsx
+│   │   ├── PostContent.tsx
+│   │   ├── KnowledgeCard.tsx
+│   │   ├── ArticleEditor.tsx     # TipTap WYSIWYG editor
+│   │   ├── ArticleForm.tsx       # Article metadata form
+│   │   ├── MyArticlesClient.tsx  # User dashboard
+│   │   ├── AdminArticlesClient.tsx # Admin review dashboard
+│   │   ├── BlogCard.tsx          # Blog post card
+│   │   ├── MoodFilter.tsx        # Blog mood filtering
+│   │   └── ... (more components)
+│   └── markdown/
+│       └── StyleConverter.tsx    # HTML to Tailwind mapping
+│
 ├── data/                         # Markdown content files
-│   ├── en/                       # English articles
-│   ├── vi/                       # Vietnamese articles (translated)
-│   └── [root]                    # Legacy articles (migrating to locale folders)
+│   ├── en/                       # English articles + blog
+│   │   ├── *.md                  # KB articles
+│   │   └── blog/*.md             # Blog posts
+│   └── vi/                       # Vietnamese translations
+│
 ├── messages/                     # i18n translation files
 │   ├── en.json
 │   └── vi.json
-├── middleware.ts                 # Locale detection middleware
+│
+├── middleware.ts                 # Locale detection + auth protection
 ├── i18n.ts                       # i18n configuration
-└── styles/globals.css            # Global Tailwind CSS
+└── styles/globals.css            # Global Tailwind CSS + animations
 ```
 
 ### Key Data Flow
 
-1. **Content Source:** Markdown files in `src/data/[locale]/` with YAML frontmatter
-2. **Post Metadata:** Each markdown file must include frontmatter with:
-   ```
-   ---
-   title: Article Title
-   description: Brief description
-   date: YYYY-MM-DD
-   tags: [tag1, tag2]
-   categories: [Category1]
-   gradientFrom: optional-hex-color
-   gradientTo: optional-hex-color
-   ---
-   ```
-3. **Loading:** `src/lib/posts.ts` provides utility functions:
-   - `getSortedPostsData(locale)` - Get all posts for a locale, sorted by date descending
+#### File-Based Knowledge Base
+1. **Source:** Markdown files in `src/data/[locale]/` with YAML frontmatter
+2. **Format:** Must include frontmatter with title, description, date, tags, categories
+3. **Loading:** `src/lib/posts.ts` provides:
+   - `getSortedPostsData(locale)` - Get all posts sorted by date
    - `getPostData(id, locale)` - Get single post with rendered HTML
-   - `getAllPostIds(locales)` - Get all post IDs for static generation
-   - `getAllCategories(locale)` / `getPostsByCategory(slug, locale)` - Category filtering
-   - `getAllTags(locale)` / `getPostsByTag(tag, locale)` - Tag filtering
-   - `slugify(text)` - Convert category/tag names to URL-safe slugs
+   - `getAllPostIds(locales)` - For static generation
+   - `getAllCategories(locale)` / `getPostsByCategory()` - Category filtering
+   - `getAllTags(locale)` / `getPostsByTag()` - Tag filtering
+
+#### Database Articles (Community Publishing)
+1. **Source:** PostgreSQL Article model via Prisma
+2. **Workflow:** Draft → Submit → Pending → Approved → Published (or Rejected)
+3. **Loading:** `src/lib/community-posts.ts` provides:
+   - `getArticles(filters)` - Get articles by status, locale, author
+   - `getArticleBySlug(slug, locale)` - Get single article
+   - `getMergedPosts(locale)` - Merge KB + DB articles
+
+#### Merged Search & Display
+- `getMergedPosts()` combines file-based KB and database articles
+- Search, categories, and tags include both sources
+- Community articles marked with "Community" badge
 
 ### Internationalization (i18n)
 
@@ -135,10 +197,81 @@ Pages use **dynamic parameters** for flexibility:
 - Component classes: Edit component `.tsx` files directly
 - Tailwind config: Check `tailwind.config.js` (not shown but implied)
 
+## Database & Authentication
+
+### PostgreSQL + Prisma ORM
+- **Schema Location:** `prisma/schema.prisma`
+- **Models:** User, Account, Session, Verification, Article
+- **Migrations:** `prisma migrate` auto-generates and applies schema changes
+- **Connection:** PostgreSQL 16 via Docker (docker-compose.yml)
+- **Access:** Prisma Client for type-safe database queries
+
+### User & Article Models
+```prisma
+model User {
+  id: String @id @default(cuid())
+  name: String?
+  email: String @unique
+  emailVerified: DateTime?
+  image: String?
+  role: String @default("user")  // "user" or "admin"
+  banned: Boolean @default(false)
+  articles: Article[]
+}
+
+model Article {
+  id: String @id @default(cuid())
+  title: String
+  slug: String
+  content: String
+  status: ArticleStatus  // DRAFT, PENDING, PUBLISHED, REJECTED
+  authorId: String
+  author: User @relation(fields: [authorId])
+  locale: String
+  categories: String[]
+  tags: String[]
+  reviewNote: String?
+  publishedAt: DateTime?
+}
+
+enum ArticleStatus {
+  DRAFT
+  PENDING
+  PUBLISHED
+  REJECTED
+}
+```
+
+### Authentication (better-auth 1.5.6)
+- **Provider:** Email/password with email verification
+- **Session:** 7-day expiry, 1-day refresh, 5-min cookie cache
+- **Email:** nodemailer SMTP for verification emails
+- **Admin Plugin:** Role-based access control (user, admin)
+- **Guards:** `requireAuth()`, `requireAdmin()` in middleware/API routes
+
+### Community Article Publishing Workflow
+1. User creates draft article (status: DRAFT)
+2. User submits for review (status: PENDING)
+3. Admin reviews and approves (status: PUBLISHED) or rejects with feedback
+4. Published articles appear in KB and search results
+5. Authors can edit/delete their own drafts and pending articles
+
+## Security Architecture (5-Layer)
+
+1. **Input Validation:** FileValidator checks MIME, size, frontmatter fields
+2. **Content Sanitization:** DOMPurify removes XSS vectors (script tags, event handlers)
+3. **Path Security:** Traversal prevention in file operations
+4. **Threat Detection:** Pattern matching for suspicious content
+5. **Auth & Authorization:** better-auth + role-based guards (requireAuth, requireAdmin)
+
 ## Important Notes
 
-- **Markdown Processing:** `remark-html` is configured with `sanitize: false`, meaning raw HTML in markdown is rendered (potential XSS risk if content is user-generated)
-- **Category Slugs:** Generated via `slugify()` function; diacritics are removed (e.g., "Lập trình" → "lap-trinh")
-- **Content Organization:** English articles in `src/data/en/` serve as the canonical set; Vietnamese translations go in `src/data/vi/`
-- **Static Generation:** The app uses dynamic pages, but Next.js caches aggressively; rebuild for new content
-- **Search:** Uses client-side search across loaded posts; no backend search index
+- **Markdown Processing:** `remark-html` configured with `sanitize: false`; XSS handled by DOMPurify layer instead
+- **Category Slugs:** Generated via `slugify()` function; diacritics removed (e.g., "Lập trình" → "lap-trinh")
+- **Content Organization:**
+  - File-based KB: `src/data/[locale]/*.md` (static, git-tracked)
+  - Database articles: PostgreSQL (dynamic, user-generated)
+  - Merged in search/listings via `getMergedPosts()`
+- **Hybrid Model:** File-based for admin content, database for community contributions
+- **Email Service:** SMTP required for email verification (configured via environment variables)
+- **Search:** Client-side merging of KB + DB articles; efficient to ~2000 total articles

@@ -64,17 +64,50 @@ npm run lint -- --fix
 
 ### Environment Variables (Local Development)
 
-Create `.env.local` file:
+Create `.env.local` file in project root:
 
 ```bash
-# No environment variables required for basic functionality
-# Add optional vars below if extending with database/services
+# Database (required for community publishing)
+DATABASE_URL="postgresql://user:password@localhost:5432/thinknote"
 
+# Authentication (required)
+NEXTAUTH_SECRET="your-secret-key-min-32-chars"
+
+# Email Service (required for email verification)
+SMTP_HOST="smtp.gmail.com"
+SMTP_PORT="587"
+SMTP_USER="your-email@gmail.com"
+SMTP_PASSWORD="your-app-password"
+SMTP_FROM="noreply@thinknote.com"
+
+# Session Configuration (optional)
+NEXTAUTH_URL="http://localhost:3000"
+
+# Optional: Analytics, APIs, etc.
 # NEXT_PUBLIC_API_URL=http://localhost:3000
 # NEXT_PUBLIC_ANALYTICS_ID=your-analytics-id
 ```
 
-Note: `.env.local` should NOT be committed to git.
+**Important Notes:**
+- `.env.local` should NOT be committed to git
+- DATABASE_URL format: `postgresql://user:password@host:port/database`
+- NEXTAUTH_SECRET: Generate with `openssl rand -base64 32`
+- Gmail: Use app-specific password, not account password
+- SMTP credentials must have write permission to send emails
+
+### Database Setup (Local)
+
+```bash
+# Start PostgreSQL in Docker
+npm run db:up
+
+# Apply Prisma migrations
+npm run db:push
+
+# Verify database
+npm run db:studio
+# Opens http://localhost:5555 for visual inspection
+```
 
 ## Build Process
 
@@ -462,32 +495,39 @@ docker-compose up -d
 
 ## Environment Variables
 
-### Required Variables
-Currently: **None** (no external services required)
+### Required Variables (Production)
 
-### Optional Variables (For Future Use)
+```bash
+# Database (PostgreSQL)
+DATABASE_URL=postgresql://user:password@host:port/dbname
+
+# Authentication
+NEXTAUTH_SECRET=your-secret-key-min-32-chars
+NEXTAUTH_URL=https://yourdomain.com
+
+# Email Service (SMTP for verification emails)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your-email@gmail.com
+SMTP_PASSWORD=your-app-password
+SMTP_FROM=noreply@yourdomain.com
+```
+
+### Optional Variables
 
 ```bash
 # Analytics
 NEXT_PUBLIC_ANALYTICS_ID=your-analytics-id
 
-# Database (Phase 2)
-DATABASE_URL=postgresql://user:password@localhost/dbname
-NEXTAUTH_SECRET=your-secret-key
-
-# Search service (Phase 2)
+# Search service (future phase)
 MEILISEARCH_HOST=http://localhost:7700
 MEILISEARCH_API_KEY=your-api-key
 
-# Email service (Phase 2)
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=your-email@gmail.com
-SMTP_PASSWORD=your-password
-
 # API Configuration
-NEXT_PUBLIC_API_URL=https://api.example.com
-API_SECRET=your-secret-key
+NEXT_PUBLIC_API_URL=https://api.yourdomain.com
+
+# Trusted Origins (for CORS if needed)
+TRUSTED_ORIGINS=https://yourdomain.com,https://www.yourdomain.com
 ```
 
 ### Using Environment Variables in Code

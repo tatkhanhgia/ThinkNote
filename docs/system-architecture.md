@@ -373,7 +373,88 @@ GET /{locale}/search?q={query} (Page)
 
 ## Data Structure
 
-### PostData Interface
+### Database Models (PostgreSQL + Prisma)
+
+```prisma
+model User {
+  id: String @id @default(cuid())
+  name: String?
+  email: String @unique
+  emailVerified: DateTime?
+  image: String?
+  role: String @default("user")  // "user" or "admin"
+  banned: Boolean @default(false)
+  banReason: String?
+  banExpires: DateTime?
+  accounts: Account[]
+  sessions: Session[]
+  articles: Article[]
+  createdAt: DateTime @default(now())
+}
+
+model Article {
+  id: String @id @default(cuid())
+  title: String
+  slug: String
+  description: String
+  content: String  // HTML content (sanitized)
+  locale: String   // "en" or "vi"
+  status: ArticleStatus  // DRAFT, PENDING, PUBLISHED, REJECTED
+  categories: String[]   // Array of category names
+  tags: String[]         // Array of tags
+  gradientFrom: String?  // Hex color
+  gradientTo: String?    // Hex color
+  coverImage: String?    // Image URL
+  authorId: String
+  author: User @relation(fields: [authorId], onDelete: Cascade)
+  reviewNote: String?    // Admin feedback
+  reviewedBy: String?    // Admin user ID
+  publishedAt: DateTime?
+  createdAt: DateTime @default(now())
+  updatedAt: DateTime @updatedAt
+
+  @@unique([slug, locale])
+  @@index([status])
+  @@index([authorId])
+  @@index([locale])
+}
+
+enum ArticleStatus {
+  DRAFT
+  PENDING
+  PUBLISHED
+  REJECTED
+}
+
+model Session {
+  id: String @id @default(cuid())
+  userId: String
+  token: String @unique
+  expiresAt: DateTime
+  ipAddress: String?
+  userAgent: String?
+  impersonatedBy: String?
+}
+
+model Account {
+  id: String @id @default(cuid())
+  userId: String
+  accountId: String
+  providerId: String
+  accessToken: String?
+  refreshToken: String?
+  password: String?
+}
+
+model Verification {
+  id: String @id @default(cuid())
+  identifier: String
+  value: String
+  expiresAt: DateTime
+}
+```
+
+### PostData Interface (File-Based KB)
 
 ```typescript
 interface PostData {
@@ -387,6 +468,15 @@ interface PostData {
   gradientTo?: string;             // Optional hex color (#xxxxxx)
   contentHtml?: string;            // Rendered HTML (when loaded via getPostData)
   [key: string]: any;              // Additional frontmatter fields
+}
+```
+
+### Merged Post Interface
+```typescript
+interface MergedPost extends PostData {
+  source: 'kb' | 'community';      // KB article or community article
+  authorId?: string;               // For community articles
+  badge?: 'Community';             // Badge for community articles
 }
 ```
 
@@ -659,107 +749,39 @@ Markdown File (user upload or git)
 - **Build Time:** ~30-60 seconds for 50 articles
 
 ### Scaling Strategies
-1. **More Content:** Add more markdown files (no architectural changes needed)
-2. **Larger Search Index:** Backend search (Phase 2) if client-side becomes slow
-3. **User Accounts:** Add authentication (Phase 2) for private knowledge bases
-4. **Dynamic Content:** Replace file-based system with database (future phase)
+- More KB content: just add markdown files
+- Backend search if client-side becomes slow (>1000 articles)
+- Database already handles community articles at scale
 
-## Performance Optimization Strategy
+## Performance Optimization
 
-### Chunked Processing
-- **Implementation:** ChunkedProcessor.ts breaks large files into 10KB chunks
-- **Benefit:** Non-blocking processing prevents UI freezes
-- **Use Case:** Large markdown imports (>5MB)
-- **Pattern:** Process chunks, yield to event loop, continue
+- **Chunked processing:** ChunkedProcessor.ts splits large files into 10KB chunks, non-blocking
+- **Lazy loading:** LazyLoader for expensive components, dynamic imports for code splitting
+- **Caching:** SearchBar caches posts on first mount
+- **Monitoring:** PerformanceMonitor.ts tracks import/sanitization/rendering time
 
-### Lazy Loading
-- **Components:** LazyLoader for expensive components
-- **Routes:** Dynamic imports for code splitting
-- **Data:** SearchBar caches posts on first mount
+## Markdown Import Pipeline
 
-### Performance Monitoring
-- **PerformanceMonitor.ts:** Track import time, sanitization time, rendering time
-- **Metrics:** Logged to console in development, captured by analytics in production
+Import flow: Upload → Validate/Decode (base64→UTF-8) → Format (normalize structure) → Sanitize → Save to `src/data/{locale}/` → Translate (async, placeholder-safe) → Save translated copy to other locale
 
-## Markdown Translation & Formatting Pipeline
-
-### Translation Flow (NEW)
-
-```
-User imports markdown (EN)
-    ↓
-API receives: POST /api/markdown/import with autoTranslate=true
-    ↓
-1. Validate & Decode (base64 → UTF-8)
-    ↓
-2. Format (if autoFormat=true)
-   ├─ TranslationService.translate() checks length
-   └─ MarkdownFormatter.format() normalizes structure
-    ↓
-3. Sanitize & Save to src/data/{locale}/file.md
-    ↓
-4. Translate (if autoTranslate=true, async after original save)
-   ├─ MarkdownTranslator.translateMarkdown()
-   ├─ Extract placeholders (code blocks, links, images)
-   ├─ Translate text via TranslationService.translate()
-   ├─ Restore placeholders
-   └─ Handle >14KB chunks with splitting
-    ↓
-5. Save translated copy to src/data/{otherLocale}/file.md
-    ↓
-Response: { filePath, translatedFilePath, formatChanges, translationWarnings }
-```
-
-### Markdown Formatting Pipeline
-
-```
-Input markdown (possibly malformed)
-    ↓
-MarkdownFormatter.format(content, options)
-    ├─ formatFrontmatter()      → Auto-generate missing fields
-    ├─ formatHeadings()         → Promote levels, ensure h1 first
-    ├─ formatCodeBlocks()       → Balance fences, normalize language tags
-    ├─ formatLinks()            → Fix spacing, detect broken patterns
-    ├─ formatLists()            → Normalize markers, fix numbering
-    ├─ formatWhitespace()       → Trim, collapse excess blank lines
-    └─ Returns: { content, changes[], warnings[] }
-    ↓
-Output: Clean, project-standard markdown ready for translation
-```
+Formatting: MarkdownFormatter normalizes frontmatter, headings, code blocks, links, lists, whitespace
 
 ### Translation Architecture
 
-```
-TranslationService (thin wrapper)
-├─ translate(text, from, to)      → Calls google-translate-api, handles chunking
-├─ detectLanguage(text)            → Auto-detect source language
-└─ Retry with backoff on rate limit
+- **TranslationService**: Wraps google-translate-api with chunking, retry, language detection
+- **MarkdownTranslator**: Extracts placeholders (code, links, images, HTML) → translates text-only → restores placeholders. Handles frontmatter (title, description) separately. Chunks >14KB content.
 
-MarkdownTranslator (markdown-aware)
-├─ extractPlaceholders()           → Replace non-translatable segments
-├─ restorePlaceholders()           → Restore after translation
-└─ translateMarkdown()             → Full pipeline with preservation
-    ├─ Extract: code blocks, inline code, links, images, HTML
-    ├─ Translate: body text only
-    ├─ Translate: frontmatter (title, description only)
-    └─ Restore: all non-translatable segments
-```
-
-## Technology Decisions & Rationale
+## Technology Decisions
 
 | Decision | Rationale |
 |----------|-----------|
-| **Next.js 14** | SSR, static generation, built-in optimization |
-| **Server Components** | Reduced client JS, direct file system access |
-| **Markdown Files** | Git-friendly, version control, scalable to ~1000 articles |
-| **Client-Side Search** | Fast for <1000 articles, no backend infrastructure |
-| **Tailwind CSS** | Utility-first, minimal custom CSS, fast styling |
-| **next-intl** | Automatic i18n with minimal configuration |
-| **Markdown Import API** | Enable non-technical content creation, UI-based editing |
-| **ContentSanitizer** | Safe user-generated markdown support without XSS risk |
-| **Chunked Processing** | Large file imports remain responsive |
-| **UndoManager** | User error recovery, safe import workflow |
-| **@vitalets/google-translate-api** | Free, unofficial Google Translate — fallback returns original + warning |
-| **Markdown Formatter** | Auto-normalize structure before translation for better quality |
-| **Placeholder System** | Preserve code/links/images during translation via token replacement |
-| **Bi-directional i18n** | EN↔VI translation enables bilingual content with single import |
+| Next.js 14 | SSR, static gen, built-in optimization |
+| PostgreSQL + Prisma | Type-safe ORM, migrations, community articles |
+| better-auth | Email/password auth, session management, admin roles |
+| Markdown files | Git-friendly KB, version control, ~1000 articles |
+| Client-side search | Fast for <1000 articles, merges KB + DB |
+| Tailwind CSS | Utility-first, minimal custom CSS |
+| next-intl | Automatic i18n, EN↔VI bilingual |
+| DOMPurify | XSS prevention for user-generated content |
+| Chunked processing | Large file imports remain responsive |
+| google-translate-api | Free translation with placeholder preservation |

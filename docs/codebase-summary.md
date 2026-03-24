@@ -5,21 +5,30 @@
 ### Core Framework & Language
 - **Framework:** Next.js 14 with App Router (Server Components by default)
 - **Language:** TypeScript 5 with strict mode enabled
-- **Runtime:** Node.js (server-side), ES2020+ (client-side)
+- **Runtime:** Node.js 20+ (server-side), ES2020+ (client-side)
 - **Package Manager:** npm
+
+### Database & ORM
+- **Database:** PostgreSQL 16
+- **ORM:** Prisma 7.5+ (type-safe client + migrations)
+- **Models:** User, Account, Session, Verification, Article
+- **Authentication:** better-auth 1.5.6 (email/password, email verification, admin plugin)
 
 ### Frontend & Styling
 - **UI Library:** React 18 with TypeScript support
 - **Styling:** Tailwind CSS 3.4 with PostCSS and autoprefixer
 - **Design Pattern:** Glass-morphism with gradient backgrounds
+- **Rich Text Editor:** Tiptap 3.20.4 WYSIWYG with formatting toolbar
 - **Responsive:** Mobile-first approach (breakpoints: md, lg, xl)
 
 ### Content & Markdown Processing
 - **Markdown Parser:** remark v15 with plugins
   - **remark-gfm:** GitHub Flavored Markdown support
-  - **remark-html:** Convert markdown to HTML (sanitize: false for trusted content)
+  - **remark-html:** Convert markdown to HTML
 - **Frontmatter:** gray-matter v4 for YAML metadata extraction
 - **Diagrams:** Mermaid v11.9.0 for diagram rendering
+- **Sanitization:** isomorphic-dompurify 2.36.0 for XSS prevention
+- **Translation:** @vitalets/google-translate-api 9.2.1
 
 ### Internationalization
 - **Library:** next-intl v4.3.4
@@ -27,8 +36,13 @@
 - **Default:** English
 - **Translation Files:** JSON-based messages in `src/messages/{locale}.json`
 
+### Email & Notifications
+- **Email Service:** nodemailer 8.0.3 (SMTP for verification emails)
+- **Toast Notifications:** sonner 2.0.7 (success, error, warning, info)
+
 ### Development & Quality
 - **Linting:** ESLint 8 with next/eslint config
+- **Testing:** vitest 4.0.8 + @testing-library/react 16+ (50+ test files)
 - **Type Checking:** TypeScript compiler
 - **Build Tools:** Next.js built-in build system
 - **Dev Server:** next dev on http://localhost:3000
@@ -501,17 +515,22 @@ Tags are dynamically extracted from article frontmatter:
 
 ## Codebase Metrics
 
-- **Total Lines:** ~18,500+ LOC across 100+ TypeScript/TSX files
-- **Pages:** 14+ pages/routes with locale prefixes (added: /blog, /blog/[slug])
-- **API Endpoints:** 3 endpoints (posts, markdown/import, markdown/undo)
-- **Components:** 16 UI components, 1 markdown component
-- **Test Files:** 50+ files (vitest 4.0.8 + @testing-library/react 16)
-  - 37 existing test files
-  - 13 new blog test suites (31 tests total)
-- **Utility Modules:** 22+ modules including:
-  - posts, blog-posts, blog-moods, markdown, translation, formatting
-  - security, performance, validation, undo, error-handling, accessibility
-- **Dependencies:** 36+ production dependencies (React, Next.js, TypeScript, Tailwind, remark, Mermaid, @vitalets/google-translate-api, etc.)
+- **Total Lines:** ~22,000+ LOC across 120+ TypeScript/TSX files
+- **Pages:** 26+ page routes (locale-prefixed + admin/auth pages)
+- **API Endpoints:** 12 endpoints (auth, articles CRUD, upload, markdown, posts)
+- **Database Tables:** 5 models (User, Article, Account, Session, Verification)
+- **Components:** 42 UI components (4,075 LOC), various patterns (form, editor, dashboard)
+- **Test Files:** 50+ test files (vitest 4.0.8 + @testing-library/react 16)
+  - Unit tests for utility modules
+  - Integration tests for API routes
+  - Component tests with React Testing Library
+  - Security tests for sanitization
+- **Utility Modules:** 25+ modules including:
+  - posts.ts (330 LOC), community-posts.ts (87 LOC), auth.ts (55 LOC)
+  - ContentSanitizer.ts (273 LOC), MarkdownProcessor.ts (258 LOC), FileValidator.ts (219 LOC)
+  - ChunkedProcessor.ts (287 LOC), ErrorHandler.ts (189 LOC)
+  - blog-posts.ts, blog-moods.ts, markdown translation, formatting
+- **Dependencies:** 40+ production dependencies (React, Next.js, TypeScript, Prisma, better-auth, Tailwind, remark, Tiptap, etc.)
 
 ## Known Limitations & Considerations
 

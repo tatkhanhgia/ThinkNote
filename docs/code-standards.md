@@ -357,6 +357,70 @@ function getPost(id) {
 }
 ```
 
+## Database Patterns (Prisma)
+
+### Using Prisma Client
+```typescript
+import { prisma } from '@/lib/prisma';  // Client instance
+
+// Create
+const user = await prisma.user.create({
+  data: { email, name, role: 'user' }
+});
+
+// Read
+const article = await prisma.article.findUnique({
+  where: { id },
+  include: { author: true }
+});
+
+// Update
+await prisma.article.update({
+  where: { id },
+  data: { status: 'PUBLISHED' }
+});
+
+// Delete
+await prisma.article.delete({ where: { id } });
+```
+
+### Authentication Guards
+```typescript
+import { requireAuth, requireAdmin } from '@/lib/auth-guard';
+
+// Protect route (require authentication)
+export async function POST(req: Request) {
+  const user = await requireAuth(req);
+  // user is guaranteed; throws 401 if not authenticated
+  const article = await createArticle(req, user.id);
+  return NextResponse.json(article);
+}
+
+// Protect route (require admin role)
+export async function POST(req: Request) {
+  const user = await requireAdmin(req);
+  // user is guaranteed to have role='admin'; throws 403 otherwise
+  // ...
+}
+```
+
+### Community Article Patterns
+```typescript
+// Check ownership before edit/delete
+const article = await prisma.article.findUnique({ where: { id } });
+if (article.authorId !== userId && user.role !== 'admin') {
+  return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+}
+
+// Validate article status workflow
+if (article.status === 'PUBLISHED') {
+  return NextResponse.json(
+    { error: 'Cannot edit published articles' },
+    { status: 400 }
+  );
+}
+```
+
 ## Error Handling
 
 ### Try-Catch Pattern
@@ -378,19 +442,27 @@ export function getSortedPostsData(locale: string = 'en'): PostData[] {
 }
 ```
 
-### API Error Handling
+### API Error Handling with Auth
 ```typescript
-export async function GET(
-  request: Request,
-  { params }: { params: { locale: string } }
-) {
+import { NextResponse } from 'next/server';
+import { requireAuth } from '@/lib/auth-guard';
+
+export async function POST(req: Request) {
   try {
-    const posts = getSortedPostsData(params.locale);
-    return NextResponse.json(posts);
+    const user = await requireAuth(req);
+    const data = await req.json();
+    // Process data
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error fetching posts:', error);
+    if (error instanceof UnauthorizedError) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+    console.error('Error:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch posts' },
+      { error: 'Internal server error' },
       { status: 500 }
     );
   }
@@ -652,38 +724,9 @@ const code = 'example';
 - **Coverage Target:** 95%+ for Phase 1
 
 ### Unit Tests Pattern
-When writing tests:
-- Test behavior, not implementation
-- Use descriptive test names
-- Keep tests focused and small
-- Arrange-Act-Assert pattern
-- Test success and error paths
-
-```typescript
-describe('getSortedPostsData', () => {
-  it('should return posts sorted by date descending', () => {
-    // Arrange
-    const locale = 'en';
-
-    // Act
-    const posts = getSortedPostsData(locale);
-
-    // Assert
-    expect(posts[0].date).toBeGreaterThanOrEqual(posts[1].date);
-  });
-
-  it('should return empty array for invalid locale', () => {
-    // Arrange
-    const locale = 'invalid';
-
-    // Act
-    const posts = getSortedPostsData(locale);
-
-    // Assert
-    expect(posts).toEqual([]);
-  });
-});
-```
+- Test behavior, not implementation; Arrange-Act-Assert pattern
+- Descriptive test names, focused and small
+- Test both success and error paths
 
 ### Test Categories
 - **Unit Tests:** Posts.ts functions, utility modules, helpers
@@ -694,103 +737,57 @@ describe('getSortedPostsData', () => {
 
 ## Security Considerations
 
-### XSS Prevention (Multi-Layer)
-- **Layer 1 - File Validation:** FileValidator.ts checks MIME type, size, frontmatter
-- **Layer 2 - Content Sanitization:** ContentSanitizer.ts (isomorphic-dompurify) removes dangerous elements
-- **Layer 3 - Style Conversion:** StyleConverter.ts maps only safe HTML to Tailwind classes
-- **Layer 4 - Rendering:** React's default escaping + Tailwind safe classes only
-- **Implications:** User-generated markdown now safe via import API
-- **Allowed Elements:** h1-h6, p, code, ul, ol, li, table, blockquote, a, img, strong, em, pre
-- **Blocked:** script, iframe, style, onX attributes, dangerous URLs
+### 5-Layer XSS Prevention Pipeline
+1. **Input Validation:** FileValidator.ts checks MIME type, size, frontmatter
+2. **Content Sanitization:** ContentSanitizer.ts (isomorphic-dompurify 2.36.0) removes XSS vectors
+3. **Style Conversion:** StyleConverter.ts maps only safe HTML to Tailwind classes
+4. **React Escaping:** React's default escaping + safe Tailwind classes
+5. **Rendering Context:** No dangerouslySetInnerHTML except in sanitized PostContent
 
-### URL Validation
-- **Allowed Schemes:** http, https, /relative paths
-- **Blocked:** javascript:, data:, vbscript:, etc.
-- **Implementation:** RegEx pattern in ContentSanitizer
+**Allowed Elements:** h1-h6, p, code, ul, ol, li, table, blockquote, a, img, strong, em, pre
+**Blocked:** script, iframe, style, onX attributes, dangerous URLs
 
-### Environment Variables
-- Never commit `.env.local` files
-- Use `.env.example` for documentation
-- Reference `.env.example` in deployment docs
-- No sensitive secrets required (file-based app)
+### Authentication & Authorization
+- **Setup:** better-auth with email/password provider
+- **Session:** 7-day expiry, 1-day refresh window
+- **Guards:** Always use `requireAuth()` or `requireAdmin()` in protected routes
+- **Ownership:** Verify `article.authorId === userId` before allowing edits
+- **Roles:** Check `user.role === 'admin'` for admin-only operations
 
 ### File Upload Security
-- Max size: 10MB (enforced on client & server)
-- MIME validation: text/markdown, text/plain
-- Base64 encoding for safe transport
-- Server-side validation on all uploads
+- **Markdown:** Max 10MB, MIME validation (text/markdown, text/plain), base64 encoding
+- **Image:** Max 5MB, PNG/JPG/WebP only, magic bytes validation, stored in `public/uploads/`
+- **URLs:** Allow http/https/mailto only; block javascript:/data:/vbscript:
+
+### Environment Variables
+- Never commit `.env.local`; use `.env.example` for documentation
+- Required: DATABASE_URL, SMTP_HOST/PORT/USER/PASS, TRUSTED_ORIGINS
+
+### HTML Sanitization (Community Articles)
+- DOMPurify strict mode: strips script tags, event handlers, style tags
+- Only whitelisted elements allowed in output
 
 ## Linting & Formatting
 
-### ESLint Configuration
-Uses next/eslint config (built into Next.js):
-
-```bash
-npm run lint
-```
-
-### Pre-commit Best Practices
-- Run linting before committing
-- Fix warnings and errors
+- **ESLint:** `npm run lint` (next/eslint config)
+- Run linting before committing; fix warnings/errors
 - Don't suppress ESLint rules without good reason
 
 ### Code Review Checklist
-- [ ] TypeScript strict mode compliance
-- [ ] No implicit `any` types
-- [ ] Proper error handling
-- [ ] Clear variable/function names
+- [ ] TypeScript strict mode, no implicit `any`
+- [ ] Proper error handling, clear naming
 - [ ] No console.log in production code
-- [ ] Tailwind classes properly ordered
-- [ ] Components under 200 lines
-- [ ] Props properly typed
-- [ ] Correct import organization
-- [ ] Comments explain "why", not "what"
+- [ ] Components under 200 lines, props typed
+- [ ] Correct import organization, comments explain "why"
 
-## Commit Message Standards
+## Commit Messages
 
-Use Conventional Commit format:
-
-```
-feat: add search functionality to knowledge base
-fix: resolve timezone issue in article dates
-docs: update codebase documentation
-refactor: simplify markdown processing logic
-test: add unit tests for posts.ts utility functions
-chore: update dependencies to latest versions
-```
-
-Format: `<type>: <description>`
-
+Conventional Commit format: `<type>: <description>`
 Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
 
 ## Performance Guidelines
 
-### Component Performance
-- Memoize expensive calculations
-- Use `useCallback` for stable function references
-- Lazy load components when appropriate
-
-### Data Fetching
-- Fetch data at page level (Server Components)
-- Cache results when possible
-- Handle loading and error states
-
-### Bundle Size
-- Lazy load heavy dependencies
-- Use Next.js dynamic imports for code splitting
+- Memoize expensive calculations, use `useCallback` for stable refs
+- Fetch data at page level (Server Components), cache when possible
+- Lazy load heavy deps with Next.js dynamic imports
 - Monitor bundle size in builds
-
-## Documentation Standards
-
-### README or Contributing Guide
-When applicable, document:
-- Setup instructions
-- How to add new content
-- Build and deployment process
-- Common troubleshooting steps
-
-### Code Comments
-- Document complex algorithms
-- Explain business logic
-- Note performance-critical sections
-- Link to related documentation

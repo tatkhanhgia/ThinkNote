@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * Admin blog management panel — list, filter, delete, and import blog posts.
+ * Admin blog management panel — list, filter, delete blog posts.
  */
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
@@ -33,10 +33,6 @@ export default function AdminBlogClient({ locale }: { locale: string }) {
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
   const [deleting, setDeleting] = useState<string | null>(null);
-  const [showImport, setShowImport] = useState(false);
-  const [importContent, setImportContent] = useState('');
-  const [importLocale, setImportLocale] = useState(locale);
-  const [importing, setImporting] = useState(false);
 
   const fetchPosts = useCallback(async () => {
     setLoading(true);
@@ -65,25 +61,6 @@ export default function AdminBlogClient({ locale }: { locale: string }) {
     fetchPosts();
   };
 
-  const handleImport = async () => {
-    if (!importContent.trim()) return;
-    setImporting(true);
-    const res = await fetch('/api/blog/import', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content: importContent, locale: importLocale }),
-    });
-    setImporting(false);
-    if (res.ok) {
-      setShowImport(false);
-      setImportContent('');
-      fetchPosts();
-    } else {
-      const data = await res.json();
-      alert(data.error || 'Import failed');
-    }
-  };
-
   const moodDisplay = (mood: string | null) => {
     if (!mood) return null;
     const m = BLOG_MOODS[mood as BlogMood];
@@ -99,9 +76,9 @@ export default function AdminBlogClient({ locale }: { locale: string }) {
           <p className="text-sm text-gray-500">{total} total posts</p>
         </div>
         <div className="flex gap-2">
-          <button onClick={() => setShowImport(true)} className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+          <Link href={`/${locale}/admin/blog/import`} className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
             Import Markdown
-          </button>
+          </Link>
           <Link href={`/${locale}/admin/blog/create`} className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors">
             Create Blog Post
           </Link>
@@ -149,34 +126,6 @@ export default function AdminBlogClient({ locale }: { locale: string }) {
               </div>
             </div>
           ))}
-        </div>
-      )}
-
-      {/* Import Modal */}
-      {showImport && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full p-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Import Markdown Blog Post</h3>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Language</label>
-                <select value={importLocale} onChange={(e) => setImportLocale(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
-                  <option value="en">English</option>
-                  <option value="vi">Tieng Viet</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Markdown Content</label>
-                <textarea value={importContent} onChange={(e) => setImportContent(e.target.value)} placeholder="Paste markdown with frontmatter here..." rows={10} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm font-mono resize-none" />
-              </div>
-            </div>
-            <div className="flex justify-end gap-3 mt-6">
-              <button onClick={() => { setShowImport(false); setImportContent(''); }} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800">Cancel</button>
-              <button onClick={handleImport} disabled={importing || !importContent.trim()} className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg disabled:opacity-50">
-                {importing ? 'Importing...' : 'Import'}
-              </button>
-            </div>
-          </div>
         </div>
       )}
     </div>

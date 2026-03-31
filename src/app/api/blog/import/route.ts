@@ -1,5 +1,6 @@
 /**
  * POST /api/blog/import - Import markdown file as blog post (admin only)
+ * Supports optional `metadata` override for frontmatter-less markdown.
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
@@ -7,30 +8,43 @@ import { requireAdmin } from '@/lib/auth-guard';
 import { generateUniqueSlug } from '@/lib/slug-utils';
 import { sanitizeArticleHtml } from '@/lib/article-sanitizer';
 import { calculateReadingTime } from '@/lib/blog-posts';
-import matter from 'gray-matter';
+import { extractBlogMetadata } from '@/lib/blog-import-utils';
 import { remark } from 'remark';
 import html from 'remark-html';
 import remarkGfm from 'remark-gfm';
+
+interface ImportBody {
+  content: string;
+  locale?: string;
+  isBase64?: boolean;
+  metadata?: {
+    title?: string;
+    description?: string;
+    mood?: string;
+    tags?: string[];
+    coverImage?: string;
+    date?: string;
+    status?: 'DRAFT' | 'PUBLISHED';
+  };
+}
 
 export async function POST(request: NextRequest) {
   const { session, error: authError } = await requireAdmin();
   if (authError) return authError;
 
-  let body: { content: string; locale?: string; isBase64?: boolean };
+  let body: ImportBody;
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ success: false, error: 'Invalid JSON body' }, { status: 400 });
   }
 
-  const { locale = 'en', isBase64 = false } = body;
   let rawContent = body.content;
-
   if (!rawContent) {
     return NextResponse.json({ success: false, error: 'Content is required' }, { status: 400 });
   }
 
-  if (isBase64) {
+  if (body.isBase64) {
     try {
       rawContent = Buffer.from(rawContent, 'base64').toString('utf-8');
     } catch {
@@ -39,23 +53,32 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const { data: frontmatter, content: markdownBody } = matter(rawContent);
+    const extracted = extractBlogMetadata(rawContent);
+    const meta = body.metadata;
 
-    const title = (frontmatter.title as string)?.trim();
+    // Metadata override takes priority > frontmatter > auto-extracted
+    const title = meta?.title?.trim() || extracted.title;
     if (!title) {
-      return NextResponse.json({ success: false, error: 'Markdown must have a title in frontmatter' }, { status: 400 });
+      return NextResponse.json({ success: false, error: 'Title is required (provide in frontmatter, # heading, or metadata)' }, { status: 400 });
     }
 
+    const description = meta?.description?.trim() ?? extracted.description;
+    const mood = meta?.mood || extracted.mood || null;
+    const tags = meta?.tags ?? extracted.tags;
+    const coverImage = meta?.coverImage || extracted.coverImage || null;
+    const locale = body.locale ?? 'en';
+    const status = meta?.status ?? 'PUBLISHED';
+
+    const dateStr = meta?.date
+      ? new Date(meta.date).toISOString()
+      : extracted.date ? new Date(extracted.date).toISOString() : new Date().toISOString();
+
+    // Convert markdown body to HTML
     const processed = await remark()
       .use(remarkGfm)
       .use(html, { sanitize: false })
-      .process(markdownBody);
+      .process(extracted.markdownBody);
     const contentHtml = sanitizeArticleHtml(processed.toString());
-
-    const rawDate = frontmatter.date;
-    const dateStr = rawDate instanceof Date
-      ? rawDate.toISOString()
-      : rawDate ? new Date(String(rawDate)).toISOString() : new Date().toISOString();
 
     const slug = await generateUniqueSlug(title, locale, undefined, 'blog-post');
 
@@ -63,16 +86,16 @@ export async function POST(request: NextRequest) {
       data: {
         title,
         slug,
-        description: (frontmatter.description as string)?.trim() ?? '',
+        description,
         content: contentHtml,
         locale,
         type: 'BLOG_POST',
-        mood: (frontmatter.mood as string) ?? null,
-        readingTime: calculateReadingTime(markdownBody),
-        tags: (frontmatter.tags as string[]) ?? [],
-        coverImage: (frontmatter.coverImage as string) ?? null,
-        status: 'PUBLISHED',
-        publishedAt: new Date(dateStr),
+        mood,
+        readingTime: calculateReadingTime(extracted.markdownBody),
+        tags,
+        coverImage,
+        status,
+        publishedAt: status === 'PUBLISHED' ? new Date(dateStr) : null,
         authorId: session!.user.id,
       },
     });

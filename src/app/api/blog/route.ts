@@ -8,6 +8,7 @@ import { requireAdmin } from '@/lib/auth-guard';
 import { generateUniqueSlug } from '@/lib/slug-utils';
 import { sanitizeArticleHtml } from '@/lib/article-sanitizer';
 import { calculateReadingTime } from '@/lib/blog-posts';
+import { TranslationService } from '@/lib/translation/TranslationService';
 import type { ArticleStatus } from '@prisma/client';
 
 const MAX_CONTENT_BYTES = 100 * 1024;
@@ -86,24 +87,65 @@ export async function POST(request: NextRequest) {
     const sanitizedContent = sanitizeArticleHtml(content);
     const readingTime = calculateReadingTime(content.replace(/<[^>]*>/g, ''));
 
+    const description = (body.description as string | undefined)?.trim() ?? '';
+    const mood = (body.mood as string | undefined) ?? null;
+    const tags = (body.tags as string[] | undefined) ?? [];
+    const coverImage = (body.coverImage as string | undefined) ?? null;
+
     const post = await prisma.article.create({
       data: {
         title,
         slug,
-        description: (body.description as string | undefined)?.trim() ?? '',
+        description,
         content: sanitizedContent,
         locale,
         type: 'BLOG_POST',
-        mood: (body.mood as string | undefined) ?? null,
+        mood,
         readingTime,
-        tags: (body.tags as string[] | undefined) ?? [],
-        coverImage: (body.coverImage as string | undefined) ?? null,
+        tags,
+        coverImage,
         status: status as ArticleStatus,
         publishedAt: status === 'PUBLISHED' ? new Date() : null,
         authorId: session!.user.id,
       },
     });
-    return NextResponse.json({ success: true, post }, { status: 201 });
+
+    // Auto-translate to opposite locale (vi↔en)
+    let translatedPost = null;
+    const targetLocale = locale === 'vi' ? 'en' : 'vi';
+    try {
+      const plainText = content.replace(/<[^>]*>/g, '');
+      const [trTitle, trDesc, trContent] = await Promise.all([
+        TranslationService.translate(title, locale, targetLocale),
+        description ? TranslationService.translate(description, locale, targetLocale) : Promise.resolve(''),
+        TranslationService.translate(plainText, locale, targetLocale),
+      ]);
+
+      const trSlug = await generateUniqueSlug(trTitle, targetLocale, undefined, 'blog-post');
+      const trSanitized = sanitizeArticleHtml(`<p>${trContent.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>')}</p>`);
+
+      translatedPost = await prisma.article.create({
+        data: {
+          title: trTitle,
+          slug: trSlug,
+          description: trDesc,
+          content: trSanitized,
+          locale: targetLocale,
+          type: 'BLOG_POST',
+          mood,
+          readingTime: calculateReadingTime(trContent),
+          tags,
+          coverImage,
+          status: status as ArticleStatus,
+          publishedAt: status === 'PUBLISHED' ? new Date() : null,
+          authorId: session!.user.id,
+        },
+      });
+    } catch (trErr) {
+      console.error('Blog auto-translate error (non-blocking):', trErr);
+    }
+
+    return NextResponse.json({ success: true, post, translatedPost }, { status: 201 });
   } catch (err) {
     console.error('Blog create error:', err);
     return NextResponse.json({ success: false, error: 'Failed to create blog post' }, { status: 500 });

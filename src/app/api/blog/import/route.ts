@@ -1,6 +1,7 @@
 /**
  * POST /api/blog/import - Import markdown file as blog post (admin only)
  * Supports optional `metadata` override for frontmatter-less markdown.
+ * Auto-translates to the opposite locale (vi↔en).
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
@@ -9,6 +10,7 @@ import { generateUniqueSlug } from '@/lib/slug-utils';
 import { sanitizeArticleHtml } from '@/lib/article-sanitizer';
 import { calculateReadingTime } from '@/lib/blog-posts';
 import { extractBlogMetadata } from '@/lib/blog-import-utils';
+import { TranslationService } from '@/lib/translation/TranslationService';
 import { remark } from 'remark';
 import html from 'remark-html';
 import remarkGfm from 'remark-gfm';
@@ -100,7 +102,45 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json({ success: true, post }, { status: 201 });
+    // Auto-translate to opposite locale (vi↔en)
+    let translatedPost = null;
+    const targetLocale = locale === 'vi' ? 'en' : 'vi';
+    try {
+      const [trTitle, trDesc, trBody] = await Promise.all([
+        TranslationService.translate(title, locale, targetLocale),
+        description ? TranslationService.translate(description, locale, targetLocale) : Promise.resolve(''),
+        TranslationService.translate(extracted.markdownBody, locale, targetLocale),
+      ]);
+
+      const trProcessed = await remark()
+        .use(remarkGfm)
+        .use(html, { sanitize: false })
+        .process(trBody);
+      const trHtml = sanitizeArticleHtml(trProcessed.toString());
+      const trSlug = await generateUniqueSlug(trTitle, targetLocale, undefined, 'blog-post');
+
+      translatedPost = await prisma.article.create({
+        data: {
+          title: trTitle,
+          slug: trSlug,
+          description: trDesc,
+          content: trHtml,
+          locale: targetLocale,
+          type: 'BLOG_POST',
+          mood,
+          readingTime: calculateReadingTime(trBody),
+          tags,
+          coverImage,
+          status,
+          publishedAt: status === 'PUBLISHED' ? new Date(dateStr) : null,
+          authorId: session!.user.id,
+        },
+      });
+    } catch (trErr) {
+      console.error('Blog auto-translate error (non-blocking):', trErr);
+    }
+
+    return NextResponse.json({ success: true, post, translatedPost }, { status: 201 });
   } catch (err) {
     console.error('Blog import error:', err);
     return NextResponse.json({ success: false, error: 'Failed to import blog post' }, { status: 500 });

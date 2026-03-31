@@ -33,6 +33,7 @@ export default function AdminBlogClient({ locale }: { locale: string }) {
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [translating, setTranslating] = useState<string | null>(null);
 
   const fetchPosts = useCallback(async () => {
     setLoading(true);
@@ -58,6 +59,21 @@ export default function AdminBlogClient({ locale }: { locale: string }) {
       alert('Failed to delete blog post. Please try again.');
       return;
     }
+    fetchPosts();
+  };
+
+  const handleTranslate = async (id: string, currentLocale: string) => {
+    const target = currentLocale === 'vi' ? 'EN' : 'VI';
+    if (!confirm(`Translate this post to ${target}?`)) return;
+    setTranslating(id);
+    const res = await fetch(`/api/blog/${id}/translate`, { method: 'POST' });
+    setTranslating(null);
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({ error: 'Unknown error' }));
+      alert(data.error || 'Failed to translate.');
+      return;
+    }
+    alert(`Translated to ${target} successfully!`);
     fetchPosts();
   };
 
@@ -117,6 +133,9 @@ export default function AdminBlogClient({ locale }: { locale: string }) {
                 </p>
               </div>
               <div className="flex items-center gap-2 shrink-0">
+                <button onClick={() => handleTranslate(p.id, p.locale)} disabled={translating === p.id} className="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg disabled:opacity-50 transition-colors">
+                  {translating === p.id ? '...' : `→ ${p.locale === 'vi' ? 'EN' : 'VI'}`}
+                </button>
                 <Link href={`/${locale}/admin/blog/edit/${p.id}`} className="px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
                   Edit
                 </Link>

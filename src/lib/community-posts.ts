@@ -8,7 +8,7 @@ import { getSortedPostsData, type PostData } from './posts';
 /** Fetch all PUBLISHED community articles for a given locale */
 export async function getPublishedArticles(locale: string): Promise<PostData[]> {
   const articles = await prisma.article.findMany({
-    where: { locale, status: 'PUBLISHED' },
+    where: { locale, status: 'PUBLISHED', type: 'ARTICLE' },
     include: { author: { select: { name: true, image: true } } },
     orderBy: { publishedAt: 'desc' },
   });
@@ -42,7 +42,7 @@ export async function getMergedPosts(locale: string): Promise<PostData[]> {
 export async function getCommunityPostsByCategorySlug(slug: string, locale: string): Promise<PostData[]> {
   const { slugify } = await import('./slugify');
   const articles = await prisma.article.findMany({
-    where: { locale, status: 'PUBLISHED' },
+    where: { locale, status: 'PUBLISHED', type: 'ARTICLE' },
     include: { author: { select: { name: true, image: true } } },
   });
 
@@ -66,7 +66,7 @@ export async function getCommunityPostsByCategorySlug(slug: string, locale: stri
 /** Get community posts matching a tag string */
 export async function getCommunityPostsByTag(tag: string, locale: string): Promise<PostData[]> {
   const articles = await prisma.article.findMany({
-    where: { locale, status: 'PUBLISHED', tags: { has: tag } },
+    where: { locale, status: 'PUBLISHED', type: 'ARTICLE', tags: { has: tag } },
     include: { author: { select: { name: true, image: true } } },
   });
 

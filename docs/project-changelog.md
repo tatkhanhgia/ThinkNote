@@ -13,6 +13,73 @@ All notable changes to this project are documented here. The format is based on 
 
 ---
 
+## [1.3.0] - 2026-03-30
+
+### Added - Admin Blog CRUD System
+
+**Major Feature:** Complete admin interface for creating, editing, importing, and managing blog posts in the database with direct publishing workflow.
+
+#### Database & Schema
+- Extended `Article` model with `ContentType` enum (ARTICLE | BLOG_POST)
+- New fields: `type` (ContentType), `mood` (String), `readingTime` (Int)
+- Index on `type` field for efficient blog post filtering
+- Prisma client regenerated for new schema
+
+#### API Endpoints
+- `GET /api/blog` - List blog posts with locale and status filtering
+- `POST /api/blog` - Create new blog post (admin only)
+- `GET /api/blog/[id]` - Fetch blog post detail
+- `PUT /api/blog/[id]` - Update blog post (admin only)
+- `DELETE /api/blog/[id]` - Delete blog post (admin only)
+- `POST /api/blog/import` - Import blog posts from markdown files (admin only)
+
+#### Admin UI Components & Pages
+- **BlogForm** - Blog creation/editing form with mood selector, auto-save (30s), tags, cover image
+- **AdminBlogClient** - Blog management dashboard with list, filters (Draft/Published), delete, import
+- `/admin/blog` - Blog management dashboard
+- `/admin/blog/create` - Create new blog post page
+- `/admin/blog/edit/[id]` - Edit blog post page
+
+#### Features
+- Blog creation with TipTap WYSIWYG editor (reused from Article editor)
+- 8 mood tags with bilingual labels (reflective, joyful, thoughtful, inspired, grateful, contemplative, energetic, peaceful)
+- Auto-calculation of reading time based on content
+- Direct publish workflow (DRAFT ↔ PUBLISHED, no moderation)
+- Markdown file import with frontmatter parsing
+- Cover image upload with gradient background customization
+- Bilingual content support (English & Vietnamese)
+- Draft auto-save every 30 seconds
+- Slug collision prevention per locale
+
+#### Frontend Updates
+- Rewrote `blog-posts.ts` to read from Prisma database instead of file system
+- Blog listing and detail pages now query published posts from database
+- Mood filtering maintained with database-backed queries
+- Removed file-based blog post files (migrated to database)
+
+#### i18n & Translations
+- New translation keys for admin blog UI: AdminBlog, BlogForm
+- Bilingual admin interface (English & Vietnamese)
+- Admin navigation link to blog management
+- Mood labels translated in both locales
+
+#### Build & Quality
+- Schema migration completed successfully
+- Prisma client generated
+- Build passes cleanly (`npm run build`)
+- Lint passes without warnings (`npm run lint`)
+- All 13 blog-related tests pass
+- 62 pre-existing test failures unrelated to this feature
+
+#### Security
+- All blog API endpoints require admin authentication
+- HTML content sanitization using DOMPurify
+- File upload validation for markdown imports
+- Ownership verification through admin role checks
+- Slug + locale uniqueness enforced
+
+---
+
 ## [1.2.0] - 2026-03-23
 
 ### Added - Community Article Publishing System
@@ -189,5 +256,5 @@ See CONTRIBUTING.md for bug report guidelines and templates.
 
 ---
 
-**Last Updated:** 2026-03-23
+**Last Updated:** 2026-03-30
 **Maintained By:** Project Team

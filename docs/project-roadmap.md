@@ -69,6 +69,26 @@
 - [x] Bilingual article support
 - [x] "Community" badge on published articles in listings
 
+#### Admin Blog CRUD System ✓ (NEW)
+- [x] Extended Article model with ContentType enum (ARTICLE | BLOG_POST)
+- [x] New fields: type, mood (8 predefined moods), readingTime (auto-calculated)
+- [x] Blog API endpoints (/api/blog/*) with CRUD operations
+- [x] Admin blog management dashboard (/admin/blog)
+- [x] Blog create page with TipTap editor and mood selector
+- [x] Blog edit page with live preview and auto-save
+- [x] Markdown file import for blog posts (frontmatter parsing)
+- [x] Blog-specific UI components (BlogForm, AdminBlogClient)
+- [x] Direct publish workflow (DRAFT ↔ PUBLISHED, no moderation)
+- [x] Blog frontend updated to read from database instead of file system
+- [x] Mood-based filtering with database queries
+- [x] Reading time calculation and display
+- [x] Bilingual blog support (English & Vietnamese)
+- [x] Cover image upload with gradient customization
+- [x] Admin navigation link for blog management
+- [x] i18n keys for blog admin UI (AdminBlog, BlogForm)
+- [x] All 13 blog-related tests passing
+- [x] Schema migration and Prisma client generation complete
+
 #### Technical Infrastructure ✓
 - [x] next-intl v4.3.4 for internationalization
 - [x] remark v15.0.1 + remark-gfm for markdown processing

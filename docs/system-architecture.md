@@ -270,7 +270,7 @@ DELETE /api/markdown/undo
 ├─ Used by: Undo system after failed imports or user cancellation
 └─ Limitation: Only reverts most recent import session
 
-### Article Publishing API (NEW)
+### Article Publishing API (Community Articles)
 
 ```
 GET /api/articles
@@ -278,14 +278,14 @@ GET /api/articles
 ├─ Query: status (DRAFT|PENDING|PUBLISHED|REJECTED), locale, authorId, limit, offset
 ├─ Auth: Required (checks user authentication)
 ├─ Returns: { articles: Article[], total: number, page: number }
-└─ Features: Filters by status, locale, author; pagination support
+└─ Features: Filters by status, locale, author; excludes BLOG_POST type; pagination support
 
 POST /api/articles
 ├─ Route: src/app/api/articles/route.ts
 ├─ Auth: Required (user must be authenticated)
 ├─ Body: { title, slug, description, content, locale, categories, tags, gradientFrom?, gradientTo? }
 ├─ Returns: { id, createdAt, status: DRAFT }
-├─ Features: Creates draft article for authenticated user
+├─ Features: Creates draft article for authenticated user (type: ARTICLE)
 └─ Validation: Title + slug + locale uniqueness enforced
 
 GET /api/articles/[id]
@@ -308,23 +308,17 @@ DELETE /api/articles/[id]
 └─ Features: Delete article (author can delete own, admin can delete any)
 
 POST /api/articles/[id]/submit
-├─ Route: src/app/api/articles/[id]/route.ts
+├─ Route: src/app/api/articles/[id]/submit/route.ts
 ├─ Auth: Required (author only)
 ├─ Returns: { status: PENDING, submittedAt: DateTime }
 └─ Features: Move draft to pending review
 
-POST /api/articles/[id]/publish
-├─ Route: src/app/api/articles/[id]/route.ts
+POST /api/articles/[id]/review
+├─ Route: src/app/api/articles/[id]/review/route.ts
 ├─ Auth: Required (admin only)
-├─ Returns: { status: PUBLISHED, publishedAt: DateTime }
-└─ Features: Admin approval moves article to published
-
-POST /api/articles/[id]/reject
-├─ Route: src/app/api/articles/[id]/route.ts
-├─ Auth: Required (admin only)
-├─ Body: { reason: string }
-├─ Returns: { status: REJECTED, reviewNote: string }
-└─ Features: Admin rejects with feedback for author
+├─ Body: { action: 'publish'|'reject', reason?: string }
+├─ Returns: { status: PUBLISHED|REJECTED, publishedAt?: DateTime, reviewNote?: string }
+└─ Features: Admin approval/rejection with optional feedback
 
 POST /api/upload
 ├─ Route: src/app/api/upload/route.ts
@@ -333,6 +327,51 @@ POST /api/upload
 ├─ Returns: { url: string, filename: string, size: number }
 ├─ Features: Upload image for article (magic bytes validation, size limit)
 └─ Validation: PNG, JPG, WebP supported; max 5MB
+
+### Blog Management API (Admin Only)
+
+```
+GET /api/blog
+├─ Route: src/app/api/blog/route.ts
+├─ Query: status (DRAFT|PENDING|PUBLISHED|REJECTED), locale, mood, page, limit
+├─ Auth: Required (admin only)
+├─ Returns: { success: boolean, posts: Article[], pagination: { page, limit, total, pages } }
+├─ Features: Lists admin blog posts with filtering by status, locale, mood; pagination
+└─ Note: All blog posts have type: BLOG_POST, excluded from community articles
+
+POST /api/blog
+├─ Route: src/app/api/blog/route.ts
+├─ Auth: Required (admin only)
+├─ Body: { title, slug?, content, locale, mood?, status?, categories?, tags?, description?, gradientFrom?, gradientTo? }
+├─ Returns: { success: boolean, post: Article }
+├─ Features: Create new blog post with auto-slug generation
+└─ Validation: slug + locale uniqueness enforced
+
+GET /api/blog/[id]
+├─ Route: src/app/api/blog/[id]/route.ts
+├─ Auth: Required (admin only)
+├─ Returns: { success: boolean, post: Article }
+└─ Features: Fetch single blog post
+
+PUT /api/blog/[id]
+├─ Route: src/app/api/blog/[id]/route.ts
+├─ Auth: Required (admin only)
+├─ Body: { title?, slug?, content?, locale?, mood?, status?, categories?, tags?, ... }
+├─ Returns: { success: boolean, post: Article }
+└─ Features: Update existing blog post with auto-slug regeneration if title changed
+
+DELETE /api/blog/[id]
+├─ Route: src/app/api/blog/[id]/route.ts
+├─ Auth: Required (admin only)
+├─ Returns: { success: boolean, message: string }
+└─ Features: Delete blog post and cascade delete all related data
+
+POST /api/blog/import
+├─ Route: src/app/api/blog/import/route.ts
+├─ Auth: Required (admin only)
+├─ Body: { title, slug?, content (base64 or text), locale, mood?, status?, categories?, tags?, description? }
+├─ Returns: { success: boolean, post: Article }
+└─ Features: Import markdown file as blog post with HTML sanitization and reading time calculation
 ```
 
 GET /{locale}/topics (Page)
@@ -396,19 +435,23 @@ model Article {
   id: String @id @default(cuid())
   title: String
   slug: String
-  description: String
-  content: String  // HTML content (sanitized)
-  locale: String   // "en" or "vi"
-  status: ArticleStatus  // DRAFT, PENDING, PUBLISHED, REJECTED
+  description: String @default("")
+  content: String @default("")  // HTML content (sanitized)
+  locale: String @default("en")   // "en" or "vi"
+  status: ArticleStatus @default(DRAFT)  // DRAFT, PENDING, PUBLISHED, REJECTED
+  type: ContentType @default(ARTICLE)  // ARTICLE (community) or BLOG_POST (admin)
   categories: String[]   // Array of category names
   tags: String[]         // Array of tags
   gradientFrom: String?  // Hex color
   gradientTo: String?    // Hex color
   coverImage: String?    // Image URL
-  authorId: String
+  mood: String?          // Blog mood tag (reflective, joyful, etc.)
+  readingTime: Int?      // Estimated reading time in minutes (blog posts only)
+  authorId: String       // User who created (community user or admin)
   author: User @relation(fields: [authorId], onDelete: Cascade)
-  reviewNote: String?    // Admin feedback
+  reviewNote: String?    // Admin feedback for rejections
   reviewedBy: String?    // Admin user ID
+  reviewedAt: DateTime?  // When admin reviewed
   publishedAt: DateTime?
   createdAt: DateTime @default(now())
   updatedAt: DateTime @updatedAt
@@ -417,6 +460,12 @@ model Article {
   @@index([status])
   @@index([authorId])
   @@index([locale])
+  @@index([type])
+}
+
+enum ContentType {
+  ARTICLE      // Community article submitted by users
+  BLOG_POST    // Personal blog post (admin-only)
 }
 
 enum ArticleStatus {
@@ -576,18 +625,33 @@ Per-Route Code Splitting:
 └─ Dynamic imports for optional features
 ```
 
-## Community Article Publishing System (NEW)
+## Community Article Publishing System
 
 **See `/docs/community-publishing.md` for comprehensive documentation of the article publishing system, including architecture, API endpoints, components, pages, and integration details.**
 
 ### Quick Summary
-- PostgreSQL Article model with status workflow (DRAFT → PENDING → PUBLISHED/REJECTED)
+- PostgreSQL Article model with `type: ARTICLE` and status workflow (DRAFT → PENDING → PUBLISHED/REJECTED)
 - TipTap WYSIWYG editor with auto-save, image upload, and toolbar
 - Full CRUD API endpoints with auth guards and ownership verification
 - Admin review dashboard at `/admin/articles`
 - User article management at `/articles/my`
 - Integration with existing KB: shared search, categories, tags
 - DOMPurify HTML sanitization and magic bytes image validation
+
+## Admin Blog Management System (NEW)
+
+**Blog posts are managed separately from community articles using the Article model with `type: BLOG_POST`.**
+
+### Quick Summary
+- PostgreSQL Article model with `type: BLOG_POST` for admin-only blog posts
+- Additional fields: `mood` (reflective, joyful, etc.), `readingTime` (minutes)
+- Full CRUD API endpoints at `/api/blog/*` - admin-only access
+- Markdown import endpoint for bulk blog post creation
+- Admin blog management at `/admin/blog` (list, create, edit, delete)
+- Published blog posts displayed at `/blog` and `/blog/[slug]`
+- Status workflow: DRAFT → PENDING → PUBLISHED/REJECTED
+- Content type filtering: Community articles automatically exclude BLOG_POST type
+- Auto-calculated reading time estimation from content length
 
 ## Deployment Architecture
 

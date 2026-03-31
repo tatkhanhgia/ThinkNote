@@ -461,6 +461,7 @@
       "dashboard": "Dashboard",
       "users": "Users",
       "articles": "Articles",
+      "blog": "Blog",
       "import": "Import Article"
     },
     "dashboard": {

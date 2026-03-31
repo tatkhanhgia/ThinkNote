@@ -14,8 +14,8 @@ export async function generateMetadata({ params: { locale } }: Props) {
 }
 
 export default async function BlogPage({ params: { locale } }: Props) {
-  const posts = getSortedBlogPosts(locale);
-  const moods = getAllBlogMoods(locale);
+  const posts = await getSortedBlogPosts(locale);
+  const moods = await getAllBlogMoods(locale);
   const t = await getTranslations('BlogPage');
 
   return (

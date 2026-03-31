@@ -27,7 +27,8 @@ ThinkNote is a personal knowledge base web application designed to help develope
 | **Community Publishing** | Authenticated users can create, draft, and submit articles with admin review workflow |
 | **Rich Text Editor** | TipTap WYSIWYG editor with formatting toolbar, image upload, auto-save for articles |
 | **User Authentication** | Email/password auth with email verification, session management, admin roles |
-| **Personal Blog** | Separate blog section with mood-based filtering (8 mood types: reflective, joyful, etc.) |
+| **Personal Blog** | Admin-managed blog section with mood-based filtering (8 mood types); CRUD management UI with markdown import |
+| **Admin Blog CRUD** | Complete blog post management system (create, read, update, delete, import) with status workflows and mood tagging |
 | **Responsive Design** | Mobile-first design with glass-morphism effects and gradient styling |
 | **Content Metadata** | YAML frontmatter for rich metadata (date, tags, categories, gradients) |
 | **Article Browsing** | Browse by category, tags, or view all articles (KB + community articles unified) |
@@ -63,8 +64,9 @@ ThinkNote is a personal knowledge base web application designed to help develope
 - **Database:** PostgreSQL + Prisma ORM for community articles
 - **Authentication:** better-auth with email verification, role-based access (user, admin)
 - **Community Publishing:** Full article submission/review workflow (DRAFT → PENDING → PUBLISHED/REJECTED)
-- **Blog:** Personal blog feature with 8 mood-based filtering and reading time
-- **Architecture:** Hybrid content (file-based KB + database articles), SSR, markdown import, sanitization
+- **Blog:** Personal blog feature with 8 mood-based filtering, reading time, and admin CRUD management
+- **Admin Blog Management:** Complete blog post CRUD API, markdown import, status workflows, mood tagging
+- **Architecture:** Hybrid content (file-based KB + database articles + admin blog posts), SSR, markdown import, sanitization
 - **Testing:** 50+ test files with vitest covering unit, integration, security, i18n, error handling
 - **Features:** Search (unified KB + DB), import, notifications, WYSIWYG editor, image upload, moderation
 - **Deployment:** Docker & Vercel ready, self-hosted support via PM2
@@ -98,12 +100,13 @@ ThinkNote is a personal knowledge base web application designed to help develope
 
 ## Unique Value Propositions
 
-1. **Hybrid Content Model:** File-based KB for admin content + database for community contributions
+1. **Hybrid Content Model:** File-based KB + database community articles + admin-managed blog posts
 2. **Bilingual by Default:** Native support for English/Vietnamese with automatic translation mapping
 3. **Community-Driven:** Users can contribute articles with moderation workflow and admin review
-4. **Developer-Friendly:** TypeScript + clear patterns; comprehensive documentation and code standards
-5. **Production-Ready:** Authentication, authorization, XSS protection, and email verification included
-6. **Full WYSIWYG Editing:** TipTap editor with image upload for rich article authoring
+4. **Admin Blog Management:** Complete blog CRUD system with markdown import and mood-based organization
+5. **Developer-Friendly:** TypeScript + clear patterns; comprehensive documentation and code standards
+6. **Production-Ready:** Authentication, authorization, XSS protection, and email verification included
+7. **Full WYSIWYG Editing:** TipTap editor with image upload for rich article authoring
 
 ## Primary Use Cases
 

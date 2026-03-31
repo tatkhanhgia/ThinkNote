@@ -7,27 +7,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth-guard';
 import { sanitizeArticleHtml } from '@/lib/article-sanitizer';
-import { slugify } from '@/lib/slugify';
+import { generateUniqueSlug } from '@/lib/slug-utils';
 
 const MAX_CONTENT_BYTES = 100 * 1024;
 
 type Params = { params: Promise<{ id: string }> };
-
-/** Generate slug unique per locale, optionally excluding a given article ID */
-async function generateUniqueSlug(title: string, locale: string, excludeId?: string) {
-  const base = slugify(title) || 'article';
-  let candidate = base;
-  let suffix = 0;
-  while (suffix <= 20) {
-    const existing = await prisma.article.findUnique({
-      where: { slug_locale: { slug: candidate, locale } },
-    });
-    if (!existing || existing.id === excludeId) return candidate;
-    suffix++;
-    candidate = `${base}-${suffix}`;
-  }
-  throw new Error('Could not generate unique slug after 20 attempts');
-}
 
 export async function GET(request: NextRequest, { params }: Params) {
   const { id } = await params;

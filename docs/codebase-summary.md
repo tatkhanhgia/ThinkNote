@@ -11,7 +11,8 @@
 ### Database & ORM
 - **Database:** PostgreSQL 16
 - **ORM:** Prisma 7.5+ (type-safe client + migrations)
-- **Models:** User, Account, Session, Verification, Article
+- **Models:** User, Account, Session, Verification, Article (with ContentType enum: ARTICLE | BLOG_POST)
+- **Article Fields:** id, title, slug, description, content, locale, status, type, categories, tags, gradientFrom, gradientTo, coverImage, mood, readingTime, authorId, reviewNote, reviewedAt, reviewedBy, publishedAt, createdAt, updatedAt
 - **Authentication:** better-auth 1.5.6 (email/password, email verification, admin plugin)
 
 ### Frontend & Styling
@@ -57,8 +58,18 @@ src/
 │   │   ├── layout.tsx             # Locale layout (header, footer, nav)
 │   │   ├── api/
 │   │   │   ├── posts/route.ts     # GET /[locale]/api/posts - returns sorted posts JSON
+│   │   │   ├── articles/route.ts  # GET/POST /api/articles (community articles)
 │   │   │   ├── markdown/import/route.ts  # POST /api/markdown/import - file upload (10MB limit)
 │   │   │   └── markdown/undo/route.ts    # DELETE /api/markdown/undo - revert last import
+│   ├── api/
+│   │   ├── articles/[id]/route.ts  # GET/PATCH/DELETE /api/articles/[id]
+│   │   ├── articles/[id]/submit/route.ts # POST /api/articles/[id]/submit
+│   │   ├── articles/[id]/review/route.ts # POST /api/articles/[id]/review (admin)
+│   │   ├── blog/route.ts           # GET/POST /api/blog (admin blog CRUD)
+│   │   ├── blog/[id]/route.ts      # GET/PUT/DELETE /api/blog/[id] (admin only)
+│   │   ├── blog/import/route.ts    # POST /api/blog/import (markdown import, admin only)
+│   │   ├── upload/route.ts         # POST /api/upload (image upload)
+│   │   ├── auth/[...all]/route.ts  # better-auth routes
 │   │   ├── topics/
 │   │   │   ├── page.tsx           # All articles page with pagination
 │   │   │   └── [topic]/
@@ -72,9 +83,24 @@ src/
 │   │   │   └── [tag]/
 │   │   │       └── page.tsx       # Tag detail - shows posts with tag
 │   │   ├── blog/
-│   │   │   ├── page.tsx           # Blog listing page with mood filtering
+│   │   │   ├── page.tsx           # Blog listing page with mood filtering (public)
+│   │   │   ├── BlogListClient.tsx # Client component for blog listing
 │   │   │   └── [slug]/
-│   │   │       └── page.tsx       # Individual blog post detail page
+│   │   │       └── page.tsx       # Individual blog post detail page (public)
+│   │   ├── admin/
+│   │   │   ├── page.tsx           # Admin dashboard
+│   │   │   ├── layout.tsx         # Admin layout (auth guard)
+│   │   │   ├── articles/
+│   │   │   │   └── page.tsx       # Community article review dashboard
+│   │   │   ├── blog/
+│   │   │   │   ├── page.tsx       # Blog management listing
+│   │   │   │   ├── create/
+│   │   │   │   │   └── page.tsx   # Create new blog post
+│   │   │   │   └── edit/
+│   │   │   │       └── [id]/
+│   │   │   │           └── page.tsx # Edit existing blog post
+│   │   │   └── users/
+│   │   │       └── page.tsx       # User management (future)
 │   │   └── search/
 │   │       ├── page.tsx           # Search results page
 │   │       └── SearchResults.tsx  # Client component for search UI
@@ -83,9 +109,15 @@ src/
 │   └── not-found.tsx              # Custom 404 page
 │
 ├── lib/
-│   ├── posts.ts                   # Core post CRUD & filtering (292 LOC)
-│   ├── blog-moods.ts              # NEW - Blog mood definitions & utilities
-│   ├── blog-posts.ts              # NEW - Blog post data loading & filtering
+│   ├── posts.ts                   # Core KB post CRUD & filtering (292 LOC)
+│   ├── community-posts.ts         # Community article utilities (merged posts)
+│   ├── blog-moods.ts              # Blog mood definitions & utilities
+│   ├── blog-posts.ts              # Blog post data loading from database (refactored)
+│   ├── auth.ts                    # better-auth configuration
+│   ├── auth-guard.ts              # requireAuth(), requireAdmin() helpers
+│   ├── prisma.ts                  # Prisma client setup
+│   ├── article-sanitizer.ts       # DOMPurify HTML sanitization for articles
+│   ├── slugify.ts                 # URL-safe slug generation utility
 │   ├── markdown/
 │   │   ├── MarkdownProcessor.ts   # Parse, validate, convert markdown
 │   │   └── MarkdownErrorHandler.ts # Bilingual error codes (EN/VI)
@@ -125,7 +157,7 @@ src/
 │       ├── slugify()              # Normalize to URL-safe slug
 │       └── categoryTranslationMap # Bilingual category translations
 │
-├── components/ui/                 # Reusable React components (16 components)
+├── components/ui/                 # Reusable React components (45+ components)
 │   ├── SearchBar.tsx              # Client component - full-text search (216 LOC)
 │   ├── MarkdownImporter.tsx       # Multi-step markdown import wizard
 │   ├── MarkdownPreview.tsx        # Preview imported markdown
@@ -141,7 +173,20 @@ src/
 │   ├── AccessibilityHelpers.tsx   # ARIA & keyboard navigation helpers
 │   ├── BlogCard.tsx               # Blog post card for listing (warm styling)
 │   ├── MoodFilter.tsx             # Mood tag filter chips for blog
-│   └── ReadingTime.tsx            # Reading time display for blog posts
+│   ├── ReadingTime.tsx            # Reading time display for blog posts
+│   ├── article-editor.tsx         # TipTap WYSIWYG editor for community articles
+│   ├── article-editor-toolbar.tsx # Editor toolbar with formatting controls
+│   ├── article-form.tsx           # Article metadata form (title, slug, categories, tags)
+│   ├── article-status-badge.tsx   # Color-coded article status indicator
+│   ├── article-reject-dialog.tsx  # Admin feedback dialog for rejections
+│   ├── my-articles-client.tsx     # User's article management dashboard
+│   ├── admin-articles-client.tsx  # Admin review dashboard for pending articles
+│   ├── blog-form.tsx              # Blog post creation/editing form (NEW)
+│   ├── admin-blog-client.tsx      # Blog management dashboard (NEW)
+│   ├── admin-user-table.tsx       # User management table (future)
+│   ├── auth-button.tsx            # Auth button with user menu
+│   ├── auth-form-card.tsx         # Login/register form card
+│   ├── category-tag-input.tsx     # Multi-select dropdown for categories/tags
 │
 ├── components/markdown/
 │   └── StyleConverter.tsx         # HTML to Tailwind class mapping
@@ -306,16 +351,24 @@ Browser Output (HTML + CSS + Tailwind styles)
 | `getMoodIcon(moodKey)` | Get emoji icon for mood type |
 | `getMoodLabel(moodKey, locale)` | Get translated label for mood |
 
-### blog-posts.ts (Blog Post Data Loading - NEW)
+### blog-posts.ts (Blog Post Data Loading - Database-backed)
 
 | Function | Purpose |
 |----------|---------|
-| `getSortedBlogPosts(locale)` | Load all blog posts, parse metadata, sort by date descending |
-| `getBlogPostData(id, locale)` | Load single blog post + render markdown to HTML |
-| `getAllBlogPostIds(locales)` | Static generation support (paths for all blog posts) |
-| `getAllBlogMoods(locale)` | Get all unique moods with occurrence counts |
-| `getBlogPostsByMood(mood, locale)` | Filter blog posts by mood |
+| `getSortedBlogPosts(locale, status?)` | Load all published blog posts from Prisma database, sort by date descending |
+| `getBlogPostData(id, locale)` | Load single blog post from database with author info |
+| `getAllBlogPostIds(locale)` | Static generation support (paths for all published blog posts) |
+| `getAllBlogMoods(locale)` | Get all unique moods from published blog posts with occurrence counts |
+| `getBlogPostsByMood(mood, locale, status?)` | Filter published blog posts by mood from database |
 | `calculateReadingTime(contentHtml)` | Calculate reading time in minutes (200 words/min) |
+
+### community-posts.ts (Community Article Utilities - NEW)
+
+| Function | Purpose |
+|----------|---------|
+| `getMergedPosts(locale, limit?, offset?)` | Merge KB articles + published community articles (type: ARTICLE) |
+| `getArticles(filters)` | Query community articles from Prisma with status/locale/author filtering |
+| `getArticleBySlug(slug, locale)` | Fetch single article by slug (published articles public, drafts auth-required) |
 
 ### Markdown Import Feature
 

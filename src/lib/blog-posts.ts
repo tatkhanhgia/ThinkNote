@@ -1,12 +1,5 @@
-import fs from 'fs';
-import path from 'path';
-import matter from 'gray-matter';
-import { remark } from 'remark';
-import html from 'remark-html';
-import remarkGfm from 'remark-gfm';
+import { prisma } from '@/lib/prisma';
 export { BLOG_MOODS, type BlogMood } from './blog-moods';
-
-const blogDirectory = path.join(process.cwd(), 'src/data/blog');
 
 export interface BlogPostData {
   id: string;
@@ -26,84 +19,82 @@ export function calculateReadingTime(content: string): number {
   return Math.max(1, Math.round(words / 200));
 }
 
-export function getSortedBlogPosts(locale: string = 'en'): BlogPostData[] {
-  const dir = path.join(blogDirectory, locale);
-  let fileNames: string[] = [];
-  try {
-    fileNames = fs.readdirSync(dir);
-  } catch {
-    return [];
-  }
-
-  const posts: BlogPostData[] = [];
-  for (const fileName of fileNames.filter(f => f.endsWith('.md'))) {
-    const id = fileName.replace(/\.md$/, '');
-    const fullPath = path.join(dir, fileName);
-    let raw = '';
-    try {
-      raw = fs.readFileSync(fullPath, 'utf8');
-    } catch {
-      continue;
-    }
-    const { data, content } = matter(raw);
-    const rawDate = data.date;
-    const dateStr = rawDate instanceof Date
-      ? rawDate.toISOString().split('T')[0]
-      : String(rawDate);
-    posts.push({
-      id,
-      title: data.title as string,
-      description: data.description as string,
-      date: dateStr,
-      mood: (data.mood as string) || 'reflective',
-      tags: (data.tags as string[]) || [],
-      coverImage: data.coverImage as string | undefined,
-      readingTime: calculateReadingTime(content),
-    });
-  }
-
-  return posts.sort((a, b) => (a.date < b.date ? 1 : -1));
+function toDateStr(d: Date | string | null): string {
+  if (!d) return new Date().toISOString().split('T')[0];
+  return d instanceof Date ? d.toISOString().split('T')[0] : new Date(d).toISOString().split('T')[0];
 }
 
-export async function getBlogPostData(id: string, locale: string = 'en'): Promise<BlogPostData> {
-  const fullPath = path.join(blogDirectory, locale, `${id}.md`);
-  const raw = fs.readFileSync(fullPath, 'utf8');
-  const { data, content } = matter(raw);
+export async function getSortedBlogPosts(locale: string = 'en'): Promise<BlogPostData[]> {
+  const posts = await prisma.article.findMany({
+    where: { type: 'BLOG_POST', status: 'PUBLISHED', locale },
+    orderBy: { publishedAt: 'desc' },
+    select: {
+      id: true, slug: true, title: true, description: true, mood: true,
+      tags: true, coverImage: true, readingTime: true, publishedAt: true, createdAt: true,
+    },
+  });
 
-  const processed = await remark()
-    .use(html, { sanitize: false })
-    .use(remarkGfm)
-    .process(content);
+  return posts.map((p) => ({
+    id: p.slug,
+    title: p.title,
+    description: p.description,
+    date: toDateStr(p.publishedAt ?? p.createdAt),
+    mood: p.mood || 'reflective',
+    tags: p.tags,
+    coverImage: p.coverImage ?? undefined,
+    readingTime: p.readingTime ?? 1,
+  }));
+}
 
-  const rawDate = data.date;
-  const dateStr = rawDate instanceof Date
-    ? rawDate.toISOString().split('T')[0]
-    : String(rawDate);
+export async function getBlogPostData(slug: string, locale: string = 'en'): Promise<BlogPostData | null> {
+  const post = await prisma.article.findFirst({
+    where: { slug, type: 'BLOG_POST', status: 'PUBLISHED', locale },
+  });
+
+  if (!post) return null;
 
   return {
-    id,
-    title: data.title as string,
-    description: data.description as string,
-    date: dateStr,
-    mood: (data.mood as string) || 'reflective',
-    tags: (data.tags as string[]) || [],
-    coverImage: data.coverImage as string | undefined,
-    readingTime: calculateReadingTime(content),
-    contentHtml: processed.toString(),
+    id: post.slug,
+    title: post.title,
+    description: post.description,
+    date: toDateStr(post.publishedAt ?? post.createdAt),
+    mood: post.mood || 'reflective',
+    tags: post.tags,
+    coverImage: post.coverImage ?? undefined,
+    readingTime: post.readingTime ?? 1,
+    contentHtml: post.content,
   };
 }
 
-export function getBlogPostsByMood(mood: string, locale: string = 'en'): BlogPostData[] {
-  return getSortedBlogPosts(locale).filter(p => p.mood === mood);
+export async function getBlogPostsByMood(mood: string, locale: string = 'en'): Promise<BlogPostData[]> {
+  const posts = await prisma.article.findMany({
+    where: { type: 'BLOG_POST', status: 'PUBLISHED', locale, mood },
+    orderBy: { publishedAt: 'desc' },
+    select: {
+      id: true, slug: true, title: true, description: true, mood: true,
+      tags: true, coverImage: true, readingTime: true, publishedAt: true, createdAt: true,
+    },
+  });
+
+  return posts.map((p) => ({
+    id: p.slug,
+    title: p.title,
+    description: p.description,
+    date: toDateStr(p.publishedAt ?? p.createdAt),
+    mood: p.mood || 'reflective',
+    tags: p.tags,
+    coverImage: p.coverImage ?? undefined,
+    readingTime: p.readingTime ?? 1,
+  }));
 }
 
-export function getAllBlogMoods(locale: string = 'en'): { mood: string; count: number }[] {
-  const posts = getSortedBlogPosts(locale);
-  const counts: Record<string, number> = {};
-  posts.forEach(p => {
-    counts[p.mood] = (counts[p.mood] || 0) + 1;
+export async function getAllBlogMoods(locale: string = 'en'): Promise<{ mood: string; count: number }[]> {
+  const groups = await prisma.article.groupBy({
+    by: ['mood'],
+    where: { type: 'BLOG_POST', status: 'PUBLISHED', locale, mood: { not: null } },
+    _count: { mood: true },
+    orderBy: { _count: { mood: 'desc' } },
   });
-  return Object.entries(counts)
-    .map(([mood, count]) => ({ mood, count }))
-    .sort((a, b) => b.count - a.count);
+
+  return groups.map((g) => ({ mood: g.mood!, count: g._count.mood }));
 }

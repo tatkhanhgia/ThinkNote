@@ -50,6 +50,12 @@ export default async function AdminLayout({
             {t('navigation.articles')}
           </Link>
           <Link
+            href={`/${locale}/admin/blog`}
+            className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+          >
+            {t('navigation.blog')}
+          </Link>
+          <Link
             href={`/${locale}/markdown-import`}
             className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
           >

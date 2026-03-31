@@ -13,6 +13,11 @@ enum ArticleStatus {
   REJECTED
 }
 
+enum ContentType {
+  ARTICLE
+  BLOG_POST
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String
@@ -43,6 +48,9 @@ model Article {
   gradientFrom String?
   gradientTo   String?
   coverImage   String?
+  type         ContentType @default(ARTICLE)
+  mood         String?
+  readingTime  Int?
   reviewNote   String?
   reviewedAt   DateTime?
   reviewedBy   String?
@@ -56,6 +64,7 @@ model Article {
   @@index([status])
   @@index([authorId])
   @@index([locale])
+  @@index([type])
 }
 
 model Session {

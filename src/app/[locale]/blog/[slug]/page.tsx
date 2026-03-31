@@ -1,35 +1,26 @@
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
-import { getBlogPostData, getSortedBlogPosts } from '@/lib/blog-posts';
+import { getBlogPostData } from '@/lib/blog-posts';
 import { BLOG_MOODS, type BlogMood } from '@/lib/blog-moods';
 import PostContent from '@/components/ui/PostContent';
 import ReadingTime from '@/components/ui/ReadingTime';
+import { notFound } from 'next/navigation';
 
 type Props = { params: { locale: string; slug: string } };
 
-export async function generateStaticParams() {
-  const locales = ['en', 'vi'];
-  const params: { locale: string; slug: string }[] = [];
-  for (const locale of locales) {
-    getSortedBlogPosts(locale).forEach(p => params.push({ locale, slug: p.id }));
-  }
-  return params;
-}
-
 export async function generateMetadata({ params: { locale, slug } }: Props) {
-  try {
-    const post = await getBlogPostData(slug, locale);
-    return {
-      title: `${post.title} - ThinkNote Blog`,
-      description: post.description,
-    };
-  } catch {
-    return { title: 'Blog - ThinkNote' };
-  }
+  const post = await getBlogPostData(slug, locale);
+  if (!post) return { title: 'Blog - ThinkNote' };
+  return {
+    title: `${post.title} - ThinkNote Blog`,
+    description: post.description,
+  };
 }
 
 export default async function BlogDetailPage({ params: { locale, slug } }: Props) {
   const post = await getBlogPostData(slug, locale);
+  if (!post) notFound();
+
   const t = await getTranslations('BlogDetail');
 
   const moodKey = post.mood as BlogMood;

